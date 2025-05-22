@@ -131,33 +131,81 @@ For local development, it's easiest to manage the server and its database (Postg
 
     To also remove volumes (like the database data), use `docker-compose down -v`.
 
-## Running the Server Container Manually with an External Database
+### Testing API Endpoints
 
-If you are managing your PostgreSQL database separately (not via the Docker Compose setup above), you can run the server container like this:
-
-```bash
-docker run --name lecturebot-app-server -p 8080:8080 \
-  -e SPRING_DATASOURCE_URL="jdbc:postgresql://your_db_host:5432/your_db_name" \
-  -e SPRING_DATASOURCE_USERNAME="your_db_user" \
-  -e SPRING_DATASOURCE_PASSWORD="your_db_password" \
-  lecturebot-server:latest
-```
-
-* Replace `your_db_host`, `your_db_name`, `your_db_user`, and `your_db_password` with your actual external database connection details.
-* If your database is running on your host machine (your Mac, from Docker Desktop), `your_db_host` can often be `host.docker.internal`.
-
-## Health Check
+#### 1. Health Check
 
 A basic health check endpoint is available at:
-`GET /api/health`
+`GET http://localhost:8080/api/health`
 
-This will return a JSON response indicating the server status.
+**Using curl:**
 
-## API Documentation
+```bash
+curl http://localhost:8080/api/health
+```
+
+**Expected Response:**
+
+```json
+{"status":"UP","message":"LECture-bot server is running!"}
+```
+
+#### 2. User Login
+
+The login endpoint is available at:
+`POST http://localhost:8080/api/auth/login`
+
+**Prerequisites:**
+
+* Ensure the server is running (either locally via `./gradlew bootRun` or via Docker/Docker Compose).
+* Ensure users exist in the database. If using Docker Compose with the `init-users.sql` script, the 5 sample users will be created automatically on the first run with an empty database volume.
+
+**Using curl:**
+Replace `user@example.com` and `password123` with credentials of a user present in your database.
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+-d '{
+  "email": "carlos@example.com",
+  "password": "carlospass"
+}' \
+http://localhost:8080/api/auth/login
+```
+
+**Expected Success Response (current simplified version):**
+
+```json
+{
+  "message": "Login successful (SIMPLIFIED - NO JWT, NO HASHING!)",
+  "token": "placeholder-jwt-token-for-carlos@example.com",
+  "user": {
+    "id": 3, // Example ID
+    "email": "carlos@example.com",
+    "name": "Carlos Mejia"
+  }
+}
+```
+
+**Expected Failure Response (e.g., wrong password or user not found):**
+
+```json
+{
+  "message": "Error: Invalid password." 
+  // or "Error: User not found with email: incorrect@example.com"
+}
+```
+
+**Important Reminders for Login:**
+
+* The current login implementation uses **plain text password comparison**. This is highly insecure and for initial setup/testing only.
+* Proper password hashing (e.g., BCrypt) must be implemented.
+* JWT generation and validation for stateless authentication will be the next step after basic login works.
+
+### API Documentation
 
 API documentation will be provided via Swagger/OpenAPI. Once implemented (by adding the `springdoc-openapi-starter-webmvc-ui` dependency to `build.gradle` and basic configuration), it will typically be accessible at `/swagger-ui.html` or `/v3/api-docs`.
 
-## Project Structure
+### Project Structure
 
 * `src/main/java/com/lecturebot`: Main Java source code.
   * `config`: Spring configuration classes.
@@ -171,6 +219,8 @@ API documentation will be provided via Swagger/OpenAPI. Once implemented (by add
   * `application.properties`: Main application configuration.
   * `static/`: Static web resources (if any).
   * `templates/`: Server-side templates (if any).
+* `db-init/`: Contains SQL scripts for database initialization.
+  * `init-users.sql`: Script to create initial users.
 * `build.gradle`: Gradle project configuration file.
 * `settings.gradle`: Gradle settings file (if present, typically defines project name).
 * `gradlew`, `gradlew.bat`: Gradle wrapper scripts.
