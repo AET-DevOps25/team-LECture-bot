@@ -1,6 +1,6 @@
-# My Vite + TypeScript Project
+#  React + Vite + TypeScript Project
 
-This is a Vite-based frontend project using TypeScript. You can run it either locally or using Docker.
+This is a Vite-based frontend project using TypeScript and React. You can run it either locally or using Docker.
 
 ##  🚀 Running Locally
 
