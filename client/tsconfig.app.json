@@ -27,7 +27,7 @@
     "noUncheckedSideEffectImports": true,
     
     // Type Definitions & Aliases
-    "types": ["vite/client"],                   // Include Vite’s `import.meta.env` types
+    "types": ["vite/client", "node"],                   // Include Vite’s `import.meta.env` types
     "baseUrl": ".",                             // Base path for `paths` to work from the project root
     "paths": {
       "@components/*": ["src/components/*"],
