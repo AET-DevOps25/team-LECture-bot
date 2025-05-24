@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  lecturebot-db:
+    image: postgres:16 # Or your preferred PostgreSQL version
+    container_name: lecturebot-postgres-db
+    environment:
+      POSTGRES_DB: lecturebot_db
+      POSTGRES_USER: lecturebot_user
+      POSTGRES_PASSWORD: mysecretpassword # Change this in a real scenario
+    ports:
+      - "5432:5432" # Expose PostgreSQL port to host (optional, for external tools)
+    volumes:
+      - lecturebot_db_data:/var/lib/postgresql/data # Persistent storage for DB
+      - ./db-init:/docker-entrypoint-initdb.d # Mount init scripts
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    healthcheck: # Added basic healthcheck for PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U lecturebot_user -d lecturebot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  lecturebot-server:
+    build:
+      context: . # Assumes docker-compose.yml is in the server directory
+      dockerfile: Dockerfile
+    container_name: lecturebot-app-server
+    ports:
+      - "8080:8080"
+    environment:
+      # These environment variables will override application.properties in the container
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+      - SPRING_DATASOURCE_USERNAME=lecturebot_user
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword # Should match POSTGRES_PASSWORD above
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Or create-drop for dev, validate for prod
+      # Add other environment variables as needed
+    depends_on:
+      lecturebot-db: # Ensures DB starts before the app
+        condition: service_healthy # Waits for DB to be healthy based on its healthcheck
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+
+volumes:
+  lecturebot_db_data: # Defines a named volume for data persistence
+
+networks:
+  lecturebot-net:
+    driver: bridge
