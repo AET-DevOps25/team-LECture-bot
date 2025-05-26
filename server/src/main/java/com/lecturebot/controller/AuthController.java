@@ -1,12 +1,11 @@
 package com.lecturebot.controller;
 
-import com.lecturebot.dto.LoginRequest;
-import com.lecturebot.dto.LoginResponse;
-import com.lecturebot.dto.RegisterRequest;
-import com.lecturebot.service.UserService;
+import com.lecturebot.dto.LoginRequest; //
+import com.lecturebot.dto.LoginResponse; //
+import com.lecturebot.dto.RegisterRequest; //
+import com.lecturebot.service.UserService; //
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserService userService; //
 
     @Autowired
     public AuthController(UserService userService) {
@@ -27,13 +26,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("Login endpoint called, but functionality is not yet implemented in this scope.");
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build(); // Return 501 Not Implemented
+    public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) { //
+        try {
+            LoginResponse loginResponse = userService.loginUser(loginRequest); //
+            return ResponseEntity.ok(loginResponse);
+        } catch (RuntimeException e) {
+             // Return a more structured error if LoginResponse can accommodate it
+            return ResponseEntity.badRequest().body(new LoginResponse(null, e.getMessage()));
+        }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, BindingResult result) { //
         if (result.hasErrors()) {
             String errorMessage = result.getFieldErrors().stream()
                     .map(error -> error.getField() + ": " + error.getDefaultMessage())
@@ -42,7 +46,7 @@ public class AuthController {
         }
         try {
             userService.registerUser(request);
-            return ResponseEntity.ok("Registration successful for " + request.getEmail()); // getEmail() should work if Lombok is fine
+            return ResponseEntity.ok("Registration successful for " + request.getEmail());
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
