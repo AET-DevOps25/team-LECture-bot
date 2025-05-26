@@ -1,0 +1,33 @@
+# Node dependencies
+node_modules
+.pnpm
+.yarn
+.yarnrc
+.npm
+
+# Build output
+dist
+build
+.vite
+
+# Logs
+*.log
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Git files
+.git
+.gitignore
+
+# Editor and OS-specific files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Testing coverage or reports (if applicable)
+coverage
+*.tsbuildinfo
+
