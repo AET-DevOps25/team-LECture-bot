@@ -1,23 +1,23 @@
 package com.lecturebot.service;
 
-import com.lecturebot.dto.RegisterRequest; //
-import com.lecturebot.entity.User; //
-import com.lecturebot.repository.UserRepository; //
+import com.lecturebot.dto.RegisterRequest;
+import com.lecturebot.entity.User;
+import com.lecturebot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder; // Import PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Import Transactional
 
-// Assuming LoginRequest and LoginResponse DTOs exist for later use
+// Assuming LoginRequest and LoginResponse DTOs exist
 import com.lecturebot.dto.LoginRequest;
 import com.lecturebot.dto.LoginResponse;
-
 
 import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepository; //
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -26,37 +26,37 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User registerUser(RegisterRequest request) { //
+    @Transactional // Add Transactional annotation for operations that modify data
+    public User registerUser(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
-        User user = new User(); //
+        User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        // Hash the password before saving
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         
-        // return userRepository.save(user); 
-        System.out.println("Hashed password for " + request.getEmail() + ": " + user.getPasswordHash());
-        return user; // Returning the user object with hashed password (not yet saved)
+        // Save the user to the database
+        return userRepository.save(user); // This line is now active
     }
 
+    @Transactional(readOnly = true) // Good practice for read operations
     public LoginResponse loginUser(LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // Use passwordEncoder.matches() for comparison
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
                 // Passwords match, successful login
-                System.out.println("Login successful for (conceptual): " + user.getEmail());
-                return new LoginResponse("dummy-token-replace-in-sub-issue-5", "Login successful");
+                // TODO: Generate and return a JWT token (can be a separate sub-task or part of full login feature)
+                String token = "dummy-jwt-token-replace-me"; // Replace with actual token generation logic
+                return new LoginResponse(token, "Login successful for " + user.getEmail());
             } else {
                 // Invalid password
-                throw new RuntimeException("Invalid email or password");
+                throw new RuntimeException("Invalid email or password for user " + loginRequest.getEmail());
             }
         } else {
             // User not found
-            throw new RuntimeException("Invalid email or password");
+            throw new RuntimeException("User not found with email: " + loginRequest.getEmail());
         }
     }
 }
