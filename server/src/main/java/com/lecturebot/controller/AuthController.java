@@ -2,20 +2,21 @@ package com.lecturebot.controller;
 
 import com.lecturebot.dto.LoginRequest;
 import com.lecturebot.dto.LoginResponse;
-// Import registration DTO and User entity later
-// import com.lecturebot.dto.RegisterRequest;
-// import com.lecturebot.entity.User;
+import com.lecturebot.dto.RegisterRequest;
 import com.lecturebot.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/auth") // Common base path for authentication endpoints
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserService userService;
@@ -27,28 +28,23 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        try {
-            LoginResponse loginResponse = userService.loginUser(loginRequest);
-            return ResponseEntity.ok(loginResponse);
-        } catch (RuntimeException e) {
-            // Basic error handling, improve later with global exception handler and specific exceptions
-            return ResponseEntity.badRequest().body(new LoginResponse(e.getMessage()));
-        }
+        System.out.println("Login endpoint called, but functionality is not yet implemented in this scope.");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build(); // Return 501 Not Implemented
     }
 
-    // Placeholder for registration endpoint - you'll need this soon
-    /*
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+            String errorMessage = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
         try {
-            // Create User object from RegisterRequest
-            User newUser = new User(registerRequest.getEmail(), null, registerRequest.getName());
-            // The password will be hashed and set by the service
-            User registeredUser = userService.registerUser(newUser, registerRequest.getPassword());
-            return ResponseEntity.ok(new LoginResponse("User registered successfully!")); // Or return UserDto
+            userService.registerUser(request);
+            return ResponseEntity.ok("Registration successful for " + request.getEmail()); // getEmail() should work if Lombok is fine
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new LoginResponse(e.getMessage()));
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    */
 }

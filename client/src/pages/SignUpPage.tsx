@@ -37,7 +37,14 @@ function SignUpPage() {
         event.preventDefault();
         if (validateForm()) {
             console.log('Form submitted with:', { name, email, password, confirmPassword });
-            // Add API call or further logic here
+            const response = await fetch('http://localhost:8080/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password }),
+            });
+            const data = await response.text();
+            if (response.ok) alert(data); // Replace with redirect
+            else setErrors({ submit: data });
         }
     };
 
