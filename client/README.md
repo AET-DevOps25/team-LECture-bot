@@ -3,12 +3,16 @@
 This is a Vite-based frontend project using TypeScript and React. You can run it either locally or using Docker.
 
 ##  🚀 Running Locally
+### 1. Navigate to the Client Directory
+```bash
+cd client
+```
 
-### 1. Install Dependencies
+### 2. Install Dependencies
 ```bash
 npm install   
 ```
-### 2. Start the Development Server
+### 3. Start the Development Server
 ```bash
 npm run dev 
 ```
@@ -16,11 +20,17 @@ npm run dev
 The app will be available at http://localhost:3000
 
 ## 🐳 Running with Docker
-### 1. Build the Docker Image
+
+### 1. Navigate to the Client Directory
+```bash
+cd client
+```
+
+### 2. Build the Docker Image
 ```bash
 docker build -t client-app .
 ```
-### 2. Run the Docker Container
+### 3. Run the Docker Container
 ```bash
 docker run --name client -p 3000:3000 client-app
 ```
