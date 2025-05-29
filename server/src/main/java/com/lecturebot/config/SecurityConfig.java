@@ -41,7 +41,11 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // Specify allowed origins. For development, you can use the specific frontend URL.
         // For production, list your actual frontend domain(s).
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Frontend origin
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:5173", // For Vite dev server
+            "http://localhost:3000",  // For Dockerized client on port 3000
+            "http://localhost:8080"  // For Dockerized client on port 3000
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         configuration.setAllowCredentials(true); // Important if you plan to use cookies or sessions
