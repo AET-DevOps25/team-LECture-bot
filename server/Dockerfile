@@ -11,15 +11,11 @@ COPY gradle ./gradle
 
 # Copy the build configuration files
 COPY build.gradle .
-# COPY settings.gradle . # Uncomment if you have a settings.gradle file
 
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
 # Download dependencies first to leverage Docker cache
-# This command might vary slightly based on your exact needs for dependency locking/resolution
-# Using 'dependencies' task is a common way to download all dependencies.
-# Alternatively, './gradlew assemble --no-daemon' or './gradlew classes' can also pull dependencies.
 RUN ./gradlew dependencies --no-daemon
 
 # Copy the source code

@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   lecturebot-db:
-    image: postgres:16 # Or your preferred PostgreSQL version
+    image: postgres:16
     container_name: lecturebot-postgres-db
     environment:
       POSTGRES_DB: lecturebot_db
       POSTGRES_USER: lecturebot_user
-      POSTGRES_PASSWORD: mysecretpassword # Change this in a real scenario
+      POSTGRES_PASSWORD: mysecretpassword
     ports:
       - "5432:5432" # Expose PostgreSQL port to host (optional, for external tools)
     volumes:
