@@ -1,0 +1,5 @@
+- name: Install Docker dependencies and repo
+  import_tasks: install_packages.yml
+
+- name: Post-install Docker config (start service, add user)
+  import_tasks: post_install.yml
