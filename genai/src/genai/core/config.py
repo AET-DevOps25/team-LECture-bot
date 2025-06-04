@@ -22,4 +22,9 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 200
     TEXT_SPLITTER_SEPARATORS: List[str] = ["\n\n", "\n", " ", "", "\t"] 
 
+    # Weaviate Configuration
+    WEAVIATE_URL: str = "http://localhost:8080" # Ensure this points to your Weaviate instance
+    WEAVIATE_API_KEY: Optional[str] = None
+    WEAVIATE_CLASS_NAME: str = "LectureBotChunk"
+
 settings = Settings()
