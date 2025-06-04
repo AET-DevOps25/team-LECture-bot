@@ -1,7 +1,6 @@
 name: Build Docker Images
 
-on:
-  push:
+on: [push]
 
 jobs:
   test:
