@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
+from typing import Optional, List
 
 class Settings(BaseSettings):
     APP_NAME: str = "GenAI Module for LECture-bot"
@@ -17,5 +17,9 @@ class Settings(BaseSettings):
     GENAI_PORT: int = 8001 # Port the GenAI FastAPI app will listen on
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding='utf-8')
+
+    CHUNK_SIZE: int = 1000
+    CHUNK_OVERLAP: int = 200
+    TEXT_SPLITTER_SEPARATORS: List[str] = ["\n\n", "\n", " ", "", "\t"] 
 
 settings = Settings()
