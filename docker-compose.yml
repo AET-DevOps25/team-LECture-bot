@@ -1,6 +1,50 @@
 version: '3.8'
 
 services:
+  #--------------------------------------------------------------------------
+  # Frontend Service (React Client)
+  #--------------------------------------------------------------------------
+  client:
+    build:
+      context: ./client # Path to the client directory from the project root
+      dockerfile: Dockerfile 
+    container_name: lecturebot-client-app
+    ports:
+      - "3000:3000" # Maps host port 3000 to container port 3000 (from your Dockerfile EXPOSE)
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    depends_on:
+      - server # Client can start independently of the server for static assets, but requests will fail until the server is up.
+
+  #--------------------------------------------------------------------------
+  # Backend Service (Spring Boot Server)
+  #--------------------------------------------------------------------------
+  server:
+    build:
+      context: ./server # Path to the server directory from the project root
+      dockerfile: Dockerfile
+    container_name: lecturebot-app-server
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://localhost:3000 # For CORS
+      - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173 # For CORS during local dev
+    depends_on:
+      lecturebot-db:
+        condition: service_healthy
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+
+  #--------------------------------------------------------------------------
+  # Database Service (PostgreSQL)
+  #--------------------------------------------------------------------------
   lecturebot-db:
     image: postgres:16
     container_name: lecturebot-postgres-db
@@ -9,10 +53,10 @@ services:
       POSTGRES_USER: lecturebot_user
       POSTGRES_PASSWORD: mysecretpassword
     ports:
-      - "5432:5432"
+      - "5432:5432" # Expose PostgreSQL port to host (optional, for external tools)
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
-      - ./server/db-init:/docker-entrypoint-initdb.d
+      - ./server/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -22,37 +66,8 @@ services:
       timeout: 5s
       retries: 5
 
-  lecturebot-server:
-    build: ./server
-    container_name: lecturebot-app-server
-    ports:
-      - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
-      - SPRING_DATASOURCE_USERNAME=lecturebot_user
-      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    depends_on:
-      lecturebot-db:
-        condition: service_healthy
-    networks:
-      - lecturebot-net
-    restart: unless-stopped
-
-  lecturebot-client:
-    build: ./client
-    container_name: lecturebot-app-client
-    ports:
-      - "3000:3000"
-    networks:
-      - lecturebot-net
-    depends_on:
-      - lecturebot-server
-    restart: unless-stopped
-
 volumes:
-  lecturebot_db_data:
+  lecturebot_db_data: # Defines a named volume for data persistence
 
 networks:
   lecturebot-net:
