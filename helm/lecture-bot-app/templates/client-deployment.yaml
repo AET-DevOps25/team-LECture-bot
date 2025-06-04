@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lecture-bot-client
+  namespace: {{ .Values.namespacename }}
+spec:
+  replicas: {{ .Values.client.replicaCount }}
+  selector:
+    matchLabels:
+      app: lecture-bot-client-selector
+  template:
+    metadata:
+      labels:
+        app: lecture-bot-client-selector
+    spec:
+      containers:
+        - name: lecture-bot-client
+          image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
+          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.client.service.targetPort }}
+          resources:
+            requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          env:
+            - name: PUBLIC_API_URL 
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PUBLIC_API_URL

@@ -1,0 +1,63 @@
+namespace:
+  create: false
+
+namespacename: team-lecture-bot
+
+server:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/server
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name:  SPRING_PROFILES_ACTIVE
+      value: dev
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: lecturebot_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: mysecretpassword
+    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+      value: update
+
+client:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/client
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  replicaCount: 1
+
+
+dbServiceName: lecturebot-db
+
+db:
+  image:
+    repository: postgres
+    tag: 16
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+  env:
+    - name: postgresDb 
+      value: lecturebot_db
+    - name: postgresUser 
+      value: lecturebot_user
+    - name: postgresPassword
+      value: mysecretpassword
+ingress:
+  enabled: true
+  className: nginx
+  tls: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
