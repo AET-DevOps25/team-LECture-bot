@@ -23,7 +23,7 @@ server:
     - name: SPRING_DATASOURCE_PASSWORD
       value: mysecretpassword
     - name: LECTUREBOT_CLIENT_ORIGIN
-      value: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de
+      value: https://team-lecture-bot.student.k8s.aet.cit.tum.de
     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
       value: update
 
