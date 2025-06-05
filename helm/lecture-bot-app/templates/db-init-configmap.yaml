@@ -1,5 +1,11 @@
+{{- if not (lookup "v1" "ConfigMap" .Release.Namespace "db-init-scripts") }}
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-scripts
+  namespace: team-lecture-bot
 data:
+
   init-users.sql: |
     -- Insert 5 sample users
     -- IMPORTANT: Passwords are in plain text for this initial setup.
@@ -20,10 +26,5 @@ data:
     ON CONFLICT (email) DO NOTHING; -- Optional: Prevents error if an email already exists, useful if script runs multiple times against a non-empty DB somehow, though initdb.d scripts usually don't.
 
     SELECT 'Finished initializing users from init-users.sql' AS status;
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2025-06-01T19:31:06Z"
-  name: db-init-scripts
-  namespace: team-lecture-bot
-  resourceVersion: "12799318"
-  uid: 13e780fe-09ae-445b-a70e-eee8d6fa1cb3
+
+{{- end }}
