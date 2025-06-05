@@ -6,7 +6,7 @@ namespacename: team-lecture-bot
 server:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/server
-    tag: latest
+    tag: 31-create-deployment-infra  #latest
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -22,13 +22,16 @@ server:
       value: lecturebot_user
     - name: SPRING_DATASOURCE_PASSWORD
       value: mysecretpassword
+    - name: LECTUREBOT_CLIENT_ORIGIN
+      value: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de
     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
       value: update
 
 client:
+  publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/client
-    tag: latest
+    tag: 31-create-deployment-infra
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -40,6 +43,9 @@ client:
 dbServiceName: lecturebot-db
 
 db:
+  postgresDb: lecturebot_db
+  postgresUser: lecturebot_user
+  postgresPassword: mysecretpassword
   image:
     repository: postgres
     tag: 16
@@ -48,13 +54,6 @@ db:
     type: ClusterIP
     port: 5432
     targetPort: 5432
-  env:
-    - name: postgresDb 
-      value: lecturebot_db
-    - name: postgresUser 
-      value: lecturebot_user
-    - name: postgresPassword
-      value: mysecretpassword
 ingress:
   enabled: true
   className: nginx

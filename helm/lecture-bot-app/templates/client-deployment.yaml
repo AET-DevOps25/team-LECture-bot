@@ -26,9 +26,12 @@ spec:
           limits:
             cpu: "300m"
             memory: "256Mi"
-          env:
-            - name: PUBLIC_API_URL 
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: PUBLIC_API_URL
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/nginx/html/config.json
+              subPath: config.json
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: client-config
