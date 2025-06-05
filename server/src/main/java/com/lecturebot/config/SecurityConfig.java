@@ -48,7 +48,9 @@ public class SecurityConfig {
                 "http://localhost:5173", // For Vite dev server
                 "http://localhost:3000", // For Dockerized client on port 3000
                 "http://localhost:8080", // For Dockerized client on port 3000
-                clientOrigin // to allow client requests in cluster environment
+                // clientOrigin // to allow client requests in cluster environment
+                "https://team-lecture-bot.student.k8s.aet.cit.tum.de" // test hardcoded value for production
+
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type",
