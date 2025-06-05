@@ -101,7 +101,7 @@ function SignUpPage() {
                 }
                 const API_BASE_URL = PUBLIC_API_URL || 'http://localhost:8080/api'; // Fallback to localhost if not set
 
-                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password }), // Correctly sends these three fields
