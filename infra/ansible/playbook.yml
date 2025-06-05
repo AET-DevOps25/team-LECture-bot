@@ -1,0 +1,22 @@
+- name: wait for ssh connection
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_connection: local
+  tasks: 
+    - name: Ensure SSH port open
+      wait_for:
+        port: 22
+        delay: 10
+        timeout: 300
+        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+        search_regex: OpenSSH
+
+
+- name: Set up Docker on EC2
+  hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - docker

@@ -1,0 +1,13 @@
+{{- if not (lookup "v1" "PersistentVolumeClaim" .Values.namespacename "lecturebot-db-pvc") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lecturebot-db-pvc
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}
