@@ -12,6 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration; // Import CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource; // Import CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // Import UrlBasedCorsConfigurationSource
+
+import jakarta.annotation.PostConstruct;
+
 import java.util.Arrays; // Import Arrays
 import java.util.List; // Import List
 
@@ -33,6 +36,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @PostConstruct
+    public void logOrigin() {
+        System.out.println("Resolved CORS origin: " + clientOrigin);
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,8 +56,9 @@ public class SecurityConfig {
                 "http://localhost:5173", // For Vite dev server
                 "http://localhost:3000", // For Dockerized client on port 3000
                 "http://localhost:8080", // For Dockerized client on port 3000
-                // clientOrigin // to allow client requests in cluster environment
-                "https://team-lecture-bot.student.k8s.aet.cit.tum.de" // test hardcoded value for production
+                clientOrigin // to allow client requests in cluster environment
+        // "https://team-lecture-bot.student.k8s.aet.cit.tum.de" // test hardcoded value
+        // for production
 
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
