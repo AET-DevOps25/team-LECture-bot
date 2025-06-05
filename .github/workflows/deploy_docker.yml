@@ -1,9 +1,10 @@
-name: Deploy Docker Images
+name: Deploy Docker Images to AWS EC2 & Kubernetes deployment (helm) to AET Cluster
 
 on: [workflow_dispatch]
 
 jobs:
-  deploy:
+  
+  docker-to-aws:
     runs-on: ubuntu-latest
     environment:
       name: AWS
@@ -45,3 +46,32 @@ jobs:
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "Starting Docker Compose..."
             docker compose -f compose.aws.yml --env-file=.env.prod up --pull=always -d
+  helm-to-aet:
+      runs-on: ubuntu-latest
+      environment:
+        name: AET
+      needs: docker-to-aws
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4
+
+        - name: Set up kubeconfig
+          run: |
+            mkdir -p ~/.kube
+            echo "${{ secrets.AET_KUBECONFIG }}" > ~/.kube/config
+        
+        - name: Install Helm
+          uses: azure/setup-helm@v3
+          with:
+            version: v3.12.3
+
+        - name: Deploy to AET Cluster
+          run: |
+            helm upgrade --install ${{ vars.APP_NAME }} ./helm/lecture-bot-app \
+              --namespace ${{ vars.NAMESPACE }}  \
+              --create-namespace \
+              --values ./helm/lecture-bot-app/values.aet.yaml 
+        
+
+
+
