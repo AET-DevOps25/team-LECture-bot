@@ -19,7 +19,7 @@ import java.util.List; // Import List
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("LECTUREBOT_CLIENT_ORIGIN")
+    @Value("${LECTUREBOT_CLIENT_ORIGIN}")
     private String clientOrigin;
 
     @Bean
