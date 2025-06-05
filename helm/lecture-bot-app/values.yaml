@@ -6,7 +6,7 @@ namespacename: team-lecture-bot
 server:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/server
-    tag: 31-create-deployment-infra  #latest
+    tag: latest
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -31,7 +31,7 @@ client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/client
-    tag: 31-create-deployment-infra
+    tag: latest
     pullPolicy: Always
   service:
     type: ClusterIP
