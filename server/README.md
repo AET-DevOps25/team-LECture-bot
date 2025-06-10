@@ -156,3 +156,81 @@ Email already exists
 * name: Name is required
 * email: Email format is invalid
 * password: Password must be at least 8 characters
+
+## Testing Manage Profile Endpoints
+
+You can test the profile update and password change features either via the UI (frontend) or directly using curl commands. All endpoints require a valid JWT for authentication, which must be passed in the `Authorization` header as `Bearer <token>`.
+
+### 1. Update Profile (Name/Email)
+
+**Endpoint:**
+```
+PUT /api/users/me
+```
+
+**Headers:**
+- `Authorization: Bearer <your-jwt-token>`
+- `Content-Type: application/json`
+
+**Request Body Example:**
+```json
+{
+  "name": "New Name",
+  "email": "new.email@example.com"
+}
+```
+
+**Curl Example:**
+```sh
+curl -X PUT http://localhost:8080/api/users/me \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Name",
+    "email": "new.email@example.com"
+  }'
+```
+
+**Expected Response:**
+- 200 OK with the updated user object, or an error message if validation fails or the email is already taken.
+
+### 2. Change Password
+
+**Endpoint:**
+```
+POST /api/users/me/change-password
+```
+
+**Headers:**
+- `Authorization: Bearer <your-jwt-token>`
+- `Content-Type: application/json`
+
+**Request Body Example:**
+```json
+{
+  "currentPassword": "oldpassword123",
+  "newPassword": "newpassword456"
+}
+```
+
+**Curl Example:**
+```sh
+curl -X POST http://localhost:8080/api/users/me/change-password \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "currentPassword": "oldpassword123",
+    "newPassword": "newpassword456"
+  }'
+```
+
+**Expected Response:**
+- 200 OK on success, or an error message if the current password is incorrect or validation fails.
+
+### 3. Using the UI
+
+- Log in via the frontend to obtain a JWT (usually stored in localStorage or cookies).
+- Navigate to `/profile` in the UI to view and update your profile or change your password.
+- All requests from the UI will automatically include the JWT if you are logged in.
+
+**Note:** If you receive a 401 Unauthorized error, ensure your JWT is valid and not expired.
