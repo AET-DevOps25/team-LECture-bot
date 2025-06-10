@@ -2,6 +2,7 @@ package com.lecturebot.service;
 
 import com.lecturebot.dto.RegisterRequest;
 import com.lecturebot.dto.UpdateUserProfileRequest;
+import com.lecturebot.dto.ChangePasswordRequest;
 import com.lecturebot.entity.User;
 import com.lecturebot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class UserService {
 
     // Update the authenticated user's profile (name, email)
     @Transactional
-    public User updateUserProfile(String email, com.lecturebot.dto.UpdateUserProfileRequest request) {
+    public User updateUserProfile(String email, UpdateUserProfileRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -76,5 +77,16 @@ public class UserService {
         }
         user.setName(request.getName());
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 }

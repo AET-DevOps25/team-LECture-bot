@@ -1,11 +1,13 @@
 package com.lecturebot.controller;
 
 import com.lecturebot.dto.UpdateUserProfileRequest;
+import com.lecturebot.dto.ChangePasswordRequest;
 import com.lecturebot.entity.User;
 import com.lecturebot.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,8 +22,16 @@ public class ProfileController {
     @PutMapping("/me")
     public ResponseEntity<?> updateProfile(
             @Valid @RequestBody UpdateUserProfileRequest request,
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         User updatedUser = userService.updateUserProfile(userDetails.getUsername(), request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/me/change-password")
+    public ResponseEntity<?> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        userService.changePassword(userDetails.getUsername(), request);
+        return ResponseEntity.ok().build();
     }
 }
