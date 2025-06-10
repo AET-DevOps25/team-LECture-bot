@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource; // Import CorsConfi
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // Import UrlBasedCorsConfigurationSource
 
 import com.lecturebot.repository.UserRepository;
-import com.lecturebot.security.JwtAuthenticationFilter
+import com.lecturebot.security.JwtAuthenticationFilter;
 import jakarta.annotation.PostConstruct;
 
 import java.util.Arrays; // Import Arrays
