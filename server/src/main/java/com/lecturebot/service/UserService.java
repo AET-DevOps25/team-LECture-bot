@@ -63,21 +63,8 @@ public class UserService {
 
         String token = jwtTokenProvider.generateToken(authentication);
 
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
-                // Passwords match, successful login
-                // TODO: Generate and return a JWT token (can be a separate sub-task or part of
-                // full login feature)
-                return new LoginResponse(token, "Login successful for " + user.getEmail());
-            } else {
-                // Invalid password
-                throw new RuntimeException("Invalid email or password for user " + loginRequest.getEmail());
-            }
-        } else {
-            // User not found
-            throw new RuntimeException("User not found with email: " + loginRequest.getEmail());
-        }
+        return new LoginResponse(
+                token,
+                "Login successful for " + loginRequest.getEmail());
     }
 }
