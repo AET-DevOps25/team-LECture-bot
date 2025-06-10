@@ -26,7 +26,10 @@ server:
       value: https://team-lecture-bot.student.k8s.aet.cit.tum.de
     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
       value: update
-
+    - name: APP_JWT_EXPIRATION_IN_MS
+      value: "86400000" # 24 hours
+    - name: APP_JWT_SECRET
+      value: ng5hl+XNBp8tM5S+8pbHEzimyjOR5DBXdATzMbrkHpNL2KsJMRL547GO7VuQqDz9BQNrBa+Dhqr1vB3OhzYPIw==
 client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
   image:

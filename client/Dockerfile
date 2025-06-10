@@ -4,7 +4,12 @@ FROM node:18-alpine AS builder
 WORKDIR /client-app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
+
+
+# --- ADD THIS DEBUGGING LINE ---
+RUN ls -l node_modules/axios || echo "axios not found"
+# ---
 
 COPY . .
 

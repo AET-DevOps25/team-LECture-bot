@@ -31,7 +31,7 @@ public class AuthController {
             LoginResponse loginResponse = userService.loginUser(loginRequest); //
             return ResponseEntity.ok(loginResponse);
         } catch (RuntimeException e) {
-             // Return a more structured error if LoginResponse can accommodate it
+            // Return a more structured error if LoginResponse can accommodate it
             return ResponseEntity.badRequest().body(new LoginResponse(null, e.getMessage()));
         }
     }
