@@ -1,5 +1,6 @@
 package com.lecturebot.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource; // Import CorsConfi
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // Import UrlBasedCorsConfigurationSource
 
 import com.lecturebot.repository.UserRepository;
-import com.lecturebot.security.JwtAuthenticationFilter;
+import com.lecturebot.security.JwtAuthenticationFilter
+import jakarta.annotation.PostConstruct;
 
 import java.util.Arrays; // Import Arrays
 import java.util.List; // Import List
@@ -27,6 +29,9 @@ import java.util.List; // Import List
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${LECTUREBOT_CLIENT_ORIGIN}")
+    private String clientOrigin;
 
     private final UserRepository userRepository;
 
@@ -42,10 +47,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated());
-
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @PostConstruct
+    public void logOrigin() {
+        System.out.println("Resolved CORS origin: " + clientOrigin);
     }
 
     @Bean
@@ -84,7 +93,10 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173", // For Vite dev server
                 "http://localhost:3000", // For Dockerized client on port 3000
-                "http://localhost:8080" // For Dockerized client on port 3000
+                "http://localhost:8080", // For Dockerized client on port 3000
+                clientOrigin // to allow client requests in cluster environment
+        // "https://team-lecture-bot.student.k8s.aet.cit.tum.de" // test hardcoded value
+        // for production
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type",

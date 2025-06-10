@@ -1,0 +1,17 @@
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user 'ubuntu' to the docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes
+
+- name: Reboot instance (optional)
+  reboot:
+    reboot_timeout: 300
+  when: reboot_required | default(true)
+
