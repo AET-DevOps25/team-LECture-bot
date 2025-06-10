@@ -1,6 +1,7 @@
 package com.lecturebot.service;
 
 import com.lecturebot.dto.RegisterRequest;
+import com.lecturebot.dto.UpdateUserProfileRequest;
 import com.lecturebot.entity.User;
 import com.lecturebot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +59,22 @@ public class UserService {
             // User not found
             throw new RuntimeException("User not found with email: " + loginRequest.getEmail());
         }
+    }
+
+    // Update the authenticated user's profile (name, email)
+    @Transactional
+    public User updateUserProfile(String email, com.lecturebot.dto.UpdateUserProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // If email is being changed, check for uniqueness
+        if (!user.getEmail().equals(request.getEmail())) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new RuntimeException("Email already exists");
+            }
+            user.setEmail(request.getEmail());
+        }
+        user.setName(request.getName());
+        return userRepository.save(user);
     }
 }
