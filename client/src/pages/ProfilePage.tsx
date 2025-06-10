@@ -86,8 +86,18 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({ name, email }),
       });
-      if (!res.ok) throw new Error("Failed to update profile");
+      if (!res.ok) {
+        let msg = "Failed to update profile";
+        try {
+          const errData = await res.json();
+          msg = errData.message || msg;
+        } catch {}
+        throw new Error(msg);
+      }
+      // Update local state with new values (in case backend returns updated user)
       setProfileSuccess("Profile updated successfully");
+      const updated = await res.json();
+      setName(updated.name); setEmail(updated.email);
     } catch (err: any) {
       setProfileErrors({ form: err.message || "Error updating profile" });
     } finally {
@@ -112,7 +122,14 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
-      if (!res.ok) throw new Error("Failed to change password");
+      if (!res.ok) {
+        let msg = "Failed to change password";
+        try {
+          const errData = await res.json();
+          msg = errData.message || msg;
+        } catch {}
+        throw new Error(msg);
+      }
       setPasswordSuccess("Password changed successfully");
       setCurrentPassword("");
       setNewPassword("");
