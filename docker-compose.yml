@@ -35,6 +35,8 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
       - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://localhost:3000 # For CORS
       - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173 # For CORS during local dev
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
     depends_on:
       lecturebot-db:
         condition: service_healthy
