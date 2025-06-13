@@ -12,8 +12,8 @@ app = FastAPI(
 )
 
 # Include the API routers
-app.include_router(indexing.router, prefix=f"{settings.API_V1_STR}/indexing", tags=["Indexing"])
-app.include_router(query.router, prefix=f"{settings.API_V1_STR}/query", tags=["Query & Answer"])
+app.include_router(indexing.router, prefix="/api/v1/index", tags=["indexing"])
+app.include_router(query.router, prefix="/api/v1/query", tags=["query"])
 
 # Basic health check endpoint
 @app.get(f"{settings.API_V1_STR}/health", summary="Health Check", tags=["Monitoring"])
@@ -21,9 +21,11 @@ async def health_check():
     return {"status": "healthy", "module_name": settings.APP_NAME, "version": app.version}
 
 # Optional: Basic root endpoint
-@app.get("/", summary="Root Endpoint", tags=["General"])
+@app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": f"Welcome to the {settings.APP_NAME}"}
+    return {"message": "Welcome to the GenAI Service"}
+
+print("✅ All routers included. Service is ready.")
 
 # Optional: Basic exception handler (can be expanded)
 @app.exception_handler(Exception)

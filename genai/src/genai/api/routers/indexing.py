@@ -1,35 +1,32 @@
 from fastapi import APIRouter, HTTPException, status, Body
-from genai.api import schemas # Corrected import path
+from genai.pipelines.indexing_pipeline import IndexingPipeline
+from genai.api import schemas
+
+# Add a print statement for debugging to confirm the module is loaded
+print("✅ Indexing router module loaded.")
 
 router = APIRouter()
+pipeline = IndexingPipeline()
 
 @router.post(
-    "/index", # Full path will be /api/v1/indexing/index
+    "/",
     response_model=schemas.IndexDocumentResponse,
-    summary="Index a document's text content",
-    description="Receives document ID, text content, and associated metadata. It then processes (chunks, embeds) and indexes the content into the vector database."
+    summary="Index a document for RAG",
+    description="Receives document text, chunks it, generates embeddings, and stores them in the vector DB.",
+    status_code=status.HTTP_200_OK,
 )
-async def index_document_content(
-    payload: schemas.IndexDocumentRequest = Body(...) # Use Body for explicit request body
+async def index_document_in_pipeline(
+    payload: schemas.IndexDocumentRequest = Body(...)
 ):
-    # Placeholder for actual indexing pipeline call
-    # This is where you'll integrate with Sub-Issue 5: Document Indexing Pipeline
-    print(f"Indexing request received for document ID: {payload.document_id} in course space: {payload.course_space_id}")
-    
-    # Example:
-    # try:
-    #   num_chunks = await some_indexing_pipeline_function(payload)
-    #   return schemas.IndexDocumentResponse(
-    #       document_id=payload.document_id,
-    #       status="completed",
-    #       message=f"Document indexed successfully. {num_chunks} chunks created.",
-    #       num_chunks_indexed=num_chunks
-    #   )
-    # except Exception as e:
-    #   raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    print(f"Indexing request received for document: {payload.document_id}")
+    try:
+        result = pipeline.process_document(payload)
+        return schemas.IndexDocumentResponse(**result)
+    except Exception as e:
+        print(f"Error during indexing pipeline: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An unexpected error occurred: {e}",
+        )
 
-    return schemas.IndexDocumentResponse(
-        document_id=payload.document_id,
-        status="indexing_started", # Or "received" if it's truly async
-        message="Document content received and is being queued for indexing."
-    )
+print("✅ Indexing router loaded successfully.")
