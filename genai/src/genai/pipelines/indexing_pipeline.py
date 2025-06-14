@@ -97,21 +97,26 @@ class IndexingPipeline:
             valid_chunks_for_storage = []
             for i, chunk_data in enumerate(chunks_with_metadata):
                 if i < len(chunk_embeddings) and chunk_embeddings[i]: # Check if embedding is not empty
+                    properties_for_weaviate = chunk_data['metadata'].copy()
+                    properties_for_weaviate['text_content'] = chunk_data['page_content']
                     valid_chunks_for_storage.append({
-                        "properties": chunk_data['metadata'], # Metadata from TextProcessingService already includes chunk_index etc.
+                        "properties": properties_for_weaviate,
                         "vector": chunk_embeddings[i],
                         # Optionally generate a deterministic UUID for each chunk here if desired
                         # "uuid": uuid.uuid5(uuid.NAMESPACE_DNS, f"{payload.document_id}-{chunk_data['metadata'].get('chunk_index', i)}")
                     })
             print(f"After filtering, {len(valid_chunks_for_storage)} chunks have valid embeddings.")
         else: # Happy path, all chunks got embeddings
-            valid_chunks_for_storage = [
-                WeaviateInputDocument(
-                    properties=chunk_data['metadata'], # Metadata from TextProcessingService
-                    vector=chunk_embeddings[i]
-                    # uuid=uuid.uuid5(uuid.NAMESPACE_DNS, f"{payload.document_id}-{chunk_data['metadata'].get('chunk_index', i)}") # Optional deterministic UUID
-                ) for i, chunk_data in enumerate(chunks_with_metadata) if chunk_embeddings[i] # Ensure embedding exists
-            ]
+            valid_chunks_for_storage = []
+            for i, chunk_data in enumerate(chunks_with_metadata):
+                if chunk_embeddings[i]: # Ensure embedding exists
+                    properties_for_weaviate = chunk_data['metadata'].copy()
+                    properties_for_weaviate['text_content'] = chunk_data['page_content']
+                    valid_chunks_for_storage.append(
+                        WeaviateInputDocument(
+                            properties=properties_for_weaviate,
+                            vector=chunk_embeddings[i]
+                        ))
         
         if not valid_chunks_for_storage:
             print(f"No valid chunks with embeddings to store for document_id: {payload.document_id}.")
