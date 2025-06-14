@@ -11,9 +11,14 @@ class Settings(BaseSettings):
     WEAVIATE_CLASS_NAME: str = "LectureBotChunk"
 
     # LLM Configuration (for Sub-Issue 7)
-    LLM_PROVIDER: str = "openai" # or "local", "azure", etc.
-    OPENAI_API_KEY: str
+    LLM_PROVIDER: str = "ollama" # Default provider
+
+    # -- OpenAI Settings --
+    OPENAI_API_KEY: Optional[str] = None # Make it optional
     OPENAI_MODEL_NAME: str = "gpt-4o-mini"
+    # -- Ollama Settings --
+    OLLAMA_BASE_URL: str = "http://localhost:11434" # Default Ollama API URL
+    OLLAMA_MODEL_NAME: str = "llama3" # Default model to use with Ollama
     
     # Embedding Model
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
