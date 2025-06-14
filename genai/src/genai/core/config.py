@@ -18,7 +18,9 @@ class Settings(BaseSettings):
     OPENAI_MODEL_NAME: str = "gpt-4o-mini"
     # -- Ollama Settings --
     OLLAMA_BASE_URL: str = "http://localhost:11434" # Default Ollama API URL
-    OLLAMA_MODEL_NAME: str = "llama3" # Default model to use with Ollama
+    # OLLAMA_MODEL_NAME: str = "llama3" # Default model to use with Ollama
+    OLLAMA_MODEL_NAME: str = "llama3:8b-instruct-q4_K_M" # Example of a quantized model
+
     
     # Embedding Model
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
