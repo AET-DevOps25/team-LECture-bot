@@ -13,6 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Create .env file
+        run: |
+          echo "${{ vars.APP_JWT_EXPIRATION_IN_MS }}" > .env 
+          echo "${{ secrets.APP_JWT_SECRET }}" >> .env
+
+
       - name: Copy Docker Compose File From Repo to VM Host
         uses: appleboy/scp-action@v0.1.7
         with:
