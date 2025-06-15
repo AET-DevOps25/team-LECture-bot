@@ -11,6 +11,8 @@ services:
     container_name: lecturebot-client-app
     ports:
       - "3000:3000" # Maps host port 3000 to container port 3000 (from your Dockerfile EXPOSE)
+    environment:
+      - PUBLIC_URL=http://localhost:3000 # Set the public URL for the React app
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -33,8 +35,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
-      - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://localhost:3000 # For CORS
-      - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173 # For CORS during local dev
+      - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
       - APP_JWT_SECRET=${APP_JWT_SECRET}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
     depends_on:

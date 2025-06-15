@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getConfig } from '../config';
 
 function SignInPage() {
     const { login } = useAuth();
@@ -61,20 +62,40 @@ function SignInPage() {
         if (validateForm()) {
             setIsLoading(true);
             try {
-                const response = await fetch('http://localhost:8080/api/auth/login', {
+                const { PUBLIC_API_URL } = getConfig(); // Get API base URL from config
+                if (!PUBLIC_API_URL) {
+                    console.warn("PUBLIC_API_URL is undefined. Using fallback.");
+                }
+                const API_BASE_URL = PUBLIC_API_URL || 'http://localhost:8080/api'; // Fallback to localhost if not set
+
+
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
                 });
 
                 if (response.ok) {
-                    const responseBody = await response.json();
+                    const contentType = response.headers.get('content-type');
+                    console.log('Content-Type:', contentType);
+                    //const responseBody = await response.json();
+                    const responseText = await response.text();
+                    console.log('Raw response text:', responseText);
 
-                    console.log('Login successful, token:', responseBody.token);
-                    const token = responseBody.token;
-                    login(token);
-                    alert("Login successful! Redirecting...");
-                    navigate(from, { replace: true });
+                    try {
+                        const data = JSON.parse(responseText); // safer than response.json()
+                        // Proceed with login...
+                        console.log('Login successful, token:', data.token);
+                        const token = data.token;
+                        login(token);
+                        alert("Login successful! Redirecting...");
+                        navigate(from, { replace: true });
+                    } catch (err) {
+                        console.error('Failed to parse JSON:', err);
+                        setSubmitError('Server did not return valid JSON. Check console for details.');
+                    }
+
                 } else {
                     const responseBodyText = await response.text();
                     setSubmitError(responseBodyText || 'Invalid email or password.');

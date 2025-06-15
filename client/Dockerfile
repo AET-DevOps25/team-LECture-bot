@@ -6,11 +6,6 @@ WORKDIR /client-app
 COPY package*.json ./
 RUN npm ci
 
-
-# --- ADD THIS DEBUGGING LINE ---
-RUN ls -l node_modules/axios || echo "axios not found"
-# ---
-
 COPY . .
 
 RUN npm run build
