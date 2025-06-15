@@ -133,7 +133,7 @@ DB_NAME=lecturebot_db
 
 # Spring Boot / JPA Settings for Server
 
-SPRING_JPA_HIBERNATE_DDL_AUTO=validate # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema.
+SPRING_JPA_HIBERNATE_DDL_AUTO=none # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema.
 SERVER_PORT=8080
 
 # Client URLs for CORS configuration on the server
@@ -197,6 +197,74 @@ docker-compose down -v
 - **Solution:** Stop services (`docker-compose down`), remove the conflicting Docker volume (e.g., `docker volume rm <projectname>_lecturebot_db_data` or `docker volume rm lecturebot_db_data` - use `docker volume ls` to find the exact name used by your setup), and then run `docker-compose up --build -d` again. This allows PostgreSQL to initialize a fresh database and run the init-users.sql script.
 
 ## ⚙️ Backend Server Details (Spring Boot)
+
+The backend is a Spring Boot application. For detailed setup and general API testing instructions (like auth endpoints), refer to `server/README.md`.
+
+### Testing Server + GenAI Integration Endpoints
+
+The server includes test endpoints under `/api/test/genai/` to specifically test the communication with the `genai-service` via the `GenAiClient`.
+
+#### Temporarily Disabling Security for Test Endpoints (Development Only)
+
+By default, Spring Security protects most endpoints. For easier testing of the `/api/test/genai/**` endpoints without handling authentication tokens or basic auth, you can temporarily modify the `SecurityConfig.java` in the `server` application.
+
+**File:** `server/src/main/java/com/lecturebot/server/config/SecurityConfig.java`
+
+Add `.requestMatchers("/api/test/genai/**").permitAll()` to your security configuration. Example:
+
+```java
+// Inside SecurityConfig.java, within the securityFilterChain method:
+http
+    .csrf(csrf -> csrf.disable())
+    .authorizeHttpRequests(authz -> authz
+        .requestMatchers("/api/test/genai/**").permitAll() // <<< ADD THIS LINE
+        .requestMatchers("/api/auth/**", "/api/health").permitAll()
+        .anyRequest().authenticated()
+    )
+    // ... other configurations ...
+```
+
+**Important:** After adding this line, rebuild and restart the `server` service:
+
+```bash
+docker-compose up --build server
+# or if all services are down:
+# docker-compose up --build
+```
+
+**Remember to remove or properly secure this path before any production deployment.**
+
+#### Testing with `curl`
+
+Ensure all services are running via `docker-compose up --build`.
+
+1. **Test Indexing Document via Server:**
+    This sends a request to the server, which then calls the `genai-service`.
+
+    ```bash
+    curl -X POST "http://localhost:8080/api/test/genai/index" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "documentId": "server-readme-test-doc-001",
+      "courseSpaceId": "cs-readme-test-101",
+      "textContent": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate."
+    }'
+    ```
+
+    *Expected Output:* JSON response from the `genai-service` relayed by the server, or an error message if the call failed. Check server and genai-service logs.
+
+2. **Test Submitting Query via Server:**
+
+    ```bash
+    curl -X POST "http://localhost:8080/api/test/genai/query" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "queryText": "What does this document about README instructions talk about?",
+      "courseSpaceId": "cs-readme-test-101"
+    }'
+    ```
+
+    *Expected Output:* JSON response (answer and citations) from the `genai-service` relayed by the server. Check server and genai-service logs.
 
 The backend is a Spring Boot application. For detailed setup and API testing instructions, refer to `server/README.md`.
 

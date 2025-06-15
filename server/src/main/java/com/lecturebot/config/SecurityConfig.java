@@ -23,10 +23,14 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
             .csrf(AbstractHttpConfigurer::disable)
+            // .authorizeHttpRequests(authorizeRequests ->
+            //     authorizeRequests
+            //         .requestMatchers("/api/auth/**").permitAll()
+            //         .anyRequest().authenticated()
+            // );
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll() // Allow all requests without authentication
             );
         return http.build();
     }

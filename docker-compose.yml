@@ -31,8 +31,8 @@ services:
       - SERVER_PORT=8080
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update} # or validate for prod
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none} # or validate for prod
       - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://localhost:3000 # For CORS
       - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173 # For CORS during local dev
       - GENAI_SERVICE_BASE_URL=http://genai-service:8001 # URL for GenAI service
@@ -104,7 +104,7 @@ services:
     environment:
       POSTGRES_DB: lecturebot_db
       POSTGRES_USER: lecturebot_user
-      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_PASSWORD: mysecretpassword # Ensure this matches SPRING_DATASOURCE_PASSWORD above
     ports:
       - "5432:5432" 
     volumes:
