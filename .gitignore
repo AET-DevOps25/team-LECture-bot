@@ -60,3 +60,5 @@ fabric.properties
 # CodeStream plugin
 .idea/codestream.xml
 # Azure Toolkit for
+
+.env
