@@ -1,81 +1,165 @@
-# GenAI Module for LECture-bot
+# GenAI Service for LECture-bot
 
-docker run -d -p 8080:8080 -p 50051:50051 -e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED='true' -e PERSISTENCE_DATA_PATH='/var/lib/weaviate' -e DEFAULT_VECTORIZER_MODULE='none' -e ENABLE_MODULES='' --name weaviate-lecurebot semitechnologies/weaviate:latest
+This service is responsible for all AI-driven tasks within the LECture-bot application, including document indexing (chunking, embedding, storing in Vector DB) and Retrieval-Augmented Generation (RAG) for Q&A. It's a Python-based microservice using FastAPI and LangChain.
 
-## GenAI Service for LECture-bot
+## Configuration (Environment Variables)
 
-This service is responsible for all AI-driven tasks, including document indexing (chunking, embedding, storing in Vector DB) and Retrieval-Augmented Generation (RAG) for Q&amp;A and other text generation tasks.
+The service is configured using environment variables. These are typically set in the root `.env` file when running via the main `docker-compose.yml`.
 
-## Tech Stack
-
-- Python 3.11+
-- FastAPI
-- LangChain
-- Weaviate (Vector Database Client)
-- Sentence-Transformers (for embeddings)
-- Poetry (for dependency management)
-
-## Setup and Installation
-
-**Install Poetry:** If you don't have it, install it following the [official instructions](https://python-poetry.org/docs/).
-**Install Dependencies:** Navigate to this directory (`/genai`) and run:
-    ```bash
-    poetry install
-    ```
-**Environment Variables:** Create a `.env` file in this directory by copying the `.env.example` (if it exists) or creating a new one. At a minimum, it should contain:
-    ```env
-    # For connecting to OpenAI for RAG OPENAI_API_KEY="your_openai_api_key_here"
-    # URL for the Weaviate instance from docker-compose
-    WEAVIATE_URL="http://localhost:8080"
-    ```
+* `LLM_PROVIDER`: Specifies the LLM provider to use.
+  * Values: `"openai"` or `"ollama"`.
+  * Default (in `docker-compose.yml`): `openai`
+* `OPENAI_API_KEY`: Your API key for OpenAI. Required if `LLM_PROVIDER="openai"`.
+* `OPENAI_MODEL_NAME`: The OpenAI model to use (e.g., `"gpt-4o-mini"`, `"gpt-3.5-turbo"`).
+  * Default (in `docker-compose.yml`): `gpt-4o-mini`
+* `OLLAMA_MODEL_NAME`: The Ollama model to use (e.g., `"llama3:8b-instruct-q4_K_M"`). Required if `LLM_PROVIDER="ollama"`.
+  * Default (in `docker-compose.yml`): `llama3:8b-instruct-q4_K_M`
+* `OLLAMA_BASE_URL`: The base URL for your Ollama instance. Required if `LLM_PROVIDER="ollama"`.
+  * Example for Ollama running on host (Docker Desktop): `http://host.docker.internal:11434`
+  * Default (in `docker-compose.yml`): `http://host.docker.internal:11434`
+* `WEAVIATE_URL`: The URL for the Weaviate vector database instance.
+  * When run via main `docker-compose.yml`: `http://weaviate:8080` (service name)
+  * Default (in `docker-compose.yml`): `http://weaviate:8080`
+* `TOKENIZERS_PARALLELISM`: Set to `"false"` to avoid potential issues with Hugging Face tokenizers in some environments.
+  * Default (in `docker-compose.yml`): `false`
+* `GENAI_PORT`: The port on which the GenAI service listens internally.
+  * Default (in `genai/core/config.py`): `8001` (This is mapped by Docker Compose).
+* `EMBEDDING_MODEL_NAME`: The sentence-transformer model used for generating embeddings.
+  * Default (in `genai/core/config.py`): `"all-MiniLM-L6-v2"`
+* `CHUNK_SIZE`: The target size for text chunks.
+  * Default (in `genai/core/config.py`): `1000`
+* `CHUNK_OVERLAP`: The overlap between consecutive text chunks.
+  * Default (in `genai/core/config.py`): `200`
 
 ## Running the Service
 
-You can run the service directly with uvicorn for local development:
+### Via Main Docker Compose (Recommended)
 
-```bash
-poetry run uvicorn genai.main:app --host 0.0.0.0 --port 8001 --reload
-```
+The GenAI service is designed to be run as part of the main LECture-bot application stack using the `docker-compose.yml` file in the project root.
 
-The service will be available at `http://localhost:8001`.
+1. Ensure Docker and Docker Compose are installed.
+2. Configure necessary environment variables in the root `.env` file (especially `OPENAI_API_KEY` if using OpenAI).
+3. Navigate to the project root directory.
+4. Run:
 
-Run weaviate
+   ```bash
+   docker-compose up --build
+   ```
+
+The service will be available internally to other Docker services (like the `server`) at `http://genai-service:8001`. It's also exposed on the host at `http://localhost:8001`.
+
+### Standalone (for Development/Testing)
+
+You can run the GenAI service locally for development without the full Docker Compose stack.
+
+1. **Prerequisites:**
+    * Python 3.11+
+    * Poetry
+    * A running Weaviate instance.
+    * If using Ollama, a running Ollama instance with the desired model pulled.
+    * If using OpenAI, a valid API key.
+
+2. **Setup:**
+    * Navigate to the `/genai` directory.
+    * Install dependencies: `poetry install`
+    * Create a `.env` file in the `/genai` directory (or set environment variables manually) with the necessary configurations (e.g., `WEAVIATE_URL`, `LLM_PROVIDER`, API keys/Ollama URLs). For Weaviate/Ollama running on your host, you'd typically use `http://localhost:8080` and `http://localhost:11434` respectively.
+
+3. **Run with Uvicorn:**
+    From the `/genai` directory:
 
     ```bash
-    docker run -d -p 8080:8080 -p 50051:50051 -e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED='true' -e PERSISTENCE_DATA_PATH='/var/lib/weaviate' -e DEFAULT_VECTORIZER_MODULE='none' -e ENABLE_MODULES='' --name weaviate-lecturebot semitechnologies/weaviate:latest
+    poetry run uvicorn genai.main:app --host 0.0.0.0 --port 8001 --reload
     ```
 
-## Testing
+## API Endpoints
 
-### Testing the Indexing Pipeline
+The API is versioned under `/api/v1`.
 
-Once the GenAI service and the Weaviate database are running (e.g., via `docker-compose`), you can test the document indexing pipeline by sending a `POST` request to the `/api/v1/index/index` endpoint.
+### 1. Index Document
 
-Use the following `curl` command in your terminal:
+* **Endpoint:** `POST /api/v1/index/`
+* **Summary:** Receives document text, chunks it, generates embeddings, and stores them in the vector DB.
+* **Request Body:** `application/json`
 
-```bash
-curl -X POST "http://localhost:8001/api/v1/index/index"
+    ```json
+    {
+        "document_id": "string (UUID or unique identifier)",
+        "course_space_id": "string (identifier for the course or context)",
+        "text_content": "string (the full text content of the document)"
+    }
+    ```
 
--H "Content-Type: application/json"
+* **Response (Success 200 OK):** `application/json`
 
--d '{
-"document_id": "doc-001-test",
-"course_space_id": "cs-101-intro-to-ai",
-"text_content": "Vector databases are essential for AI. They store data as high-dimensional vectors, which are mathematical representations of features or attributes. LangChain is a popular framework for developing applications powered by language models. It simplifies the process of creating complex AI workflows, including Retrieval-Augmented Generation (RAG)."
-}'
-```
+    ```json
+    {
+        "status": "string (e.g., 'success')",
+        "message": "string (e.g., 'Document indexed successfully')",
+        "document_id": "string (echoed from request)",
+        "total_chunks_generated": "integer",
+        "chunks_stored_successfully": "integer",
+        "failed_chunk_indexes": ["string (optional, list of problematic chunk identifiers/indexes)"]
+    }
+    ```
 
-**Expected Successful Response:**
+* **Response (Error):** Standard FastAPI error responses (e.g., 422 Unprocessable Entity for validation errors, 500 Internal Server Error).
 
-If successful, you will receive a `200 OK` or `207 Multi-Status` response with a JSON body detailing the outcome, like this:
+### 2. Query Document
 
-```json
-{
-"status": "partial_success",
-"message": "Document processed. 2 chunks were stored successfully. 0 chunks failed.",
-"document_id": "doc-001-test",
-"total_chunks_generated": 2,
-"chunks_stored_successfully": 2,
-"failed_chunk_indexes": []
-}
-```
+* **Endpoint:** `POST /api/v1/query/query`
+* **Summary:** Receives a query, retrieves relevant context from the vector DB, and generates an answer using an LLM.
+* **Request Body:** `application/json`
+
+    ```json
+    {
+        "query_text": "string (the user's question)",
+        "course_space_id": "string (identifier for the course or context to search within)"
+    }
+    ```
+
+* **Response (Success 200 OK):** `application/json`
+
+    ```json
+    {
+        "answer": "string (the LLM-generated answer)",
+        "citations": [
+            {
+                "document_id": "string",
+                "chunk_id": "string (or other identifier for the source chunk)",
+                "text_content_preview": "string (a snippet of the source chunk)",
+                "metadata": {} // Optional: any other relevant metadata from the chunk
+            }
+            // ... more citations
+        ]
+    }
+    ```
+
+* **Response (Error):** Standard FastAPI error responses.
+
+### 3. Health Check
+
+* **Endpoint:** `GET /api/v1/health`
+* **Summary:** Basic health check for the service.
+* **Response (Success 200 OK):** `application/json`
+
+    ```json
+    {
+        "status": "healthy",
+        "module_name": "GenAI Service for LECture-bot",
+        "version": "0.1.0"
+    }
+    ```
+
+## Project Structure (within `/genai`)
+
+* `src/genai/`: Main source code.
+  * `api/`: FastAPI specific code (routers, schemas).
+  * `core/`: Core configuration and settings.
+  * `llm_integrations/`: Logic for interacting with different LLMs.
+  * `pipelines/`: Core RAG pipelines (indexing, querying).
+  * `text_processing/`: Text chunking and embedding logic.
+  * `vector_db/`: Weaviate client and interaction logic.
+  * `main.py`: FastAPI application entry point.
+* `Dockerfile`: For containerizing the service.
+* `pyproject.toml`: Project metadata and dependencies (Poetry).
+* `.env.example`: Example environment variables.

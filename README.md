@@ -2,7 +2,7 @@
 
 Welcome to LECture-bot! This project involves the design, development, deployment, and scaling of a lightweight but technically complete web application with a meaningful Generative AI (GenAI) integration.
 
-## 🎯 Project Overview & Objectives
+## Project Overview & Objectives
 
 This project aims to apply modern DevOps principles including containerization, CI/CD automation, cloud-native deployment, observability, and AI integration. The system is built as a client-server application, integrates a GenAI component, and is designed for collaborative development with documented ownership and clear workflows.
 
@@ -47,7 +47,7 @@ The GenAI component is a modular Python microservice using FastAPI and LangChain
     - The system administrator (or user, if allowed by design) reconfigures the GenAI service (via `.env` file) to use a locally running Ollama model instead of OpenAI.
     - The student asks another question. The RAG process is the same, but the LLM interaction now uses the local Ollama instance.
 
-## 🏗️ Architecture & Technical Stack
+## Architecture & Technical Stack
 
 ### System Components
 
@@ -72,13 +72,13 @@ The system is divided into the following technical components:
 
 Detailed architecture, including UML diagrams (Analysis Object Model, Use Cases, Top-Level Component Diagram/Subsystem Decomposition), should be available in the project's `/docs` directory. These diagrams visualize the system structure and interactions.
 
-## ✨ Key Features (Planned/Implemented)
+## Key Features (Planned/Implemented)
 
 - **User Authentication:** Secure sign-up and login functionality.
 - **Core Application Feature(s):** Document upload, organization into course spaces, and content indexing.
 - **GenAI Powered Feature:** Retrieval-Augmented Generation (RAG) for Q&A on uploaded course materials, with citations.
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### For Running the Entire Application with Docker Compose (Recommended)
 
@@ -96,7 +96,7 @@ Detailed architecture, including UML diagrams (Analysis Object Model, Use Cases,
 - Java 21 JDK.
 - Gradle (or use the provided Gradle Wrapper `./gradlew` in the server directory).
 
-## 📁 Project Structure
+## Project Structure
 
 A brief overview of the main directories:
 
@@ -106,7 +106,7 @@ A brief overview of the main directories:
 - `/docker-compose.yml`: (Located in this root directory) Orchestrates the client, server, GenAI service, Weaviate, and database services for a complete development environment.
 - `/docs`: Contains additional documentation like architecture descriptions, analysis models, and problem statements.
 
-## 🚀 Getting Started: Running the Full Application (with Root Docker Compose)
+## Getting Started: Running the Full Application (with Root Docker Compose)
 
 The primary way to run the LECture-bot application (frontend, backend, database, GenAI service, and Weaviate) is by using the `docker-compose.yml` file located in this project root directory. By default, this setup configures the GenAI service to use OpenAI.
 
@@ -268,11 +268,11 @@ Ensure all services are running via `docker-compose up --build`.
 
 The backend is a Spring Boot application. For detailed setup and API testing instructions, refer to `server/README.md`.
 
-## 🖥️ Frontend Client Details (React)
+## Frontend Client Details (React)
 
 The frontend is a React application built with Vite and TypeScript. For detailed setup and UI testing, see `client/README.md`.
 
-## 🧠 GenAI Service Details (Python, LangChain)
+## GenAI Service Details (Python, LangChain)
 
 The GenAI service is a Python application using FastAPI and LangChain.
 
@@ -323,18 +323,18 @@ If you prefer to use a local LLM with Ollama instead of OpenAI:
 
     The `genai-service` will now attempt to connect to your locally running Ollama instance.
 
-## ☁️ Deployment & Observability
+## Deployment & Observability
 
 - **Deployment:** The project is intended to be deployed to Kubernetes using GitHub Actions and Helm or raw manifests. (Further details would be in specific deployment guides).
 - **Observability:** The system is planned to be observable with Prometheus and Grafana, monitoring key system metrics (server, GenAI). (Configuration files and dashboards are part of deliverables).
 
-## 🧪 Testing
+## Testing
 
 - **Unit Tests:** Must cover critical server and GenAI logic.
 - **Client Tests:** Should cover core workflows and interactions.
 - **CI Testing:** All tests must run automatically in the CI pipeline.
 (Refer to individual `client/README.md` and `server/README.md` for specific test execution commands).
 
-## 📚 API Documentation (Server)
+## API Documentation (Server)
 
 The REST API should be clearly defined. API documentation is planned via Swagger/OpenAPI (typically accessible at `/swagger-ui.html` or `/v3/api-docs` on the running server once `springdoc-openapi-starter-webmvc-ui` is added and configured).
