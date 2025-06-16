@@ -100,6 +100,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=mysecretpassword
       - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://client.${SERVER_HOST}
       - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
     restart: unless-stopped
     depends_on:
       lecturebot-db:

@@ -156,3 +156,59 @@ Email already exists
 * name: Name is required
 * email: Email format is invalid
 * password: Password must be at least 8 characters
+
+
+
+### 3. User Login (Sign In)
+
+* **Endpoint:** POST /api/auth/login
+
+* **Description:** Allows users to log into their existing account.
+
+**Request Body (JSON):**
+
+* email: (String) User's email address. 
+* password: (String) User's password. 
+
+**Example curl for Successful Login:**
+
+```bash
+curl -X POST -H "Content-Type: application/json" 
+
+-d '{
+"email": "ada.lovelace@example.com",
+"password": "Password123!"
+}' 
+
+http://localhost:8080/api/auth/login
+```
+
+**Expected Success Response (200 OK):**
+
+```text
+Login successful for ada.lovelace@example.com, token: <JWT> # currently set for debuging purposes
+```
+
+**Example curl for Failed Login:**
+
+```bash
+curl -X POST -H "Content-Type: application/json" -i \
+
+-d '{ "email": "ada.lovelace@example.com", "password": "NewPassword456!"}' 
+http://localhost:8080/api/auth/login 
+```
+
+**Expected Error Response (401 Unauthorized):**
+
+```text
+Bad Credentials (possible error message)
+```
+
+**Other Validation Error Examples (400 Bad Request):**
+
+* email: Email format is invalid
+* password: Password must be at least 8 characters
+
+
+
+

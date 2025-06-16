@@ -73,3 +73,7 @@ crash.log
 
 # Ignore Terraform cache directory
 .terraform/
+
+
+.env
+server/bin
