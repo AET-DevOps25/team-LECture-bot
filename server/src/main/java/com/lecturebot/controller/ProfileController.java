@@ -5,9 +5,9 @@ import com.lecturebot.dto.ChangePasswordRequest;
 import com.lecturebot.entity.User;
 import com.lecturebot.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +17,19 @@ public class ProfileController {
 
     public ProfileController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        User user = userService.findByEmail(userDetails.getUsername());
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // Optionally, return a DTO instead of the full User entity
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/me")

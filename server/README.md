@@ -157,80 +157,58 @@ Email already exists
 * email: Email format is invalid
 * password: Password must be at least 8 characters
 
-## Testing Manage Profile Endpoints
 
-You can test the profile update and password change features either via the UI (frontend) or directly using curl commands. All endpoints require a valid JWT for authentication, which must be passed in the `Authorization` header as `Bearer <token>`.
 
-### 1. Update Profile (Name/Email)
+### 3. User Login (Sign In)
 
-**Endpoint:**
-```
-PUT /api/users/me
-```
+* **Endpoint:** POST /api/auth/login
 
-**Headers:**
-- `Authorization: Bearer <your-jwt-token>`
-- `Content-Type: application/json`
+* **Description:** Allows users to log into their existing account.
 
-**Request Body Example:**
-```json
-{
-  "name": "New Name",
-  "email": "new.email@example.com"
-}
-```
+**Request Body (JSON):**
 
-**Curl Example:**
-```sh
-curl -X PUT http://localhost:8080/api/users/me \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "New Name",
-    "email": "new.email@example.com"
-  }'
+* email: (String) User's email address. 
+* password: (String) User's password. 
+
+**Example curl for Successful Login:**
+
+```bash
+curl -X POST -H "Content-Type: application/json" 
+
+-d '{
+"email": "ada.lovelace@example.com",
+"password": "Password123!"
+}' 
+
+http://localhost:8080/api/auth/login
 ```
 
-**Expected Response:**
-- 200 OK with the updated user object, or an error message if validation fails or the email is already taken.
+**Expected Success Response (200 OK):**
 
-### 2. Change Password
-
-**Endpoint:**
-```
-POST /api/users/me/change-password
+```text
+Login successful for ada.lovelace@example.com, token: <JWT> # currently set for debuging purposes
 ```
 
-**Headers:**
-- `Authorization: Bearer <your-jwt-token>`
-- `Content-Type: application/json`
+**Example curl for Failed Login:**
 
-**Request Body Example:**
-```json
-{
-  "currentPassword": "oldpassword123",
-  "newPassword": "newpassword456"
-}
+```bash
+curl -X POST -H "Content-Type: application/json" -i \
+
+-d '{ "email": "ada.lovelace@example.com", "password": "NewPassword456!"}' 
+http://localhost:8080/api/auth/login 
 ```
 
-**Curl Example:**
-```sh
-curl -X POST http://localhost:8080/api/users/me/change-password \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "currentPassword": "oldpassword123",
-    "newPassword": "newpassword456"
-  }'
+**Expected Error Response (401 Unauthorized):**
+
+```text
+Bad Credentials (possible error message)
 ```
 
-**Expected Response:**
-- 200 OK on success, or an error message if the current password is incorrect or validation fails.
+**Other Validation Error Examples (400 Bad Request):**
 
-### 3. Using the UI
+* email: Email format is invalid
+* password: Password must be at least 8 characters
 
-- Log in via the frontend to obtain a JWT (usually stored in localStorage or cookies).
-- Navigate to `/profile` in the UI to view and update your profile or change your password.
-- All requests from the UI will automatically include the JWT if you are logged in.
 
-**Note:** If you receive a 401 Unauthorized error, ensure your JWT is valid and not expired.
+
+

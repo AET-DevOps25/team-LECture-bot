@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { getConfig } from '../config';
+import storage from '../utils/storage';
 
 export default function ProfilePage() {
+  const { PUBLIC_API_URL } = getConfig();
+  const API_BASE_URL = PUBLIC_API_URL || "http://localhost:8080/api";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -17,9 +22,12 @@ export default function ProfilePage() {
   const [profileSuccess, setProfileSuccess] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
 
-  // Helper to get JWT token from localStorage (or another storage)
+  // Helper to get JWT token from localStorage (correct key: jwtToken)
   function getToken() {
-    return localStorage.getItem('token');
+    // This will return the string with quotes, so remove them:
+    const raw = storage.getItem<string>('jwtToken');
+    // Remove leading/trailing quotes if present
+    return raw?.replace(/^"|"$/g, '') || null;
   }
 
   useEffect(() => {
@@ -29,9 +37,14 @@ export default function ProfilePage() {
       setError("");
       try {
         const token = getToken();
-        const res = await fetch("/api/users/me", {
+        console.log(`Bearer ${token}`)
+        if (!token) throw new Error("Not authenticated");
+        // Fetch user profile
+        // Use API_BASE_URL from config
+        const res = await fetch(`${API_BASE_URL}/users/me`, {
           headers: {
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           },
         });
         if (!res.ok) throw new Error("Failed to fetch profile");
@@ -45,6 +58,7 @@ export default function ProfilePage() {
       }
     }
     fetchProfile();
+    // eslint-disable-next-line
   }, []);
 
   // Profile validation
@@ -78,7 +92,7 @@ export default function ProfilePage() {
     setProfileErrors({});
     try {
       const token = getToken();
-      const res = await fetch("/api/users/me", {
+      const res = await fetch(`${API_BASE_URL}/users/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +128,7 @@ export default function ProfilePage() {
     setPasswordErrors({});
     try {
       const token = getToken();
-      const res = await fetch("/api/users/me/change-password", {
+      const res = await fetch(`${API_BASE_URL}/users/me/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
