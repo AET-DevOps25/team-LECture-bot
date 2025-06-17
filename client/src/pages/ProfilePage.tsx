@@ -24,10 +24,7 @@ export default function ProfilePage() {
 
   // Helper to get JWT token from localStorage (correct key: jwtToken)
   function getToken() {
-    // This will return the string with quotes, so remove them:
-    const raw = storage.getItem<string>('jwtToken');
-    // Remove leading/trailing quotes if present
-    return raw?.replace(/^"|"$/g, '') || null;
+    return storage.getItem<string>('jwtToken') || null;
   }
 
   useEffect(() => {
