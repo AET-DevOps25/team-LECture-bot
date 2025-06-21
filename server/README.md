@@ -209,6 +209,71 @@ Bad Credentials (possible error message)
 * email: Email format is invalid
 * password: Password must be at least 8 characters
 
+### 4. Manage User Profile (Update Profile & Change Password)
 
+After logging in and obtaining your JWT token, you can update your profile information or change your password using the following endpoints. All requests require the `Authorization` header with your JWT as `Bearer <token>`.
 
+#### a. Update Profile (Name/Email)
+
+* **Endpoint:** PUT /api/users/me
+
+**Request Body Example:**
+```json
+{
+  "name": "New Name",
+  "email": "new.email@example.com"
+}
+```
+
+**Curl Example**
+```bash
+curl -X PUT http://localhost:8080/api/users/me \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "New Name", "email": "new.email@example.com"}'
+```
+
+**Expected Response:**  
+200 OK with the updated user object, or an error message if validation fails or the email is already taken.
+
+Example successful response:
+```json
+{
+  "id": 6,
+  "email": "new.email@example.com",
+  "passwordHash": "$2a$10$JCnEfokhtT4igB3manzAtuidgWwE3jlpSEsRfHgq/JXgvnmcoqOUO",
+  "name": "New Name"
+}
+```
+
+#### b. Change Password
+
+* **Endpoint:** POST /api/users/me/change-password
+
+**Request Body Example:**
+```json
+{
+  "currentPassword": "oldpassword123",
+  "newPassword": "newpassword456"
+}
+```
+**Curl Example**
+```bash
+curl -X POST http://localhost:8080/api/users/me/change-password \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"currentPassword": "oldpassword123", "newPassword": "newpassword456"}'
+```
+
+**Expected Response:**  
+200 OK on success, or an error message if the current password is incorrect or validation fails.
+
+#### c. Using the Frontend UI
+
+- Log in via the frontend to obtain a JWT (handled automatically).
+- Navigate to `/profile` to view and update your profile or change your password.
+- All requests from the UI will automatically include the JWT if you are logged in.
+
+**Note:**  
+If you receive a 401 Unauthorized error, ensure your JWT is valid
 
