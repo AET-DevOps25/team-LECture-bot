@@ -82,12 +82,15 @@ Detailed architecture, including UML diagrams (Analysis Object Model, Use Cases,
 
 ## 📁 Project Structure
 
-A brief overview of the main directories:
+The project follows an API-driven design, separating the API specification from its implementations. A brief overview of the main directories:
 
-- `/client`: Contains the frontend React application source code and its Dockerfile.
-- `/server`: Contains the backend Spring Boot application source code, its Dockerfile, and database initialization scripts (db-init).
-- `/docker-compose.yml`: (Located in this root directory) Orchestrates the client, server, and database services for a complete development environment.
-- `/docs`: Contains additional documentation like architecture descriptions, analysis models, and problem statements.
+- `/api`: Contains the OpenAPI specification (`openapi.yaml`), which is the single source of truth for the API contract. It also includes scripts for code generation.
+- `/services`: Contains the source code for all microservices.
+  - `/services/client`: The frontend React application.
+  - `/services/server`: The backend Spring Boot application.
+  - `/services/genai`: The Python GenAI microservice.
+- `/docker-compose.yml`: Orchestrates all services for a complete local development environment.
+- `/docs`: Contains architecture diagrams and other project documentation.
 
 ## 🚀 Getting Started: Running the Full Application (with Root Docker Compose)
 

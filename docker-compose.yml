@@ -6,13 +6,11 @@ services:
   #--------------------------------------------------------------------------
   client:
     build:
-      context: ./client # Path to the client directory from the project root
+      context: ./services/client # Path to the client directory from the project root
       dockerfile: Dockerfile 
     container_name: lecturebot-client-app
     ports:
       - "3000:3000" # Maps host port 3000 to container port 3000 (from your Dockerfile EXPOSE)
-    environment:
-      - PUBLIC_URL=http://localhost:3000 # Set the public URL for the React app
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -24,7 +22,7 @@ services:
   #--------------------------------------------------------------------------
   server:
     build:
-      context: ./server # Path to the server directory from the project root
+      context: ./services/server # Path to the server directory from the project root
       dockerfile: Dockerfile
     container_name: lecturebot-app-server
     ports:
@@ -34,16 +32,68 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
-      - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
-      - APP_JWT_SECRET=${APP_JWT_SECRET}
-      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update} # or validate for prod
+      - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://localhost:3000 # For CORS
+      - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173 # For CORS during local dev
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8001 # URL for GenAI service
     depends_on:
-      lecturebot-db:
-        condition: service_healthy
+      lecturebot-db: { condition: service_healthy }
+      # ollama-setup: { condition: service_completed_successfully } # Ollama is now run externally
+      genai-service: # Server depends on GenAI service
+        condition: service_started # Or service_healthy if you add a healthcheck
     networks:
       - lecturebot-net
     restart: unless-stopped
+
+  #--------------------------------------------------------------------------
+  # GenAI Service
+  #--------------------------------------------------------------------------
+  genai-service:
+    build:
+      context: ./services/genai # Path to the genai directory
+      dockerfile: Dockerfile
+    container_name: lecturebot-genai-service
+    ports:
+      - "8001:8001"
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai} # Default to openai
+      - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3:8b-instruct-q4_K_M} # Ensure this matches the model pulled by ollama-setup
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434} # For externally run Ollama
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_key_if_using_openai}
+      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4o-mini}
+      - WEAVIATE_URL=http://weaviate:8080 # Connect to weaviate service
+      - TOKENIZERS_PARALLELISM=false # Recommended for some environments
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    depends_on:
+      weaviate: { condition: service_started } # Weaviate doesn't have a simple built-in healthcheck for compose v1 style
+
+  #--------------------------------------------------------------------------
+  # Weaviate Service
+  #--------------------------------------------------------------------------
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    container_name: lecturebot-weaviate-db
+    ports:
+      - "8081:8080" # Changed host port for Weaviate REST to 8081 to avoid conflict with server
+      - "50051:50051" # gRPC
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none' # As per your command
+      ENABLE_MODULES: ''                # As per your command
+      CLUSTER_HOSTNAME: 'node1'         # Recommended for Weaviate
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+
+  #--------------------------------------------------------------------------
+  # Ollama Service
+  # Ollama will be run externally. See README.md for instructions.
+  #--------------------------------------------------------------------------
 
   #--------------------------------------------------------------------------
   # Database Service (PostgreSQL)
@@ -56,7 +106,7 @@ services:
       POSTGRES_USER: lecturebot_user
       POSTGRES_PASSWORD: mysecretpassword
     ports:
-      - "5432:5432" # Expose PostgreSQL port to host (optional, for external tools)
+      - "5432:5432" 
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
       - ./server/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
@@ -70,7 +120,10 @@ services:
       retries: 5
 
 volumes:
-  lecturebot_db_data: # Defines a named volume for data persistence
+  lecturebot_db_data: {}
+  weaviate_data: {}      # Named volume for Weaviate data
+  # ollama_data: {}      # Ollama data managed externally
+
 
 networks:
   lecturebot-net:
