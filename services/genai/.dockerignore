@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv/
+env/
+venv/
+ENV/
+.git
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+# Add any other files or directories you don't want in the Docker image

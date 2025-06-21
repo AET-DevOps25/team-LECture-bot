@@ -61,6 +61,7 @@ fabric.properties
 .idea/codestream.xml
 # Azure Toolkit for
 
+
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
@@ -77,4 +78,3 @@ crash.log
 
 .env
 server/bin
-node_modules/
