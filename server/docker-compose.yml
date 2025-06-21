@@ -35,7 +35,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
       - SPRING_DATASOURCE_USERNAME=lecturebot_user
       - SPRING_DATASOURCE_PASSWORD=mysecretpassword # Should match POSTGRES_PASSWORD above
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Or create-drop for dev, validate for prod
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none # Or create-drop for dev, validate for prod
       # Add other environment variables as needed
     depends_on:
       lecturebot-db: # Ensures DB starts before the app

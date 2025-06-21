@@ -42,13 +42,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated());
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
+            .csrf(AbstractHttpConfigurer::disable)
+            // .authorizeHttpRequests(authorizeRequests ->
+            //     authorizeRequests
+            //         .requestMatchers("/api/auth/**").permitAll()
+            //         .anyRequest().authenticated()
+            // );
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests
+                    .anyRequest().permitAll() // Allow all requests without authentication
+            );
         return http.build();
     }
 
