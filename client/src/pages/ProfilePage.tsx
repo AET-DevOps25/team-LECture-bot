@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getConfig } from '../config';
 import storage from '../utils/storage';
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
   const { PUBLIC_API_URL } = getConfig();
@@ -13,6 +14,8 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   // Validation state
   const [profileErrors, setProfileErrors] = useState<{ name?: string; email?: string; form?: string }>({});
@@ -104,6 +107,14 @@ export default function ProfilePage() {
           msg = errData.message || msg;
         } catch {}
         throw new Error(msg);
+      }
+      const data = await res.json();
+      if (data.requireReauth) {
+        storage.removeItem("jwtToken");
+        alert("Your email was changed. Please log in again.");
+        // Use navigate from react-router-dom to redirect to login
+        navigate("/login", { replace: true });
+        return;
       }
       // Update local state with new values (in case backend returns updated user)
       setProfileSuccess("Profile updated successfully");

@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/users")
 public class ProfileController {
@@ -35,9 +38,24 @@ public class ProfileController {
     @PutMapping("/me")
     public ResponseEntity<?> updateProfile(
             @Valid @RequestBody UpdateUserProfileRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User updatedUser = userService.updateUserProfile(userDetails.getUsername(), request);
-        return ResponseEntity.ok(updatedUser);
+            Principal principal
+    ) {
+        String oldEmail = principal.getName();
+        User updatedUser = userService.updateUserProfile(oldEmail, request);
+        boolean emailChanged = !oldEmail.equals(request.getEmail());
+
+        if (emailChanged) {
+            return ResponseEntity.ok(Map.of(
+                "message", "Email changed. Please log in again.",
+                "requireReauth", true
+            ));
+        } else {
+            return ResponseEntity.ok(Map.of(
+                "message", "Profile updated successfully",
+                "requireReauth", false,
+                "user", updatedUser
+            ));
+        }
     }
 
     @PostMapping("/me/change-password")
