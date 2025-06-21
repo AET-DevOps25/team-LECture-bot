@@ -5,6 +5,7 @@ import AboutPage from '@pages/About';
 import SignUpPage from '@pages/SignUpPage';
 import SignInPage from '@pages/SignInPage';
 import ProtectedRoute from '@components/auth/ProtectedRoute';
+import ProfilePage from '@pages/ProfilePage'; // <-- Add this import
 import { useAuth } from './context/AuthContext';
 
 
@@ -30,6 +31,11 @@ function App() {
                     <li>
                         <Link to="/about" className="hover:text-gray-300">About</Link>
                     </li>
+                    {isAuthenticated && (
+                        <li>
+                            <Link to="/profile" className="hover:text-gray-300">Profile</Link>
+                        </li>
+                    )}
                     {!isAuthenticated ? (
                         <>
                             <li>
@@ -49,10 +55,6 @@ function App() {
                             </li>
                         </>
                     )}
-                    {/* Add a link to Login page later */}
-                    {/* <li>
-                        <Link to="/login" className="hover:text-gray-300">Login</Link>
-                    </li> */}
                 </ul>
             </nav>
             {/* Page Content */}
@@ -63,10 +65,8 @@ function App() {
                     <Route path="/signup" element={<SignUpPage />} />
                     <Route path="/login" element={<SignInPage />} />
                     <Route element={<ProtectedRoute />}>
-                        {/* Protected routes can be added here */}
-                        {/* Example: <Route path="/dashboard" element={<DashboardPage />} /> */}
                         <Route path="/dashboard" element={<Dashboard />} />
-
+                        <Route path="/profile" element={<ProfilePage />} /> {/* <-- Add this route */}
                     </Route>
                 </Routes>
             </div>

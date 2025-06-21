@@ -77,3 +77,4 @@ crash.log
 
 .env
 server/bin
+node_modules/

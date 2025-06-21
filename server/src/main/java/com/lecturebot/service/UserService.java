@@ -1,6 +1,8 @@
 package com.lecturebot.service;
 
 import com.lecturebot.dto.RegisterRequest;
+import com.lecturebot.dto.UpdateUserProfileRequest;
+import com.lecturebot.dto.ChangePasswordRequest;
 import com.lecturebot.entity.User;
 import com.lecturebot.repository.UserRepository;
 import com.lecturebot.security.JwtTokenProvider;
@@ -66,5 +68,38 @@ public class UserService {
         return new LoginResponse(
                 token,
                 "Login successful for " + loginRequest.getEmail());
+    }
+
+    // Update the authenticated user's profile (name, email)
+    @Transactional
+    public User updateUserProfile(String email, UpdateUserProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // If email is being changed, check for uniqueness
+        if (!user.getEmail().equals(request.getEmail())) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new RuntimeException("Email already exists");
+            }
+            user.setEmail(request.getEmail());
+        }
+        user.setName(request.getName());
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 }
