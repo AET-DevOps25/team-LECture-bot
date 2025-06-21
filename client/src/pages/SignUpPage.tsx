@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import for navigation
+import { getConfig } from '../config';
+
+
 
 function SignUpPage() {
     const [name, setName] = useState('');
@@ -32,7 +35,7 @@ function SignUpPage() {
         } else if (confirmPassword !== password) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -44,9 +47,9 @@ function SignUpPage() {
         // For simplicity, let's re-validate the whole form on blur,
         // but you could make this more targeted.
         const currentErrors = { ...errors };
-        
+
         // Clear previous error for the field being blurred
-        delete currentErrors[field]; 
+        delete currentErrors[field];
         // Optionally clear submit error when user starts correcting fields
         setSubmitError(null);
 
@@ -61,7 +64,7 @@ function SignUpPage() {
             }
         }
         if (field === 'password') {
-             if (!password) {
+            if (!password) {
                 currentErrors.password = 'Password is required';
             } else if (password.length < 8) {
                 currentErrors.password = 'Password must be at least 8 characters';
@@ -74,7 +77,7 @@ function SignUpPage() {
                 currentErrors.confirmPassword = 'Passwords do not match';
             }
         }
-         // If password is changed, re-validate confirmPassword if it's not empty
+        // If password is changed, re-validate confirmPassword if it's not empty
         if (field === 'password' && confirmPassword && password !== confirmPassword) {
             currentErrors.confirmPassword = 'Passwords do not match';
         }
@@ -91,7 +94,14 @@ function SignUpPage() {
         if (validateForm()) {
             setIsLoading(true); // Start loading
             try {
-                const response = await fetch('http://localhost:8080/api/auth/register', {
+
+                const { PUBLIC_API_URL } = getConfig(); // Get API base URL from config
+                if (!PUBLIC_API_URL) {
+                    console.warn("PUBLIC_API_URL is undefined. Using fallback.");
+                }
+                const API_BASE_URL = PUBLIC_API_URL || 'http://localhost:8080/api'; // Fallback to localhost if not set
+
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password }), // Correctly sends these three fields
