@@ -64,6 +64,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/genai/index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Index a document
+         * @description Sends a document's content to the GenAI service for indexing.
+         */
+        post: operations["indexDocument"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/genai/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit a query
+         * @description Sends a natural language query to the GenAI service for RAG.
+         */
+        post: operations["submitQuery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current user's profile
+         * @description Retrieves the profile information for the currently authenticated user.
+         */
+        get: operations["getUserProfile"];
+        /**
+         * Update current user's profile
+         * @description Updates the name and/or email for the currently authenticated user.
+         */
+        put: operations["updateUserProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profile/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change current user's password
+         * @description Allows the authenticated user to change their password.
+         */
+        patch: operations["changePassword"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -103,6 +187,59 @@ export interface components {
         LoginResponse: {
             /** @example eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZGEubG92ZWxhY2VAZXhhbXBsZS5jb20iLCJpYXQiOjE2MTYyMzkwMjIsImV4cCI6MTYxNjMyNTQyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c */
             token?: string;
+        };
+        IndexRequest: {
+            /** @example doc-123 */
+            document_id: string;
+            /** @example cs-456 */
+            course_space_id: string;
+            /** @example This is the content of the document. */
+            text_content: string;
+        };
+        IndexResponse: {
+            /** @example Document indexed successfully */
+            message?: string;
+            /** @example doc-123 */
+            documentId?: string;
+        };
+        QueryRequest: {
+            /** @example What is this document about? */
+            query_text: string;
+            /** @example cs-456 */
+            course_space_id: string;
+        };
+        QueryResponse: {
+            /** @example This document is about... */
+            answer?: string;
+            /** @example [
+             *       "doc-123",
+             *       "doc-456"
+             *     ] */
+            citations?: string[];
+        };
+        UserProfile: {
+            /** Format: int64 */
+            readonly id?: number;
+            /** @example Ada Lovelace */
+            name?: string;
+            /**
+             * Format: email
+             * @example ada.lovelace@example.com
+             */
+            email?: string;
+        };
+        UpdateUserProfileRequest: {
+            /** @example Ada L. */
+            name?: string;
+            /**
+             * Format: email
+             * @example ada.lovelace.new@example.com
+             */
+            email?: string;
+        };
+        ChangePasswordRequest: {
+            oldPassword?: string;
+            newPassword?: string;
         };
     };
     responses: never;
@@ -191,6 +328,177 @@ export interface operations {
                 };
             };
             /** @description Unauthorized - Bad credentials. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    indexDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Document indexing request details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IndexRequest"];
+            };
+        };
+        responses: {
+            /** @description Document indexed successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndexResponse"];
+                };
+            };
+            /** @description Internal Server Error - Failed to index document. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    submitQuery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Query request details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueryRequest"];
+            };
+        };
+        responses: {
+            /** @description Query processed successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryResponse"];
+                };
+            };
+            /** @description Internal Server Error - Failed to get query response. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile data. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+            /** @description Unauthorized - No or invalid token provided. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateUserProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new profile information. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Profile updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+            /** @description Bad Request (e.g., validation error, email already in use). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The old and new password. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description Password changed successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request (e.g., old password incorrect). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
             401: {
                 headers: {
                     [name: string]: unknown;

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import for navigation
-import { getConfig } from '../config';
+import { registerUser } from '../api/apiClient';
+import type { components } from '../shared/api/generated/api';
 
-
+type RegisterRequest = components['schemas']['RegisterRequest'];
 
 function SignUpPage() {
     const [name, setName] = useState('');
@@ -94,20 +95,15 @@ function SignUpPage() {
         if (validateForm()) {
             setIsLoading(true); // Start loading
             try {
+                const requestBody: RegisterRequest = {
+                    name,
+                    email,
+                    password,
+                };
 
-                const { PUBLIC_API_URL } = getConfig(); // Get API base URL from config
-                if (!PUBLIC_API_URL) {
-                    console.warn("PUBLIC_API_URL is undefined. Using fallback.");
-                }
-                const API_BASE_URL = PUBLIC_API_URL || 'http://localhost:8080/api'; // Fallback to localhost if not set
-
-                const response = await fetch(`${API_BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password }), // Correctly sends these three fields
-                });
-
-                const responseBodyText = await response.text(); // Get response body as text
+                const responseText = await registerUser(requestBody);
+                // Simulate a response object for consistent logic flow
+                const response = { ok: true, text: () => Promise.resolve(responseText) };
 
                 if (response.ok) {
                     // alert(responseBodyText); // Or use a more sophisticated notification
@@ -115,11 +111,11 @@ function SignUpPage() {
                     setSubmitError(null); // Clear any previous error
                     // TODO: Implement a more user-friendly success message (e.g., a toast notification)
                     alert("Registration successful! Redirecting to login..."); // Placeholder success message
-                    navigate('/login'); // Navigate to login page (ensure you have a '/login' route)
+                    navigate('/signin'); // Navigate to signin page
                 } else {
                     // Handle errors from the backend (e.g., email already exists, server-side validation)
                     // The backend returns plain text error messages.
-                    setSubmitError(responseBodyText || 'Registration failed. Please try again.');
+                    setSubmitError(await response.text() || 'Registration failed. Please try again.');
                     setErrors({}); // Clear field-specific errors as this is a submit-level error
                 }
             } catch (error) {

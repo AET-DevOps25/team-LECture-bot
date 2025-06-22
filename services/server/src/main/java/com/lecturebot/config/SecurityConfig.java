@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,19 +41,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
             .csrf(AbstractHttpConfigurer::disable)
-            // .authorizeHttpRequests(authorizeRequests ->
-            //     authorizeRequests
-            //         .requestMatchers("/api/auth/**").permitAll()
-            //         .anyRequest().authenticated()
-            // );
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions for JWT
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .anyRequest().permitAll() // Allow all requests without authentication
+                    .requestMatchers("/auth/**", "/health").permitAll() // Permit auth and health endpoints
+                    .anyRequest().authenticated() // Secure all other endpoints
             );
+
+        // Add the JWT filter before the standard username/password authentication filter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

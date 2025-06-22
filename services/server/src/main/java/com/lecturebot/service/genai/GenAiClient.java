@@ -1,15 +1,12 @@
 package com.lecturebot.service.genai;
 
-import com.lecturebot.service.genai.dto.IndexRequestDto;
-import com.lecturebot.service.genai.dto.IndexResponseDto;
-import com.lecturebot.service.genai.dto.QueryRequestDto;
-import com.lecturebot.service.genai.dto.QueryResponseDto;
+import com.lecturebot.generated.model.IndexRequest;
+import com.lecturebot.generated.model.IndexResponse;
+import com.lecturebot.generated.model.QueryRequest;
+import com.lecturebot.generated.model.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -28,12 +25,11 @@ public class GenAiClient {
         this.genAiServiceBaseUrl = genAiServiceBaseUrl;
     }
 
-    public Optional<IndexResponseDto> indexDocument(String documentId, String courseSpaceId, String textContent) {
+    public Optional<IndexResponse> indexDocument(IndexRequest request) {
         String url = genAiServiceBaseUrl + "/api/v1/index/index";
         try {
-            IndexRequestDto requestDto = new IndexRequestDto(documentId, courseSpaceId, textContent);
-            logger.info("Sending indexing request to GenAI service for documentId: {}", documentId);
-            IndexResponseDto response = restTemplate.postForObject(url, requestDto, IndexResponseDto.class);
+            logger.info("Sending indexing request to GenAI service for documentId: {}", request.getDocumentId());
+            IndexResponse response = restTemplate.postForObject(url, request, IndexResponse.class);
             logger.info("Successfully received indexing response from GenAI service.");
             return Optional.ofNullable(response);
         } catch (RestClientException e) {
@@ -42,12 +38,11 @@ public class GenAiClient {
         }
     }
 
-    public Optional<QueryResponseDto> submitQuery(String queryText, String courseSpaceId) {
+    public Optional<QueryResponse> submitQuery(QueryRequest request) {
         String url = genAiServiceBaseUrl + "/api/v1/query/query";
         try {
-            QueryRequestDto requestDto = new QueryRequestDto(queryText, courseSpaceId);
-            logger.info("Sending query to GenAI service for courseSpaceId: {}", courseSpaceId);
-            QueryResponseDto response = restTemplate.postForObject(url, requestDto, QueryResponseDto.class);
+            logger.info("Sending query to GenAI service for courseSpaceId: {}", request.getCourseSpaceId());
+            QueryResponse response = restTemplate.postForObject(url, request, QueryResponse.class);
             logger.info("Successfully received query response from GenAI service.");
             return Optional.ofNullable(response);
         } catch (RestClientException e) {

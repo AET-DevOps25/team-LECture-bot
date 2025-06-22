@@ -1,49 +1,37 @@
 package com.lecturebot.controller;
 
-import com.lecturebot.dto.LoginRequest; //
-import com.lecturebot.dto.LoginResponse; //
-import com.lecturebot.dto.RegisterRequest; //
-import com.lecturebot.service.UserService; //
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.stream.Collectors;
+
+import com.lecturebot.generated.api.AuthenticationApi;
+import com.lecturebot.generated.model.LoginResponse;
+import com.lecturebot.generated.model.RegisterRequest;
+import com.lecturebot.service.UserService;
 
 @RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+public class AuthController implements AuthenticationApi { // RequestMapping is now handled by the global context-path
 
-    private final UserService userService; //
+    private final UserService userService; 
 
-    @Autowired
     public AuthController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) { //
+    @Override
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody com.lecturebot.generated.model.LoginRequest loginRequest) {
         try {
-            LoginResponse loginResponse = userService.loginUser(loginRequest); //
+            LoginResponse loginResponse = userService.loginUser(loginRequest);
             return ResponseEntity.ok(loginResponse);
         } catch (RuntimeException e) {
             // Return a more structured error if LoginResponse can accommodate it
-            return ResponseEntity.badRequest().body(new LoginResponse(null, e.getMessage()));
+            return ResponseEntity.badRequest().body(new LoginResponse().token(e.getMessage()));
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, BindingResult result) { //
-        if (result.hasErrors()) {
-            String errorMessage = result.getFieldErrors().stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                    .collect(Collectors.joining(", "));
-            return ResponseEntity.badRequest().body(errorMessage);
-        }
+    @Override
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest request) { 
         try {
             userService.registerUser(request);
             return ResponseEntity.ok("Registration successful for " + request.getEmail());

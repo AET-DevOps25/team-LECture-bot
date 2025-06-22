@@ -68,7 +68,7 @@ You can run the GenAI service locally for development without the full Docker Co
     From the `/genai` directory:
 
     ```bash
-    poetry run uvicorn genai.main:app --host 0.0.0.0 --port 8001 --reload
+    poetry run uvicorn src.genai.main:app --host 0.0.0.0 --port 8001 --reload
     ```
 
 ## API Endpoints
@@ -77,7 +77,7 @@ The API is versioned under `/api/v1`.
 
 ### 1. Index Document
 
-* **Endpoint:** `POST /api/v1/index/`
+* **Endpoint:** `POST /api/v1/index/index`
 * **Summary:** Receives document text, chunks it, generates embeddings, and stores them in the vector DB.
 * **Request Body:** `application/json`
 
@@ -93,12 +93,8 @@ The API is versioned under `/api/v1`.
 
     ```json
     {
-        "status": "string (e.g., 'success')",
-        "message": "string (e.g., 'Document indexed successfully')",
-        "document_id": "string (echoed from request)",
-        "total_chunks_generated": "integer",
-        "chunks_stored_successfully": "integer",
-        "failed_chunk_indexes": ["string (optional, list of problematic chunk identifiers/indexes)"]
+        "message": "Document indexed successfully",
+        "documentId": "doc-123"
     }
     ```
 
@@ -121,16 +117,8 @@ The API is versioned under `/api/v1`.
 
     ```json
     {
-        "answer": "string (the LLM-generated answer)",
-        "citations": [
-            {
-                "document_id": "string",
-                "chunk_id": "string (or other identifier for the source chunk)",
-                "text_content_preview": "string (a snippet of the source chunk)",
-                "metadata": {} // Optional: any other relevant metadata from the chunk
-            }
-            // ... more citations
-        ]
+        "answer": "This document is about...",
+        "citations": ["doc-123", "doc-456"]
     }
     ```
 
@@ -138,28 +126,27 @@ The API is versioned under `/api/v1`.
 
 ### 3. Health Check
 
-* **Endpoint:** `GET /api/v1/health`
+* **Endpoint:** `GET /health`
 * **Summary:** Basic health check for the service.
 * **Response (Success 200 OK):** `application/json`
 
     ```json
     {
-        "status": "healthy",
-        "module_name": "GenAI Service for LECture-bot",
-        "version": "0.1.0"
+        "status": "UP",
+        "message": "GenAI service is running!",
+        "llm_provider": "openai"
     }
     ```
 
 ## Project Structure (within `/genai`)
 
-* `src/genai/`: Main source code.
-  * `api/`: FastAPI specific code (routers, schemas).
-  * `core/`: Core configuration and settings.
-  * `llm_integrations/`: Logic for interacting with different LLMs.
-  * `pipelines/`: Core RAG pipelines (indexing, querying).
-  * `text_processing/`: Text chunking and embedding logic.
-  * `vector_db/`: Weaviate client and interaction logic.
-  * `main.py`: FastAPI application entry point.
+* `src/genai/`: Main source code directory.
+  * `api/`: Contains FastAPI routers and Pydantic schemas.
+  * `core/`: Core application configuration (e.g., environment variables).
+  * `pipelines/`: High-level logic for indexing and question-answering pipelines.
+  * `services/`: Contains clients for external services (LLMs, embeddings, vector DB).
+  * `utils/`: Helper functions and utilities.
+  * `main.py`: The FastAPI application entry point.
 * `Dockerfile`: For containerizing the service.
 * `pyproject.toml`: Project metadata and dependencies (Poetry).
 * `.env.example`: Example environment variables.

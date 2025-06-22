@@ -32,6 +32,10 @@ dependencies {
 
     // Database Driver
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1' // Added for JSR-305 annotations
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
 
     // Lombok for boilerplate code reduction
     compileOnly 'org.projectlombok:lombok'
@@ -42,7 +46,7 @@ dependencies {
 
     // Test Dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {

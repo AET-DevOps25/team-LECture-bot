@@ -12,6 +12,8 @@ COPY gradle ./gradle
 # Copy the build configuration files
 COPY build.gradle .
 
+COPY src ./src
+
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
