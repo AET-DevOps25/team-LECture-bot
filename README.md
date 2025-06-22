@@ -1,4 +1,4 @@
-## LECture-bot: Full-Stack Application with GenAI Integration
+# LECture-bot: Full-Stack Application with GenAI Integration
 
 Welcome to LECture-bot! This project involves the design, development, deployment, and scaling of a lightweight but technically complete web application with a meaningful Generative AI (GenAI) integration.
 
@@ -31,21 +31,21 @@ The GenAI component is a modular Python microservice using FastAPI and LangChain
 
 ### Key Scenarios
 
-**Document Upload and Indexing for a New Course**
+### Document Upload and Indexing for a New Course
 
 * A student logs into LECture-bot.
 * They create a new "course space" (e.g., "Advanced Algorithms CS701").
 * The student uploads lecture slides (PDFs) and textbook chapters (TXT files) into this space.
 * The system processes these documents, chunking text, generating embeddings, and storing them in Weaviate, associated with the "CS701" course space.
 
-**Asking a Specific Question about Course Content**
+### Asking a Specific Question about Course Content
 
 * While studying, the student navigates to their "CS701" course space.
 * They ask: "What are the main applications of Dijkstra's algorithm discussed in the lectures?"
 * The GenAI service retrieves relevant information from the indexed "CS701" documents and uses the configured LLM to generate an answer based solely on this context.
 * The answer is displayed with citations to the source materials.
 
-**Querying with a Different LLM Provider (e.g., Local Ollama)**
+### Querying with a Different LLM Provider (e.g., Local Ollama)
 
 * The system administrator (or user, if allowed by design) reconfigures the GenAI service (via `.env` file) to use a locally running Ollama model instead of OpenAI.
 * The student asks another question. The RAG process is the same, but the LLM interaction now uses the local Ollama instance.
@@ -83,31 +83,26 @@ This project follows an **API-Driven Design** methodology. This means the `api/o
 
 **Workflow for API Changes:**
 
-**Define the Contract:** Modify `api/openapi.yaml` to add or change endpoints, schemas, or parameters. Ensure your changes are well-documented and follow OpenAPI standards.
-**Lint the Specification (Optional but Recommended):** Before generating code, you can validate your changes using a linter. Our CI pipeline does this automatically, but you can run it locally:
+**Define the Contract:** Modify `api/openapi.yaml` to add or change endpoints, schemas, or parameters. Ensure your changes are well-documented and follow OpenAPI standards. **Lint the Specification (Optional but Recommended):** Before generating code, you can validate your changes using a linter. Our CI pipeline does this automatically, but you can run it locally:
 
 You might need to install it first:
 
 ```bash
-npm install -g @redocly/openapi-cli
-redocly lint api/openapi.yaml
+npm install -g @redocly/openapi-cli redocly lint api/openapi.yaml
 ```
 
 **Generate Code:** Run the master script from the project root to regenerate the server interfaces and the client-side API library.
 
 ```bash
 ./api/scripts/gen-all.sh
-``` 
+```
 
 This script will:
 
 * Generate Java interfaces and models for the Spring Boot server.
-* Generate a TypeScript client library for the React frontend.
-**Implement the Logic:**
+* Generate a TypeScript client library for the React frontend. **Implement the Logic:**
 * **On the server:** Your controller classes will now need to implement the newly generated Java interfaces.
-* **On the client:** Use the new functions and types available in the generated TypeScript client to build your UI features.
-**Commit Everything:** Commit the changes to `openapi.yaml` **along with all the newly generated code**. This is crucial for ensuring the repository is always in a consistent state.
-This process ensures that the frontend and backend are always aligned, reduces integration bugs, and provides clear, type-safe contracts for development.
+* **On the client:** Use the new functions and types available in the generated TypeScript client to build your UI features. **Commit Everything:** Commit the changes to `openapi.yaml` **along with all the newly generated code**. This is crucial for ensuring the repository is always in a consistent state. This process ensures that the frontend and backend are always aligned, reduces integration bugs, and provides clear, type-safe contracts for development.
 
 ## Project Structure
 
@@ -130,11 +125,6 @@ The primary way to run the LECture-bot application (frontend, backend, database,
 
 ### 1. Clone the Repository (If you haven't already)
 
-```bash
-git clone https://github.com/AET-DevOps25/team-LECture-bot.git
-cd LECture-bot
-```
-
 ### 2. Environment Configuration (Optional but Recommended)
 
 You can create a `.env` file in this root directory to manage environment variables for the services. Docker Compose will automatically pick it up. This is **highly recommended** for API keys.
@@ -142,36 +132,32 @@ You can create a `.env` file in this root directory to manage environment variab
 Example `.env` file:
 
 ```dotenv
-# This is an example .env file. Copy to .env in the project root and fill in your values.
 
-# --- Database Credentials & Settings ---
-DB_USER=lecturebot_user
-DB_PASSWORD=myverysecurepassword # Change this!
-DB_NAME=lecturebot_db
+This is an example .env file. Copy to .env in the project root and fill in your values.
+--- Database Credentials & Settings ---
+DB_USER=lecturebot_user DB_PASSWORD=myverysecurepassword # Change this! DB_NAME=lecturebot_db
 
-# --- Spring Boot / JPA Settings for Server ---
-SPRING_JPA_HIBERNATE_DDL_AUTO=none # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema.
-SERVER_PORT=8080
+--- Spring Boot / JPA Settings for Server ---
+SPRING_JPA_HIBERNATE_DDL_AUTO=none # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema. SERVER_PORT=8080
 
-# --- Client URLs for CORS configuration on the server ---
+--- Client URLs for CORS configuration on the server ---
 LECTUREBOT_CLIENT_ORIGIN=http://localhost:3000
-
-# --- GenAI Service Configuration ---
-# Select the provider: "openai", "ollama", or "tum_aet"
+LECTUREBOT_CLIENT_ORIGIN=<http://localhost:3000>
+--- GenAI Service Configuration ---
+Select the provider: "openai", "ollama", or "tum_aet"
 LLM_PROVIDER=openai
 
-# -- OpenAI Settings (if LLM_PROVIDER is "openai") --
-OPENAI_API_KEY=sk-your-actual-openai-api-key-here
-OPENAI_MODEL_NAME=gpt-4o-mini
+-- OpenAI Settings (if LLM_PROVIDER is "openai") --
+OPENAI_API_KEY=sk-your-actual-openai-api-key-here OPENAI_MODEL_NAME=gpt-4o-mini
 
-# -- TUM AET Settings (if LLM_PROVIDER is "tum_aet") --
-TUM_AET_LLM_API_BASE=https://gpu.aet.cit.tum.de/api
+-- TUM AET Settings (if LLM_PROVIDER is "tum_aet") --
+TUM_AET_LLM_API_BASE=https://gpu.aet.cit.tum.de/api TUM_AET_LLM_API_KEY=sk-your-tum-aet-key-here TUM_AET_LLM_MODEL_NAME=llama3.3:latest
+TUM_AET_LLM_API_BASE=<https://gpu.aet.cit.tum.de/api>
 TUM_AET_LLM_API_KEY=sk-your-tum-aet-key-here
 TUM_AET_LLM_MODEL_NAME=llama3.3:latest
-
-# -- Ollama Settings (if LLM_PROVIDER is "ollama") --
-# OLLAMA_MODEL_NAME=llama3:8b-instruct-q4_K_M
-# OLLAMA_BASE_URL=http://host.docker.internal:11434 # For Docker Desktop on Mac/Windows
+-- Ollama Settings (if LLM_PROVIDER is "ollama") --
+OLLAMA_BASE_URL=<http://host.docker.internal:11434> # For Docker Desktop on Mac/Windows
+OLLAMA_BASE_URL=http://host.docker.internal:11434 # For Docker Desktop on Mac/Windows
 ```
 
 If this file is not present, the defaults specified in `docker-compose.yml` will be used. **You must provide an `OPENAI_API_KEY` if using the default OpenAI setup.**
@@ -191,10 +177,10 @@ docker-compose up --build
 
 Once all containers are up and running:
 
-* **Frontend Application:** Open your browser and go to <http://localhost:3000> (this port is mapped from the client container in `docker-compose.yml`).
-* **Backend API Server:** Accessible at <http://localhost:8080> (this port is mapped from the server container).
-* **GenAI Service API:** Accessible at <http://localhost:8001> (this port is mapped from the `genai-service` container).
-* **Weaviate Vector DB:** Accessible at <http://localhost:8081> (this port is mapped from the `weaviate` container).
+* **Frontend Application:** Open your browser and go to http://localhost:3000 (this port is mapped from the client container in `docker-compose.yml`).
+* **Backend API Server:** Accessible at http://localhost:8080 (this port is mapped from the server container).
+* **GenAI Service API:** Accessible at http://localhost:8001 (this port is mapped from the `genai-service` container).
+* **Weaviate Vector DB:** Accessible at http://localhost:8081 (this port is mapped from the `weaviate` container).
 * **Database (PostgreSQL):** Running and accessible on port 5432 from your host machine.
 
 ### 5. Stopping All Services
@@ -218,11 +204,11 @@ docker-compose down -v
 
 ## ⚙️ Backend Server Details (Spring Boot)
 
-The backend is a Spring Boot application. For detailed setup and general API testing instructions (like auth endpoints), refer to `server/README.md`.
+The backend is a Spring Boot application. For detailed setup and general API testing instructions (like auth endpoints), refer to `services/server/README.md`.
 
 ### Testing Server + GenAI Integration Endpoints
 
-The server includes test endpoints under `/api/test/genai/` to specifically test the communication with the `genai-service` via the `GenAiClient`.
+The server includes endpoints under `/api/v1/genai/` to specifically test the communication with the `genai-service`. These endpoints are generated from the `openapi.yaml` specification.
 
 #### Temporarily Disabling Security for Test Endpoints (Development Only)
 
@@ -230,11 +216,11 @@ By default, Spring Security protects most endpoints. For easier testing of the `
 
 **File:** `server/src/main/java/com/lecturebot/server/config/SecurityConfig.java`
 
-Add `.requestMatchers("/api/test/genai/**").permitAll()` to your security configuration. Example:
+Add `.requestMatchers("/api/v1/genai/**").permitAll()` to your security configuration. Example:
 
 ```java
-// Inside SecurityConfig.java, within the securityFilterChain method: http .csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz .requestMatchers("/api/test/genai/").permitAll() 
-// <<< ADD THIS LINE .requestMatchers("/api/auth/", "/api/health").permitAll() .anyRequest().authenticated() )
+// Inside SecurityConfig.java, within the securityFilterChain method: http.csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz.requestMatchers("/api/v1/genai/").permitAll()
+// <<< ADD THIS LINE .requestMatchers("/api/v1/auth/", "/api/v1/health").permitAll().anyRequest().authenticated())
 // ... other configurations ...
 ```
 
@@ -243,7 +229,7 @@ Add `.requestMatchers("/api/test/genai/**").permitAll()` to your security config
 ```bash
 docker-compose up --build server
 
-# or if all services are down:
+#or if all services are down:
 docker-compose up --build
 ```
 
@@ -256,9 +242,7 @@ Ensure all services are running via `docker-compose up --build`.
 **Test Indexing Document via Server:** This sends a request to the server, which then calls the `genai-service`.
 
 ```bash
-curl -X POST "<http://localhost:8080/api/test/genai/index>"
--H "Content-Type: application/json"
--d '{ "documentId": "server-readme-test-doc-001", "courseSpaceId": "cs-readme-test-101", "textContent": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
+curl -X POST "http://localhost:8080/api/test/genai/index" -H "Content-Type: application/json" -d '{ "documentId": "server-readme-test-doc-001", "courseSpaceId": "cs-readme-test-101", "textContent": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
 ```
 
 *Expected Output:* JSON response from the `genai-service` relayed by the server, or an error message if the call failed. Check server and genai-service logs.
@@ -266,9 +250,7 @@ curl -X POST "<http://localhost:8080/api/test/genai/index>"
 **Test Submitting Query via Server:**
 
 ```bash
-curl -X POST "<http://localhost:8080/api/test/genai/query>"
--H "Content-Type: application/json"
--d '{ "queryText": "What does this document about README instructions talk about?", "courseSpaceId": "cs-readme-test-101" }'
+curl -X POST "http://localhost:8080/api/test/genai/query" -H "Content-Type: application/json" -d '{ "queryText": "What does this document about README instructions talk about?", "courseSpaceId": "cs-readme-test-101" }'
 ```
 
 *Expected Output:* JSON response (answer and citations) from the `genai-service` relayed by the server. Check server and genai-service logs.
@@ -300,21 +282,11 @@ Ensure the Ollama server is running and accessible (typically at `http://localho
 **Configure Environment Variables:** Update your `.env` file (in the project root) to configure the `genai-service` for Ollama:
 
 ```env
-
-... other variables
-GenAI Service Configuration (for Local Ollama)
-plaintext
-LLM_PROVIDER=ollama
-OLLAMA_MODEL_NAME=llama3:8b-instruct-q4_K_M # Or the model you pulled
-OLLAMA_BASE_URL=<http://host.docker.internal:11434> # For Docker Desktop (Mac/Windows)
-For Linux, if host.docker.internal doesn't work, use your host's IP on the Docker bridge (e.g., <http://172.17.0.1:11434>)
-OPENAI_API_KEY= # Not needed for Ollama
-plaintext
+... other variables GenAI Service Configuration (for Local Ollama) plaintext LLM_PROVIDER=ollama OLLAMA_MODEL_NAME=llama3:8b-instruct-q4_K_M # Or the model you pulled OLLAMA_BASE_URL=http://host.docker.internal:11434 # For Docker Desktop (Mac/Windows) For Linux, if host.docker.internal doesn't work, use your host's IP on the Docker bridge (e.g., http://172.17.0.1:11434) OPENAI_API_KEY= # Not needed for Ollama plaintext
 ```
 
 * `host.docker.internal` allows containers to connect to services running on the host machine in Docker Desktop (Mac/Windows).
-* For Linux, you might need to find your host's IP address on the `docker0` bridge network (often `172.17.0.1`) or configure Docker networking appropriately.
-**Restart Docker Compose:** If Docker Compose is already running, stop it (`docker-compose down`) and then restart it:
+* For Linux, you might need to find your host's IP address on the `docker0` bridge network (often `172.17.0.1`) or configure Docker networking appropriately. **Restart Docker Compose:** If Docker Compose is already running, stop it (`docker-compose down`) and then restart it:
 
 ```bash
 docker-compose up --build

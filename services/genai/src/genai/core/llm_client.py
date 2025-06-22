@@ -1,8 +1,9 @@
 """LLM client factory and custom client implementations."""
 
 from typing import Optional, Dict, Any
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from genai.core.config import settings
+from genai.core.exceptions import LLMConfigError
 
 class TUMAETLLM(ChatOpenAI):
     """
@@ -20,13 +21,13 @@ class TUMAETLLM(ChatOpenAI):
         and allows overriding other ChatOpenAI parameters via kwargs.
         """
         if not settings.TUM_AET_LLM_API_BASE or not settings.TUM_AET_LLM_API_KEY:
-            raise ValueError(
+            raise LLMConfigError(
                 "TUM AET LLM API base URL and API key must be configured."
             )
         
         model_kwargs: Dict[str, Any] = {
-            "model_name": settings.TUM_AET_LLM_MODEL_NAME,
-            "openai_api_base": settings.TUM_AET_LLM_API_BASE + "/chat/completions", # LangChain still expects /chat/completions
+            "model": settings.TUM_AET_LLM_MODEL_NAME,
+            "openai_api_base": settings.TUM_AET_LLM_API_BASE,
             "openai_api_key": settings.TUM_AET_LLM_API_KEY,
             "max_tokens": 1024,  # Reasonable default, adjust as needed
             "temperature": 0.1,  # For more deterministic output

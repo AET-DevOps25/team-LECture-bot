@@ -25,7 +25,7 @@ def _get_llm(llm_settings: Settings) -> BaseChatModel:
         return ChatOpenAI(api_key=llm_settings.OPENAI_API_KEY, model=llm_settings.OPENAI_MODEL_NAME)
     
     elif llm_provider == "ollama":
-        return ChatOpenAI(model_name=llm_settings.OLLAMA_MODEL_NAME, base_url=llm_settings.OLLAMA_BASE_URL)
+        return ChatOpenAI(model=llm_settings.OLLAMA_MODEL_NAME, base_url=llm_settings.OLLAMA_BASE_URL)
     
     elif llm_provider == "tum_aet":
         return TUMAETLLM()
