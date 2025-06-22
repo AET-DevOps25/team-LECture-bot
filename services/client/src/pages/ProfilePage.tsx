@@ -1,266 +1,204 @@
-import React, { useState, useEffect } from "react";
-import { getConfig } from '../config';
-import storage from '../utils/storage';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, type FormEvent } from 'react'; // Add 'type' to FormEvent
+import { useAuth } from '../context/AuthContext';
+import { getUserProfile, updateUserProfile, changePassword } from '../api/apiClient';
+import type { components } from '../shared/api/generated/api';
 
-export default function ProfilePage() {
-  const { PUBLIC_API_URL } = getConfig();
-  const API_BASE_URL = PUBLIC_API_URL || "http://localhost:8080/api";
+type UserProfile = components['schemas']['UserProfile'];
+type UpdateUserProfileRequest = components['schemas']['UpdateUserProfileRequest'];
+type ChangePasswordRequest = components['schemas']['ChangePasswordRequest'];
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const ProfilePage: React.FC = () => {
+    const { isAuthenticated } = useAuth(); // Only isAuthenticated is needed here
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [editMode, setEditMode] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [passwordChangeError, setPasswordChangeError] = useState<string | null>(null);
+    const [passwordChangeSuccess, setPasswordChangeSuccess] = useState<string | null>(null);
 
-  const navigate = useNavigate();
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setLoading(false);
+            setError('Not authenticated. Please sign in.');
+            return;
+        }
 
-  // Validation state
-  const [profileErrors, setProfileErrors] = useState<{ name?: string; email?: string; form?: string }>({});
-  const [passwordErrors, setPasswordErrors] = useState<{ currentPassword?: string; newPassword?: string; confirmPassword?: string; form?: string }>({});
-  const [profileSubmitting, setProfileSubmitting] = useState(false);
-  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
-  const [profileSuccess, setProfileSuccess] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState("");
+        const fetchUserProfile = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const data = await getUserProfile(); // Use the API client function
+                setProfile(data);
+                setNewName(data.name || ''); // Initialize form fields with current profile data
+                setNewEmail(data.email || '');
+            } catch (err: any) {
+                console.error('Failed to fetch profile:', err);
+                setError(err.message || 'Failed to fetch profile. Please check your connection.');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  // Helper to get JWT token from localStorage (correct key: jwtToken)
-  function getToken() {
-    return storage.getItem<string>('jwtToken') || null;
-  }
+        fetchUserProfile();
+    }, [isAuthenticated]); // Depend on isAuthenticated
 
-  useEffect(() => {
-    // Fetch current user profile from backend
-    async function fetchProfile() {
-      setLoading(true);
-      setError("");
-      try {
-        const token = getToken();
-        console.log(`Bearer ${token}`)
-        if (!token) throw new Error("Not authenticated");
-        // Fetch user profile
-        // Use API_BASE_URL from config
-        const res = await fetch(`${API_BASE_URL}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        });
-        if (!res.ok) throw new Error("Failed to fetch profile");
-        const data = await res.json();
-        setName(data.name || "");
-        setEmail(data.email || "");
-      } catch (err: any) {
-        setError(err.message || "Error loading profile");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProfile();
-    // eslint-disable-next-line
-  }, []);
+    const handleUpdateProfile = async (e: FormEvent) => {
+        e.preventDefault();
+        setError(null); // Clear general error
+        if (!profile) return; // Should not happen if profile is loaded
 
-  // Profile validation
-  function validateProfile() {
-    const errors: { name?: string; email?: string } = {};
-    if (!name.trim()) errors.name = "Name is required";
-    if (!email.trim()) errors.email = "Email is required";
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.email = "Invalid email address";
-    setProfileErrors(errors);
-    return Object.keys(errors).length === 0;
-  }
+        const requestBody: UpdateUserProfileRequest = {
+            name: newName,
+            email: newEmail,
+        };
 
-  // Password validation
-  function validatePassword() {
-    const errors: { currentPassword?: string; newPassword?: string; confirmPassword?: string; form?: string } = {};
-    if (!currentPassword) errors.currentPassword = "Current password is required";
-    if (!newPassword) errors.newPassword = "New password is required";
-    else if (newPassword.length < 8) errors.newPassword = "New password must be at least 8 characters";
-    if (!confirmPassword) errors.confirmPassword = "Please confirm new password";
-    else if (newPassword !== confirmPassword) errors.confirmPassword = "Passwords do not match";
-    setPasswordErrors(errors);
-    return Object.keys(errors).length === 0;
-  }
-
-  // Profile form submit
-  async function handleProfileSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setProfileSuccess("");
-    if (!validateProfile()) return;
-    setProfileSubmitting(true);
-    setProfileErrors({});
-    try {
-      const token = getToken();
-      const res = await fetch(`${API_BASE_URL}/users/me`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ name, email }),
-      });
-      if (!res.ok) {
-        let msg = "Failed to update profile";
         try {
-          const errData = await res.json();
-          msg = errData.message || msg;
-        } catch {}
-        throw new Error(msg);
-      }
-      const data = await res.json();
-      if (data.requireReauth) {
-        storage.removeItem("jwtToken");
-        alert("Your email was changed. Please log in again.");
-        // Use navigate from react-router-dom to redirect to login
-        navigate("/login", { replace: true });
-        return;
-      }
-      // Update local state with new values (in case backend returns updated user)
-      setProfileSuccess("Profile updated successfully");
-      const updated = await res.json();
-      setName(updated.name); setEmail(updated.email);
-    } catch (err: any) {
-      setProfileErrors({ form: err.message || "Error updating profile" });
-    } finally {
-      setProfileSubmitting(false);
-    }
-  }
+            const updatedData = await updateUserProfile(requestBody); // Use API client function
+            setProfile(updatedData); // Update local profile state
+            setEditMode(false); // Exit edit mode
+            alert('Profile updated successfully!'); // Simple success feedback
+        } catch (err: any) {
+            console.error('Failed to update profile:', err);
+            setError(err.message || 'Failed to update profile.'); // Display error
+        }
+    };
 
-  // Password form submit
-  async function handlePasswordSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setPasswordSuccess("");
-    if (!validatePassword()) return;
-    setPasswordSubmitting(true);
-    setPasswordErrors({});
-    try {
-      const token = getToken();
-      const res = await fetch(`${API_BASE_URL}/users/me/change-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      if (!res.ok) {
-        let msg = "Failed to change password";
+    const handleChangePassword = async (e: FormEvent) => {
+        e.preventDefault();
+        setPasswordChangeError(null); // Clear previous password change error
+        setPasswordChangeSuccess(null); // Clear previous password change success
+
+        // Client-side validation for password change
+        if (newPassword !== confirmNewPassword) {
+            setPasswordChangeError('New passwords do not match.');
+            return;
+        }
+        if (newPassword.length < 8) {
+            setPasswordChangeError('New password must be at least 8 characters long.');
+            return;
+        }
+
+        const requestBody: ChangePasswordRequest = {
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+        };
+
         try {
-          const errData = await res.json();
-          msg = errData.message || msg;
-        } catch {}
-        throw new Error(msg);
-      }
-      setPasswordSuccess("Password changed successfully");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (err: any) {
-      setPasswordErrors({ form: err.message || "Error changing password" });
-    } finally {
-      setPasswordSubmitting(false);
+            await changePassword(requestBody); // Use API client function
+            setPasswordChangeSuccess('Password changed successfully!'); // Success feedback
+            // Clear form fields
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
+        } catch (err: any) {
+            console.error('Failed to change password:', err);
+            setPasswordChangeError(err.message || 'Failed to change password.'); // Display error
+        }
+    };
+
+    if (loading) {
+        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading profile...</div>;
     }
-  }
 
-  if (loading) {
-    return <div className="text-center mt-10">Loading profile...</div>;
-  }
-  if (error) {
-    return <div className="text-center mt-10 text-red-600">{error}</div>;
-  }
+    if (error) {
+        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-red-500">Error: {error}</div>;
+    }
 
-  return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Manage Profile</h1>
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-2">Profile Information</h2>
-        <form className="space-y-4" autoComplete="off" onSubmit={handleProfileSubmit}>
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 ${profileErrors.name ? 'border-red-500' : ''}`}
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              onBlur={validateProfile}
-              disabled={profileSubmitting}
-            />
-            {profileErrors.name && <div className="text-red-600 text-sm mt-1">{profileErrors.name}</div>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 ${profileErrors.email ? 'border-red-500' : ''}`}
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onBlur={validateProfile}
-              disabled={profileSubmitting}
-            />
-            {profileErrors.email && <div className="text-red-600 text-sm mt-1">{profileErrors.email}</div>}
-          </div>
-          {profileErrors.form && <div className="text-red-600 text-sm mt-1">{profileErrors.form}</div>}
-          {profileSuccess && <div className="text-green-600 text-sm mt-1">{profileSuccess}</div>}
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            disabled={profileSubmitting || Object.keys(profileErrors).length > 0}
-          >
-            {profileSubmitting ? "Updating..." : "Update Profile"}
-          </button>
-        </form>
-      </div>
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Change Password</h2>
-        <form className="space-y-4" autoComplete="off" onSubmit={handlePasswordSubmit}>
-          <div>
-            <label className="block text-sm font-medium mb-1">Current Password</label>
-            <input
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 ${passwordErrors.currentPassword ? 'border-red-500' : ''}`}
-              type="password"
-              value={currentPassword}
-              onChange={e => setCurrentPassword(e.target.value)}
-              onBlur={validatePassword}
-              disabled={passwordSubmitting}
-            />
-            {passwordErrors.currentPassword && <div className="text-red-600 text-sm mt-1">{passwordErrors.currentPassword}</div>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">New Password</label>
-            <input
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 ${passwordErrors.newPassword ? 'border-red-500' : ''}`}
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              onBlur={validatePassword}
-              disabled={passwordSubmitting}
-            />
-            {passwordErrors.newPassword && <div className="text-red-600 text-sm mt-1">{passwordErrors.newPassword}</div>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Confirm New Password</label>
-            <input
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 ${passwordErrors.confirmPassword ? 'border-red-500' : ''}`}
-              type="password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              onBlur={validatePassword}
-              disabled={passwordSubmitting}
-            />
-            {passwordErrors.confirmPassword && <div className="text-red-600 text-sm mt-1">{passwordErrors.confirmPassword}</div>}
-          </div>
-          {passwordErrors.form && <div className="text-red-600 text-sm mt-1">{passwordErrors.form}</div>}
-          {passwordSuccess && <div className="text-green-600 text-sm mt-1">{passwordSuccess}</div>}
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-            disabled={passwordSubmitting || Object.keys(passwordErrors).length > 0}
-          >
-            {passwordSubmitting ? "Changing..." : "Change Password"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+    // If profile is null after loading, it means there was an error or no data
+    if (!profile) {
+        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">No profile data available.</div>;
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+            <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-md text-white">
+                <h2 className="text-3xl font-bold mb-6 text-center text-indigo-400">User Profile</h2>
+                {error && <div className="mb-4 p-3 bg-red-500 text-white rounded-md text-sm">{error}</div>}
+
+                <div className="space-y-4 mb-8">
+                    {editMode ? (
+                        <form onSubmit={handleUpdateProfile} className="space-y-4">
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-300">Name</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={newEmail}
+                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white"
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditMode(false)}
+                                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold transition-colors duration-200"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold transition-colors duration-200"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <>
+                            <p><strong>Name:</strong> {profile.name}</p>
+                            <p><strong>Email:</strong> {profile.email}</p>
+                            <button
+                                onClick={() => setEditMode(true)}
+                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold transition-colors duration-200"
+                            >
+                                Edit Profile
+                            </button>
+                        </>
+                    )}
+                </div>
+
+                <h3 className="text-2xl font-bold mb-4 text-indigo-400">Change Password</h3>
+                {passwordChangeError && <div className="mb-4 p-3 bg-red-500 text-white rounded-md text-sm">{passwordChangeError}</div>}
+                {passwordChangeSuccess && <div className="mb-4 p-3 bg-green-500 text-white rounded-md text-sm">{passwordChangeSuccess}</div>}
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                    <div>
+                        <label htmlFor="oldPassword" className="block text-sm font-medium text-gray-300">Old Password</label>
+                        <input type="password" id="oldPassword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300">New Password</label>
+                        <input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-300">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white" />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-md font-semibold transition-colors duration-200"
+                    >
+                        Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
 }
+
+export default ProfilePage;

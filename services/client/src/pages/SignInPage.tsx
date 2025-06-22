@@ -76,7 +76,7 @@ function SignInPage() {
                 console.log('Login successful, token:', data.token);
                 const token = data.token;
                 if (token) { // Ensure token is not undefined
-                    login(token);
+                    login(token); // Use the login function from AuthContext
                     alert("Login successful! Redirecting...");
                     navigate(from, { replace: true });
                 } else {

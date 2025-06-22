@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * UserProfile
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-22T17:29:10.053289+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-22T18:26:18.421795+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class UserProfile {
 
   private @Nullable Long id;

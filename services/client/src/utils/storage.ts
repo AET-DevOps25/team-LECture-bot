@@ -34,9 +34,7 @@ const storage = {
   setItem: <T>(key: string, value: T): void => {
     // Check if we are in a browser environment
     if (typeof window === 'undefined') {
-      console.warn(
-        `Tried setting localStorage key “${key}” in a non-browser environment.`
-      );
+      console.warn(`Tried setting localStorage key “${key}” in a non-browser environment.`);
       return;
     }
     try {
@@ -54,9 +52,7 @@ const storage = {
   removeItem: (key: string): void => {
     // Check if we are in a browser environment
     if (typeof window === 'undefined') {
-      console.warn(
-        `Tried removing localStorage key “${key}” in a non-browser environment.`
-      );
+      console.warn(`Tried removing localStorage key “${key}” in a non-browser environment.`);
       return;
     }
     try {
