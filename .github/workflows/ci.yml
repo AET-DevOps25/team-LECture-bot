@@ -40,18 +40,17 @@ jobs:
           ./api/scripts/gen-all.sh
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
-  # You can add other jobs here for building/testing your services
-  # For example:
-  # build-server:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: Set up JDK 21
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: '21'
-  #         distribution: 'temurin'
-  #     - name: Build Server with Gradle
-  #       run: ./gradlew build -x test
-  #       working-directory: services/server
+  # This job builds the server to ensure it compiles correctly with the generated code.
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build Server with Gradle
+        run: ./gradlew build -x test
+        working-directory: services/server
