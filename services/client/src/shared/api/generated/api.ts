@@ -241,6 +241,13 @@ export interface components {
             oldPassword?: string;
             newPassword?: string;
         };
+        UpdateUserProfileResponse: {
+            userProfile?: components["schemas"]["UserProfile"];
+            /** @example false */
+            requireReauth?: boolean;
+            /** @example Profile updated successfully. */
+            message?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -451,7 +458,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserProfile"];
+                    "application/json": components["schemas"]["UpdateUserProfileResponse"];
                 };
             };
             /** @description Bad Request (e.g., validation error, email already in use). */

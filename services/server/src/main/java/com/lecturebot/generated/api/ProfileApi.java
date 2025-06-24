@@ -7,6 +7,7 @@ package com.lecturebot.generated.api;
 
 import com.lecturebot.generated.model.ChangePasswordRequest;
 import com.lecturebot.generated.model.UpdateUserProfileRequest;
+import com.lecturebot.generated.model.UpdateUserProfileResponse;
 import com.lecturebot.generated.model.UserProfile;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-22T18:26:18.421795+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-24T13:39:51.049480600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Profile", description = "the Profile API")
 public interface ProfileApi {
@@ -142,7 +143,7 @@ public interface ProfileApi {
         tags = { "Profile" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Profile updated successfully.", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfile.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateUserProfileResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad Request (e.g., validation error, email already in use)."),
             @ApiResponse(responseCode = "401", description = "Unauthorized.")
@@ -158,13 +159,13 @@ public interface ProfileApi {
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<UserProfile> updateUserProfile(
+    default ResponseEntity<UpdateUserProfileResponse> updateUserProfile(
         @Parameter(name = "UpdateUserProfileRequest", description = "The new profile information.", required = true) @Valid @RequestBody UpdateUserProfileRequest updateUserProfileRequest
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }";
+                    String exampleString = "{ \"requireReauth\" : false, \"message\" : \"Profile updated successfully.\", \"userProfile\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

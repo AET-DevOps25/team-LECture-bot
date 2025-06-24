@@ -4,13 +4,17 @@ import com.lecturebot.generated.api.ProfileApi;
 import com.lecturebot.generated.model.ChangePasswordRequest;
 import com.lecturebot.generated.model.UpdateUserProfileRequest;
 import com.lecturebot.generated.model.UserProfile;
+import com.lecturebot.generated.model.UpdateUserProfileResponse;
 import com.lecturebot.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder; // Added import
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class ProfileController implements ProfileApi {
@@ -30,15 +34,21 @@ public class ProfileController implements ProfileApi {
     }
 
     @Override
-    public ResponseEntity<UserProfile> updateUserProfile(
+    public ResponseEntity<UpdateUserProfileResponse> updateUserProfile(
             @Valid UpdateUserProfileRequest updateUserProfileRequest) {
 
-        // Access username from SecurityContextHolder
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
-            UserProfile updatedProfile = userService.updateUserProfile(username, updateUserProfileRequest);
-            return ResponseEntity.ok(updatedProfile);
+        boolean emailChanged = !username.equals(updateUserProfileRequest.getEmail());
+        UserProfile updatedProfile = userService.updateUserProfile(username, updateUserProfileRequest);
+
+        UpdateUserProfileResponse response = new UpdateUserProfileResponse()
+            .userProfile(updatedProfile)
+            .requireReauth(emailChanged)
+            .message(emailChanged ? "Email changed. Please log in again." : "Profile updated successfully.");
+
+        return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build(); // Or return a more specific error response
         }
