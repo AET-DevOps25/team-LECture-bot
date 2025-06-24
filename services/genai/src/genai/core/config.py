@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     # OLLAMA_MODEL_NAME: str = "llama3" # Default model to use with Ollama
     OLLAMA_MODEL_NAME: str = "llama3:8b-instruct-q4_K_M" # Example of a quantized model
 
+    # -- TUM AET GPU LLM Settings --
+    TUM_AET_LLM_API_BASE: Optional[str] = None
+    TUM_AET_LLM_API_KEY: Optional[str] = None
+    TUM_AET_LLM_MODEL_NAME: str = "llama3.3:latest" # Default model for TUM AET LLM
+
     
     # Embedding Model
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
