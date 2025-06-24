@@ -2,6 +2,7 @@ import React, { useState, useEffect, type FormEvent } from 'react'; // Add 'type
 import { useAuth } from '../context/AuthContext';
 import { getUserProfile, updateUserProfile, changePassword } from '../api/apiClient';
 import type { components } from '../shared/api/generated/api';
+import { useNavigate } from 'react-router-dom';
 
 type UserProfile = components['schemas']['UserProfile'];
 type UpdateUserProfileRequest = components['schemas']['UpdateUserProfileRequest'];
@@ -20,6 +21,8 @@ const ProfilePage: React.FC = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [passwordChangeError, setPasswordChangeError] = useState<string | null>(null);
     const [passwordChangeSuccess, setPasswordChangeSuccess] = useState<string | null>(null);
+
+    const navigate = useNavigate(); // Import useNavigate for navigation
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -58,10 +61,24 @@ const ProfilePage: React.FC = () => {
         };
 
         try {
-            const updatedData = await updateUserProfile(requestBody); // Use API client function
-            setProfile(updatedData); // Update local profile state
-            setEditMode(false); // Exit edit mode
-            alert('Profile updated successfully!'); // Simple success feedback
+            const data = await updateUserProfile(requestBody);
+
+            if (data.requireReauth) {
+                localStorage.removeItem("jwtToken");
+                alert("Your email was changed. Please log in again.");
+                navigate('/login', { replace: true });
+                return;
+            }
+
+            if (data && 'userProfile' in data && data.userProfile) {
+                setProfile(data.userProfile);
+                setEditMode(false);
+                alert('Profile updated successfully!');
+            } else {
+                setProfile(null); // fallback, should not happen if backend is correct
+                setEditMode(false);
+                setError('Failed to update profile: No profile data returned.');
+            }
         } catch (err: any) {
             console.error('Failed to update profile:', err);
             setError(err.message || 'Failed to update profile.'); // Display error

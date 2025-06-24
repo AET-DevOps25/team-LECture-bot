@@ -1,4 +1,3 @@
-
 import storage from '../utils/storage';
 import type { components } from '../shared/api/generated/api';
 
@@ -8,6 +7,7 @@ type LoginRequestBody = components['schemas']['LoginRequest'];
 type LoginResponseBody = components['schemas']['LoginResponse'];
 type UserProfileResponseBody = components['schemas']['UserProfile'];
 type UpdateUserProfileRequestBody = components['schemas']['UpdateUserProfileRequest'];
+type UpdateUserProfileResponseBody = components['schemas']['UpdateUserProfileResponse'];
 type ChangePasswordRequestBody = components['schemas']['ChangePasswordRequest'];
 
 
@@ -93,9 +93,11 @@ export const getUserProfile = async (): Promise<UserProfileResponseBody> => {
   return fetchApi<UserProfileResponseBody>('/profile', 'GET');
 };
 
-export const updateUserProfile = async (data: UpdateUserProfileRequestBody): Promise<UserProfileResponseBody> => {
+export const updateUserProfile = async (
+  data: UpdateUserProfileRequestBody
+): Promise<UpdateUserProfileResponseBody> => {
   // Path for updateUserProfile is /profile
-  return fetchApi<UserProfileResponseBody, UpdateUserProfileRequestBody>('/profile', 'PUT', data);
+  return fetchApi<UpdateUserProfileResponseBody, UpdateUserProfileRequestBody>('/profile', 'PUT', data);
 };
 
 export const changePassword = async (data: ChangePasswordRequestBody): Promise<void> => {

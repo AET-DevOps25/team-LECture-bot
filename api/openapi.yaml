@@ -174,7 +174,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
+                $ref: '#/components/schemas/UpdateUserProfileResponse'
         '400':
           description: Bad Request (e.g., validation error, email already in use).
         '401':
@@ -331,6 +331,17 @@ components:
         newPassword:
           type: string
           minLength: 8
+    UpdateUserProfileResponse:
+      type: object
+      properties:
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
+        requireReauth:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Profile updated successfully.
   securitySchemes:
     bearerAuth:
       type: http
