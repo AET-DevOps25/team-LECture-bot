@@ -89,13 +89,14 @@ This project follows an **API-Driven Design** methodology. This means the `api/o
 You might need to install it first:
 
 ```bash
-npm install -g @redocly/openapi-cli
-redocly lint api/openapi.yaml
+sudo npm install -g @redocly/cli --force
+sudo redocly lint api/openapi.yaml
 ```
 
 **Generate Code:** Run the master script from the project root to regenerate the server interfaces and the client-side API library.
 
 ```bash
+sudo chmod +x ./api/scripts/gen-all.sh
 ./api/scripts/gen-all.sh
 ``` 
 
