@@ -50,6 +50,16 @@ class Settings(BaseSettings):
 
     ANSWER:
     """
+    FLASHCARD_PROMPT_TEMPLATE: str = """
+    You are an expert in creating study materials. Based on the following context from a document, generate a list of concise question-and-answer flashcards that cover the key concepts.
+    Your response MUST be a valid JSON list of objects. Each object in the list MUST contain two string keys: "question" and "answer".
+    Do not include any other text or explanations outside of the JSON list itself.
+
+    CONTEXT:
+    {context}
+
+    JSON_FLASHCARDS:
+    """
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding='utf-8')
 

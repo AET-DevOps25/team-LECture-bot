@@ -36,3 +36,15 @@ class LLMService:
         prompt = self.prompt_template.format(context=context, question=query)
         response = self.llm.invoke(prompt)
         return response.content
+
+    def generate_response(self, prompt_template_str: str, input_data: dict) -> str:
+        """
+        Generates a response using the LLM based on a custom prompt template and input data.
+        """
+        prompt_template = ChatPromptTemplate.from_template(prompt_template_str)
+        print(f"Generating response with prompt template: {prompt_template_str}")
+        prompt = prompt_template.format(**input_data)
+        print(f"Formatted prompt: {prompt}")
+        response = self.llm.invoke(prompt)
+        print(f"LLM response received: {response.content}")
+        return response.content

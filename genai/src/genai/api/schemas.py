@@ -28,3 +28,31 @@ class QueryResponse(BaseModel):
     answer: str
     citations: List[Citation] = []
     # error_message: Optional[str] = None # For graceful error reporting to client
+
+
+# FLASCHARD shamas
+
+class Flashcard(BaseModel):
+    question: str = Field(..., description="The question side of the flashcard")
+    answer: str = Field(..., description="The answer side of the flashcard")
+
+
+class FlashcardRequest(BaseModel):
+    course_space_id: str  = Field(..., description="Contextual course space ID for filtering flashcard generation")
+    document_id: Optional[str] = Field(None, description="Optional: Specific document ID. If omitted, generates from all documents in the course space.")
+    #number_of_flashcards: Optional[int] = Field(None, description="Number of flashcards to generate from the document")
+
+#class FlashcardResponse(BaseModel):
+#    scope: str = Field(..., description="Scope of the flashcard generation (e.g., 'course_space' or 'document')")
+#    flashcards: List[Flashcard] = Field(..., description="List of generated flashcards")
+#    status: str = Field(..., description="Status of the flashcard generation process")
+#    message: Optional[str] = None # e.g., "Flashcards generated successfully" or error message 
+
+class FlashcardsForDocument(BaseModel):
+    document_id: str
+    flashcards: List[Flashcard]
+
+# Update the main response model
+class FlashcardResponse(BaseModel):
+    course_space_id: str
+    results: List[FlashcardsForDocument]
