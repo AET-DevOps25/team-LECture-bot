@@ -15,54 +15,54 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * UpdateUserProfileRequest
+ * Flashcard
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-25T17:57:04.683390+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
-public class UpdateUserProfileRequest {
+public class Flashcard {
 
-  private @Nullable String name;
+  private @Nullable String question;
 
-  private @Nullable String email;
+  private @Nullable String answer;
 
-  public UpdateUserProfileRequest name(String name) {
-    this.name = name;
+  public Flashcard question(String question) {
+    this.question = question;
     return this;
   }
 
   /**
-   * Get name
-   * @return name
+   * Get question
+   * @return question
    */
   
-  @Schema(name = "name", example = "Ada L.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("name")
-  public String getName() {
-    return name;
+  @Schema(name = "question", example = "What is the capital of France?", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("question")
+  public String getQuestion() {
+    return question;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setQuestion(String question) {
+    this.question = question;
   }
 
-  public UpdateUserProfileRequest email(String email) {
-    this.email = email;
+  public Flashcard answer(String answer) {
+    this.answer = answer;
     return this;
   }
 
   /**
-   * Get email
-   * @return email
+   * Get answer
+   * @return answer
    */
-  @jakarta.validation.constraints.Email 
-  @Schema(name = "email", example = "ada.lovelace.new@example.com", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("email")
-  public String getEmail() {
-    return email;
+  
+  @Schema(name = "answer", example = "Paris", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("answer")
+  public String getAnswer() {
+    return answer;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setAnswer(String answer) {
+    this.answer = answer;
   }
 
   @Override
@@ -73,22 +73,22 @@ public class UpdateUserProfileRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateUserProfileRequest updateUserProfileRequest = (UpdateUserProfileRequest) o;
-    return Objects.equals(this.name, updateUserProfileRequest.name) &&
-        Objects.equals(this.email, updateUserProfileRequest.email);
+    Flashcard flashcard = (Flashcard) o;
+    return Objects.equals(this.question, flashcard.question) &&
+        Objects.equals(this.answer, flashcard.answer);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, email);
+    return Objects.hash(question, answer);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateUserProfileRequest {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("class Flashcard {\n");
+    sb.append("    question: ").append(toIndentedString(question)).append("\n");
+    sb.append("    answer: ").append(toIndentedString(answer)).append("\n");
     sb.append("}");
     return sb.toString();
   }

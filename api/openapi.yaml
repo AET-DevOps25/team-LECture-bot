@@ -140,7 +140,7 @@ paths:
               schema:
                 type: string
                 example: Faioled to get query response from GenAI service
-  /genai/flashcards:
+  /genai/generate-flashcards:
     post:
       summary: Generate flashcards
       description: Generates flashcards from a specific document or from all documents in a course space.
@@ -154,23 +154,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/FlashcardRequest'
-
       responses:
         '200':
           description: Flashcards generated successfully.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    question:
-                      type: string
-                      example: What is the capital of France?
-                    answer:
-                      type: string
-                      example: Paris
+                $ref: '#/components/schemas/FlashcardResponse'
         '500':
           description: Internal Server Error - Failed to generate flashcards.
           content:
@@ -213,7 +203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
+                $ref: '#/components/schemas/UpdateUserProfileResponse'
         '400':
           description: Bad Request (e.g., validation error, email already in use).
         '401':
@@ -359,15 +349,24 @@ components:
         answer:
           type: string
           example: Paris
+    FlashcardsForDocument:
+      type: object
+      properties:
+        document_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flashcard'
     FlashcardResponse:
-      type: array
+      type: object
       properties:
         course_space_id:
           type: string
         flashcards:
           type: array
           items:
-            $ref: '#/components/schemas/Flashcard'
+            $ref: '#/components/schemas/FlashcardsForDocument'
     UserProfile:
       type: object
       properties:
@@ -400,6 +399,17 @@ components:
         newPassword:
           type: string
           minLength: 8
+    UpdateUserProfileResponse:
+      type: object
+      properties:
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
+        requireReauth:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Profile updated successfully.
   securitySchemes:
     bearerAuth:
       type: http

@@ -52,12 +52,13 @@ public class SecurityConfig {
                                                                                                               // for JWT
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/auth/**", "/health").permitAll() // Permit auth and health endpoints
-                        .anyRequest().authenticated() // Secure all other endpoints
+                        .anyRequest().permitAll()// .authenticated() // Secure all other endpoints
                 );
 
         // Add the JWT filter before the standard username/password authentication
         // filter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterBefore(jwtAuthenticationFilter,
+        // UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

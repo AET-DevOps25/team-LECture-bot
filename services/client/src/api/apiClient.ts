@@ -1,4 +1,3 @@
-
 import storage from '../utils/storage';
 import type { components } from '../shared/api/generated/api';
 
@@ -8,7 +7,10 @@ type LoginRequestBody = components['schemas']['LoginRequest'];
 type LoginResponseBody = components['schemas']['LoginResponse'];
 type UserProfileResponseBody = components['schemas']['UserProfile'];
 type UpdateUserProfileRequestBody = components['schemas']['UpdateUserProfileRequest'];
+type UpdateUserProfileResponseBody = components['schemas']['UpdateUserProfileResponse'];
 type ChangePasswordRequestBody = components['schemas']['ChangePasswordRequest'];
+type FlashcardRequestBody = components['schemas']['FlashcardRequest'];
+type FlashcardResponseBody = components['schemas']['FlashcardResponse'];
 
 
 // Correct base URL for the backend API, including the /api/v1 context path.
@@ -93,9 +95,11 @@ export const getUserProfile = async (): Promise<UserProfileResponseBody> => {
   return fetchApi<UserProfileResponseBody>('/profile', 'GET');
 };
 
-export const updateUserProfile = async (data: UpdateUserProfileRequestBody): Promise<UserProfileResponseBody> => {
+export const updateUserProfile = async (
+  data: UpdateUserProfileRequestBody
+): Promise<UpdateUserProfileResponseBody> => {
   // Path for updateUserProfile is /profile
-  return fetchApi<UserProfileResponseBody, UpdateUserProfileRequestBody>('/profile', 'PUT', data);
+  return fetchApi<UpdateUserProfileResponseBody, UpdateUserProfileRequestBody>('/profile', 'PUT', data);
 };
 
 export const changePassword = async (data: ChangePasswordRequestBody): Promise<void> => {
@@ -103,3 +107,10 @@ export const changePassword = async (data: ChangePasswordRequestBody): Promise<v
   // The server returns 200 OK with no content for success, so TResponse is void
   return fetchApi<void, ChangePasswordRequestBody>('/profile/password', 'PATCH', data);
 };
+
+
+// --- Flashcard API Calls ---
+export const generateFlashcards = async (data: FlashcardRequestBody): Promise<FlashcardResponseBody> => {
+    // Path for generateFlashcards is /flashcards/generate
+    return fetchApi<FlashcardResponseBody, FlashcardRequestBody>('/genai/generate-flashcards', 'POST', data);
+}

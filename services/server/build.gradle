@@ -47,6 +47,11 @@ dependencies {
     // Test Dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.wiremock:wiremock:3.13.1"
+    testImplementation 'com.h2database:h2'
+
+
+
 }
 
 tasks.named('test') {

@@ -4,6 +4,8 @@ import com.lecturebot.generated.model.IndexRequest;
 import com.lecturebot.generated.model.IndexResponse;
 import com.lecturebot.generated.model.QueryRequest;
 import com.lecturebot.generated.model.QueryResponse;
+import com.lecturebot.generated.model.FlashcardRequest;
+import com.lecturebot.generated.model.FlashcardResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +49,19 @@ public class GenAiClient {
             return Optional.ofNullable(response);
         } catch (RestClientException e) {
             logger.error("Error calling GenAI query service at {}: {}", url, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<FlashcardResponse> getFlashcards(FlashcardRequest request) {
+        String url = genAiServiceBaseUrl + "/api/v1/flashcard/generate-flashcards";
+        try {
+            logger.info("Sending flashcard request to GenAI service for courseSpaceId: {}", request.getCorseSpaceId());
+            FlashcardResponse response = restTemplate.postForObject(url, request, FlashcardResponse.class);
+            logger.info("Successfully received flashcard response from GenAI service.");
+            return Optional.ofNullable(response);
+        } catch (RestClientException e) {
+            logger.error("Error calling GenAI flashcard service at {}: {}", url, e.getMessage());
             return Optional.empty();
         }
     }

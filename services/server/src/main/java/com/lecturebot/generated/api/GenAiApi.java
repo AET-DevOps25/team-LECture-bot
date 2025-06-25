@@ -5,6 +5,8 @@
  */
 package com.lecturebot.generated.api;
 
+import com.lecturebot.generated.model.FlashcardRequest;
+import com.lecturebot.generated.model.FlashcardResponse;
 import com.lecturebot.generated.model.IndexRequest;
 import com.lecturebot.generated.model.IndexResponse;
 import com.lecturebot.generated.model.QueryRequest;
@@ -36,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-22T18:26:18.421795+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-25T17:57:04.683390+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {
@@ -44,6 +46,62 @@ public interface GenAiApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * POST /genai/generate-flashcards : Generate flashcards
+     * Generates flashcards from a specific document or from all documents in a course space.
+     *
+     * @param flashcardRequest Flashcard generation request details (required)
+     * @return Flashcards generated successfully. (status code 200)
+     *         or Internal Server Error - Failed to generate flashcards. (status code 500)
+     */
+    @Operation(
+        operationId = "generateFlashcards",
+        summary = "Generate flashcards",
+        description = "Generates flashcards from a specific document or from all documents in a course space.",
+        tags = { "GenAI" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Flashcards generated successfully.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = FlashcardResponse.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = FlashcardResponse.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Failed to generate flashcards.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/genai/generate-flashcards",
+        produces = { "application/json", "text/plain" },
+        consumes = { "application/json" }
+    )
+    
+    default ResponseEntity<FlashcardResponse> generateFlashcards(
+        @Parameter(name = "FlashcardRequest", description = "Flashcard generation request details", required = true) @Valid @RequestBody FlashcardRequest flashcardRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"flashcards\" : [ { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" }, { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" } ], \"course_space_id\" : \"course_space_id\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf(""))) {
+                    String exampleString = "";
+                    ApiUtil.setExampleResponse(request, "", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * POST /genai/index : Index a document

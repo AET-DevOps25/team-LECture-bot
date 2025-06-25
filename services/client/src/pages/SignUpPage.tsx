@@ -111,7 +111,7 @@ function SignUpPage() {
                     setSubmitError(null); // Clear any previous error
                     // TODO: Implement a more user-friendly success message (e.g., a toast notification)
                     alert("Registration successful! Redirecting to login..."); // Placeholder success message
-                    navigate('/signin'); // Navigate to signin page
+                    navigate('/login', { replace: true }); // Navigate to signin page
                 } else {
                     // Handle errors from the backend (e.g., email already exists, server-side validation)
                     // The backend returns plain text error messages.

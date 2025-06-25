@@ -15,37 +15,37 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * IndexResponse
+ * FlashcardRequest
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-25T17:57:04.683390+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
-public class IndexResponse {
+public class FlashcardRequest {
 
-  private @Nullable String message;
+  private @Nullable String corseSpaceId;
 
-  private @Nullable String documentId;
+  private @Nullable String documentId = null;
 
-  public IndexResponse message(String message) {
-    this.message = message;
+  public FlashcardRequest corseSpaceId(String corseSpaceId) {
+    this.corseSpaceId = corseSpaceId;
     return this;
   }
 
   /**
-   * Get message
-   * @return message
+   * Get corseSpaceId
+   * @return corseSpaceId
    */
   
-  @Schema(name = "message", example = "Document indexed successfully", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("message")
-  public String getMessage() {
-    return message;
+  @Schema(name = "corse_space_id", example = "cs-456", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("corse_space_id")
+  public String getCorseSpaceId() {
+    return corseSpaceId;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
+  public void setCorseSpaceId(String corseSpaceId) {
+    this.corseSpaceId = corseSpaceId;
   }
 
-  public IndexResponse documentId(String documentId) {
+  public FlashcardRequest documentId(String documentId) {
     this.documentId = documentId;
     return this;
   }
@@ -55,8 +55,8 @@ public class IndexResponse {
    * @return documentId
    */
   
-  @Schema(name = "documentId", example = "doc-123", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("documentId")
+  @Schema(name = "document_id", example = "doc-123", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("document_id")
   public String getDocumentId() {
     return documentId;
   }
@@ -73,21 +73,21 @@ public class IndexResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    IndexResponse indexResponse = (IndexResponse) o;
-    return Objects.equals(this.message, indexResponse.message) &&
-        Objects.equals(this.documentId, indexResponse.documentId);
+    FlashcardRequest flashcardRequest = (FlashcardRequest) o;
+    return Objects.equals(this.corseSpaceId, flashcardRequest.corseSpaceId) &&
+        Objects.equals(this.documentId, flashcardRequest.documentId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message, documentId);
+    return Objects.hash(corseSpaceId, documentId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class IndexResponse {\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("class FlashcardRequest {\n");
+    sb.append("    corseSpaceId: ").append(toIndentedString(corseSpaceId)).append("\n");
     sb.append("    documentId: ").append(toIndentedString(documentId)).append("\n");
     sb.append("}");
     return sb.toString();

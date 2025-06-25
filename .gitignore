@@ -61,10 +61,7 @@ fabric.properties
 .idea/codestream.xml
 # Azure Toolkit for
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 65-llm-tum-aet-gpu
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
@@ -80,8 +77,8 @@ crash.log
 
 
 .env
-<<<<<<< HEAD
 server/bin
-=======
+
+*.class
 server/bin
->>>>>>> 65-llm-tum-aet-gpu
+node_modules/

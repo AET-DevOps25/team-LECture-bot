@@ -104,6 +104,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/genai/generate-flashcards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate flashcards
+         * @description Generates flashcards from a specific document or from all documents in a course space.
+         */
+        post: operations["generateFlashcards"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profile": {
         parameters: {
             query?: never;
@@ -217,6 +237,26 @@ export interface components {
              *     ] */
             citations?: string[];
         };
+        FlashcardRequest: {
+            /** @example cs-456 */
+            corse_space_id?: string;
+            /** @example doc-123 */
+            document_id?: string | null;
+        };
+        Flashcard: {
+            /** @example What is the capital of France? */
+            question?: string;
+            /** @example Paris */
+            answer?: string;
+        };
+        FlashcardsForDocument: {
+            document_id?: string;
+            flashcards?: components["schemas"]["Flashcard"][];
+        };
+        FlashcardResponse: {
+            course_space_id?: string;
+            flashcards?: components["schemas"]["FlashcardsForDocument"][];
+        };
         UserProfile: {
             /** Format: int64 */
             readonly id?: number;
@@ -240,6 +280,13 @@ export interface components {
         ChangePasswordRequest: {
             oldPassword?: string;
             newPassword?: string;
+        };
+        UpdateUserProfileResponse: {
+            userProfile?: components["schemas"]["UserProfile"];
+            /** @example false */
+            requireReauth?: boolean;
+            /** @example Profile updated successfully. */
+            message?: string;
         };
     };
     responses: never;
@@ -404,6 +451,40 @@ export interface operations {
             };
         };
     };
+    generateFlashcards: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Flashcard generation request details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FlashcardRequest"];
+            };
+        };
+        responses: {
+            /** @description Flashcards generated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlashcardResponse"];
+                };
+            };
+            /** @description Internal Server Error - Failed to generate flashcards. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     getUserProfile: {
         parameters: {
             query?: never;
@@ -451,7 +532,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserProfile"];
+                    "application/json": components["schemas"]["UpdateUserProfileResponse"];
                 };
             };
             /** @description Bad Request (e.g., validation error, email already in use). */
