@@ -1,18 +1,14 @@
-version: '3.8'
-
 services:
   #--------------------------------------------------------------------------
   # Frontend Service (React Client)
   #--------------------------------------------------------------------------
   client:
     build:
-      context: ./client # Path to the client directory from the project root
+      context: ./services/client # Path to the client directory from the project root
       dockerfile: Dockerfile 
     container_name: lecturebot-client-app
     ports:
       - "3000:3000" # Maps host port 3000 to container port 3000 (from your Dockerfile EXPOSE)
-    environment:
-      - PUBLIC_URL=http://localhost:3000 # Set the public URL for the React app
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -24,7 +20,7 @@ services:
   #--------------------------------------------------------------------------
   server:
     build:
-      context: ./server # Path to the server directory from the project root
+      context: ./services/server # Path to the server directory from the project root
       dockerfile: Dockerfile
     container_name: lecturebot-app-server
     ports:
@@ -39,6 +35,7 @@ services:
       - APP_JWT_SECRET=${APP_JWT_SECRET}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
       - GENAI_SERVICE_BASE_URL=http://genai-service:8001 # URL for GenAI service
+
     depends_on:
       lecturebot-db: { condition: service_healthy }
       # ollama-setup: { condition: service_completed_successfully } # Ollama is now run externally
@@ -53,17 +50,20 @@ services:
   #--------------------------------------------------------------------------
   genai-service:
     build:
-      context: ./genai # Path to the genai directory
+      context: ./services/genai # Path to the genai directory
       dockerfile: Dockerfile
     container_name: lecturebot-genai-service
     ports:
       - "8001:8001"
     environment:
-      - LLM_PROVIDER=${LLM_PROVIDER:-openai} # Default to openai
+      - LLM_PROVIDER=${LLM_PROVIDER:-tum_aet} # Default to openai
       - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3:8b-instruct-q4_K_M} # Ensure this matches the model pulled by ollama-setup
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434} # For externally run Ollama
       - OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_key_if_using_openai}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4o-mini}
+      - TUM_AET_LLM_API_BASE=${TUM_AET_LLM_API_BASE:-https://gpu.aet.cit.tum.de/api}
+      - TUM_AET_LLM_API_KEY=${TUM_AET_LLM_API_KEY:-your_tum_aet_key_here}
+      - TUM_AET_LLM_MODEL_NAME=${TUM_AET_LLM_MODEL_NAME:-llama3.3:latest}
       - WEAVIATE_URL=http://weaviate:8080 # Connect to weaviate service
       - TOKENIZERS_PARALLELISM=false # Recommended for some environments
     networks:
@@ -112,7 +112,7 @@ services:
       - "5432:5432" 
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
-      - ./server/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+      - ./services/server/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
     networks:
       - lecturebot-net
     restart: unless-stopped

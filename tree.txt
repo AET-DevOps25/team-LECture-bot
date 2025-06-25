@@ -1,0 +1,230 @@
+.
+├── LICENSE
+├── README.md
+├── api
+├── compose.aws.yml
+├── docker-compose.yml
+├── docs
+│   ├── AnalysisObjectModel.pdf
+│   ├── analysis-object-model-description.md
+│   ├── architecture-description.md
+│   ├── architecture.png
+│   ├── component-diagram-explanation.md
+│   ├── component-diagram-plantuml-version.png
+│   ├── component-diagram.png
+│   ├── initial_concept.md
+│   ├── use-case-diagram-explanation.md
+│   └── use-case-diagram.png
+├── errors.txt
+├── helm
+│   ├── README.md
+│   └── lecture-bot-app
+│       ├── Chart.yaml
+│       ├── templates
+│       │   ├── app-config.yaml
+│       │   ├── client-config.yaml
+│       │   ├── client-deployment.yaml
+│       │   ├── client-service.yaml
+│       │   ├── db-deployment.yaml
+│       │   ├── db-init-configmap.yaml
+│       │   ├── db-service.yaml
+│       │   ├── ingress.yaml
+│       │   ├── pvc.yaml
+│       │   ├── server-deployment.yaml
+│       │   └── server-service.yaml
+│       └── values.yaml
+├── infra
+│   ├── README.md
+│   ├── ansible
+│   │   ├── playbook.yml
+│   │   └── roles
+│   │       └── docker
+│   │           └── tasks
+│   │               ├── install_packages.yml
+│   │               ├── main.yml
+│   │               └── post_install.yml
+│   └── terraform
+│       ├── main.tf
+│       └── terraform.tfvars
+├── node_modules
+│   └── @types
+├── package-lock.json
+├── package.json
+├── services
+│   ├── client
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── nginx.conf
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── postcss.config.cjs
+│   │   ├── public
+│   │   │   ├── config.json
+│   │   │   └── vite.svg
+│   │   ├── src
+│   │   │   ├── App.css
+│   │   │   ├── App.tsx
+│   │   │   ├── api
+│   │   │   │   └── apiClient.ts
+│   │   │   ├── assets
+│   │   │   │   └── react.svg
+│   │   │   ├── components
+│   │   │   │   └── auth
+│   │   │   │       └── ProtectedRoute.tsx
+│   │   │   ├── config.ts
+│   │   │   ├── context
+│   │   │   │   └── AuthContext.tsx
+│   │   │   ├── index.css
+│   │   │   ├── main.tsx
+│   │   │   ├── pages
+│   │   │   │   ├── About.tsx
+│   │   │   │   ├── Home.tsx
+│   │   │   │   ├── ProfilePage.tsx
+│   │   │   │   ├── SignInPage.tsx
+│   │   │   │   └── SignUpPage.tsx
+│   │   │   ├── router
+│   │   │   │   └── index.tsx
+│   │   │   ├── utils
+│   │   │   │   └── storage.ts
+│   │   │   └── vite-env.d.ts
+│   │   ├── tailwind.config.js
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   └── vite.config.ts
+│   ├── genai
+│   └── server
+│       ├── Dockerfile
+│       ├── README.md
+│       ├── bin
+│       │   ├── default
+│       │   ├── generated-sources
+│       │   │   └── annotations
+│       │   └── main
+│       │       ├── application.properties
+│       │       └── com
+│       │           └── lecturebot
+│       │               ├── LectureBotApplication.class
+│       │               ├── config
+│       │               │   └── SecurityConfig.class
+│       │               ├── controller
+│       │               │   ├── AuthController.class
+│       │               │   ├── HealthController.class
+│       │               │   └── ProfileController.class
+│       │               ├── dto
+│       │               │   ├── ChangePasswordRequest.class
+│       │               │   ├── LoginRequest.class
+│       │               │   ├── LoginResponse.class
+│       │               │   ├── RegisterRequest.class
+│       │               │   ├── UpdateUserProfileRequest.class
+│       │               │   └── UserDto.class
+│       │               ├── entity
+│       │               │   └── User.class
+│       │               ├── repository
+│       │               │   └── UserRepository.class
+│       │               ├── security
+│       │               │   ├── JwtAuthenticationFilter.class
+│       │               │   └── JwtTokenProvider.class
+│       │               └── service
+│       │                   └── UserService.class
+│       ├── build.gradle
+│       ├── db-init
+│       │   └── init-users.sql
+│       ├── docker-compose.yml
+│       ├── gradle
+│       │   └── wrapper
+│       │       ├── gradle-wrapper.jar
+│       │       └── gradle-wrapper.properties
+│       ├── gradlew
+│       ├── gradlew.bat
+│       └── src
+│           └── main
+│               ├── java
+│               │   └── com
+│               │       └── lecturebot
+│               │           ├── LectureBotApplication.java
+│               │           ├── config
+│               │           │   └── SecurityConfig.java
+│               │           ├── controller
+│               │           │   ├── AuthController.java
+│               │           │   ├── HealthController.java
+│               │           │   └── ProfileController.java
+│               │           ├── dto
+│               │           │   ├── ChangePasswordRequest.java
+│               │           │   ├── LoginRequest.java
+│               │           │   ├── LoginResponse.java
+│               │           │   ├── RegisterRequest.java
+│               │           │   ├── UpdateUserProfileRequest.java
+│               │           │   └── UserDto.java
+│               │           ├── entity
+│               │           │   └── User.java
+│               │           ├── repository
+│               │           │   └── UserRepository.java
+│               │           ├── security
+│               │           │   ├── JwtAuthenticationFilter.java
+│               │           │   └── JwtTokenProvider.java
+│               │           └── service
+│               │               └── UserService.java
+│               └── resources
+│                   └── application.properties
+├── tree.txt
+└── venv
+    └── lib
+        └── python3.12
+            └── site-packages
+                ├── build
+                │   ├── __init__.py
+                │   ├── __main__.py
+                │   ├── __pycache__
+                │   │   ├── __init__.cpython-312.pyc
+                │   │   ├── __main__.cpython-312.pyc
+                │   │   ├── _builder.cpython-312.pyc
+                │   │   ├── _ctx.cpython-312.pyc
+                │   │   ├── _exceptions.cpython-312.pyc
+                │   │   ├── _types.cpython-312.pyc
+                │   │   ├── _util.cpython-312.pyc
+                │   │   ├── env.cpython-312.pyc
+                │   │   └── util.cpython-312.pyc
+                │   ├── _builder.py
+                │   ├── _compat
+                │   │   ├── __init__.py
+                │   │   ├── __pycache__
+                │   │   │   ├── __init__.cpython-312.pyc
+                │   │   │   ├── importlib.cpython-312.pyc
+                │   │   │   ├── tarfile.cpython-312.pyc
+                │   │   │   └── tomllib.cpython-312.pyc
+                │   │   ├── importlib.py
+                │   │   ├── tarfile.py
+                │   │   └── tomllib.py
+                │   ├── _ctx.py
+                │   ├── _exceptions.py
+                │   ├── _types.py
+                │   ├── _util.py
+                │   ├── env.py
+                │   ├── py.typed
+                │   └── util.py
+                └── pip
+                    └── _internal
+                        └── operations
+                            └── build
+                                ├── __init__.py
+                                ├── __pycache__
+                                │   ├── __init__.cpython-312.pyc
+                                │   ├── build_tracker.cpython-312.pyc
+                                │   ├── metadata.cpython-312.pyc
+                                │   ├── metadata_editable.cpython-312.pyc
+                                │   ├── metadata_legacy.cpython-312.pyc
+                                │   ├── wheel.cpython-312.pyc
+                                │   ├── wheel_editable.cpython-312.pyc
+                                │   └── wheel_legacy.cpython-312.pyc
+                                ├── build_tracker.py
+                                ├── metadata.py
+                                ├── metadata_editable.py
+                                ├── metadata_legacy.py
+                                ├── wheel.py
+                                ├── wheel_editable.py
+                                └── wheel_legacy.py
+
+71 directories, 157 files

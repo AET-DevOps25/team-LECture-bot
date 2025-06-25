@@ -1,0 +1,338 @@
+openapi: 3.0.3
+info:
+  title: LECture-bot API
+  description: The official API for the LECture-bot application.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+security:
+  - bearerAuth: [] # Applies JWT Bearer authentication globally to all endpoints except those with an empty security array
+
+tags:
+  - name: Profile
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Checks if the server is running.
+      operationId: healthCheck
+      tags:
+        - Health
+      security: [] # This endpoint does not require authentication
+      responses:
+        '200':
+          description: Server is up and running.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account.
+      operationId: registerUser
+      tags:
+        - Authentication
+      security: [] # This endpoint does not require authentication
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Registration successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Registration successful for user@example.com
+        '400':
+          description: Bad Request - Invalid input or email already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Email already exists
+  /auth/login:
+    post:
+      summary: Log in a user
+      description: Authenticates a user and returns a JWT.
+      operationId: loginUser
+      tags:
+        - Authentication
+      security: [] # This endpoint does not require authentication
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized - Bad credentials.
+
+  /genai/index:
+    post:
+      summary: Index a document
+      description: Sends a document's content to the GenAI service for indexing.
+      operationId: indexDocument
+      tags:
+        - GenAI
+      requestBody:
+        description: Document indexing request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexRequest'
+      responses:
+        '200':
+          description: Document indexed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexResponse'
+        '500':
+          description: Internal Server Error - Failed to index document.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to index document via GenAI service
+
+  /genai/query:
+    post:
+      summary: Submit a query
+      description: Sends a natural language query to the GenAI service for RAG.
+      operationId: submitQuery
+      tags:
+        - GenAI
+      requestBody:
+        description: Query request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Query processed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '500':
+          description: Internal Server Error - Failed to get query response.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to get query response from GenAI service
+  /profile:
+    get:
+      summary: Get current user's profile
+      description: Retrieves the profile information for the currently authenticated user.
+      operationId: getUserProfile
+      tags:
+        - Profile
+      responses:
+        '200':
+          description: User profile data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized - No or invalid token provided.
+    put:
+      summary: Update current user's profile
+      description: Updates the name and/or email for the currently authenticated user.
+      operationId: updateUserProfile
+      tags:
+        - Profile
+      requestBody:
+        description: The new profile information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Bad Request (e.g., validation error, email already in use).
+        '401':
+          description: Unauthorized.
+  /profile/password:
+    patch:
+      summary: Change current user's password
+      description: Allows the authenticated user to change their password.
+      operationId: changePassword
+      tags:
+        - Profile
+      requestBody:
+        description: The old and new password.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+        '400':
+          description: Bad Request (e.g., old password incorrect).
+        '401':
+          description: Unauthorized.
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+        message:
+          type: string
+          example: LECture-bot server is running!
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: Password123!
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+        password:
+          type: string
+          format: password
+          example: Password123!
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZGEubG92ZWxhY2VAZXhhbXBsZS5jb20iLCJpYXQiOjE2MTYyMzkwMjIsImV4cCI6MTYxNjMyNTQyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    IndexRequest:
+      type: object
+      required:
+        - document_id
+        - course_space_id
+        - text_content
+      properties:
+        document_id:
+          type: string
+          example: doc-123
+        course_space_id:
+          type: string
+          example: cs-456
+        text_content:
+          type: string
+          example: This is the content of the document.
+    IndexResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Document indexed successfully
+        documentId:
+          type: string
+          example: doc-123
+    QueryRequest:
+      type: object
+      required:
+        - query_text
+        - course_space_id
+      properties:
+        query_text:
+          type: string
+          example: What is this document about?
+        course_space_id:
+          type: string
+          example: cs-456
+    QueryResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+          example: This document is about...
+        citations:
+          type: array
+          items:
+            type: string
+          example: ["doc-123", "doc-456"]
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Ada L.
+        email:
+          type: string
+          format: email
+          example: ada.lovelace.new@example.com
+    ChangePasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

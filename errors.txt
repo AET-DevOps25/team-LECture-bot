@@ -1,0 +1,12 @@
+carloslme@mba LECture-bot % docker-compose up --build
+
+WARN[0000] /Users/carloslme/Documents/GitHub/LECture-bot/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+[+] Building 0.0s (1/1) FINISHED                                                           docker:desktop-linux
+ => [genai-service internal] load build definition from Dockerfile                                         0.0s
+ => => transferring dockerfile: 2B                                                                         0.0s
+failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+carloslme@mba LECture-bot % 
+
+

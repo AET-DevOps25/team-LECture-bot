@@ -1,0 +1,56 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  openapi-lint-and-generate-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Use a Node.js version compatible with Redocly CLI and openapi-typescript
+
+      - name: Install Redocly CLI and OpenAPI-Typescript
+        run: |
+          npm install -g @redocly/openapi-cli
+          npm install -g openapi-typescript
+
+      - name: Lint OpenAPI Specification
+        run: |
+          echo "Linting api/openapi.yaml..."
+          redocly lint api/openapi.yaml
+        working-directory: ${{ github.workspace }} # Ensure command runs from root
+
+      - name: Verify Code Generation Script
+        run: |
+          echo "Verifying code generation script (gen-all.sh)..."
+          chmod +x api/scripts/gen-all.sh
+          ./api/scripts/gen-all.sh
+        working-directory: ${{ github.workspace }} # Ensure command runs from root
+
+  # This job builds the server to ensure it compiles correctly with the generated code.
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build Server with Gradle
+        run: ./gradlew build -x test
+        working-directory: services/server
