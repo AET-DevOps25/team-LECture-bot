@@ -11,6 +11,7 @@ security:
 
 tags:
   - name: Profile
+  - name: GenAI
 paths:
   /health:
     get:
@@ -138,7 +139,45 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: Failed to get query response from GenAI service
+                example: Faioled to get query response from GenAI service
+  /genai/flashcards:
+    post:
+      summary: Generate flashcards
+      description: Generates flashcards from a specific document or from all documents in a course space.
+      operationId: generateFlashcards
+      tags:
+        - GenAI
+      requestBody:
+        description: Flashcard generation request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardRequest'
+
+      responses:
+        '200':
+          description: Flashcards generated successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question:
+                      type: string
+                      example: What is the capital of France?
+                    answer:
+                      type: string
+                      example: Paris
+        '500':
+          description: Internal Server Error - Failed to generate flashcards.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to generate flashcards via GenAI service
   /profile:
     get:
       summary: Get current user's profile
@@ -299,6 +338,36 @@ components:
           items:
             type: string
           example: ["doc-123", "doc-456"]
+    FlashcardRequest:
+      type: object
+      required:
+        - course_space_id
+      properties:
+        corse_space_id:
+          type: string
+          example: cs-456
+        document_id:
+          type: string
+          nullable: true
+          example: "doc-123"
+    Flashcard:
+      type: object
+      properties:
+        question:
+          type: string
+          example: What is the capital of France?
+        answer:
+          type: string
+          example: Paris
+    FlashcardResponse:
+      type: array
+      properties:
+        course_space_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flashcard'
     UserProfile:
       type: object
       properties:
