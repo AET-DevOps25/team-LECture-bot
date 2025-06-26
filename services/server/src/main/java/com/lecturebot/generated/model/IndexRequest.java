@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * IndexRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-24T13:39:51.049480600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class IndexRequest {
 
   private String documentId;
@@ -50,8 +50,8 @@ public class IndexRequest {
    * @return documentId
    */
   @NotNull 
-  @Schema(name = "document_id", example = "doc-123", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("document_id")
+  @Schema(name = "documentId", example = "doc-123", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("documentId")
   public String getDocumentId() {
     return documentId;
   }
@@ -70,8 +70,8 @@ public class IndexRequest {
    * @return courseSpaceId
    */
   @NotNull 
-  @Schema(name = "course_space_id", example = "cs-456", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("course_space_id")
+  @Schema(name = "courseSpaceId", example = "cs-456", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("courseSpaceId")
   public String getCourseSpaceId() {
     return courseSpaceId;
   }
@@ -90,8 +90,8 @@ public class IndexRequest {
    * @return textContent
    */
   @NotNull 
-  @Schema(name = "text_content", example = "This is the content of the document.", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("text_content")
+  @Schema(name = "textContent", example = "This is the content of the document.", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("textContent")
   public String getTextContent() {
     return textContent;
   }

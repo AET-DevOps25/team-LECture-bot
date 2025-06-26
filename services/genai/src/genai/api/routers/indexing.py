@@ -9,7 +9,7 @@ router = APIRouter()
 pipeline = IndexingPipeline()
 
 @router.post(
-    "/",
+    "", # Changed from "/" to "" to match /api/v1/index
     response_model=schemas.IndexDocumentResponse,
     summary="Index a document for RAG",
     description="Receives document text, chunks it, generates embeddings, and stores them in the vector DB.",

@@ -254,17 +254,17 @@ components:
     IndexRequest:
       type: object
       required:
-        - document_id
-        - course_space_id
-        - text_content
+        - documentId
+        - courseSpaceId
+        - textContent
       properties:
-        document_id:
+        documentId:
           type: string
           example: doc-123
-        course_space_id:
+        courseSpaceId:
           type: string
           example: cs-456
-        text_content:
+        textContent:
           type: string
           example: This is the content of the document.
     IndexResponse:
@@ -276,16 +276,28 @@ components:
         documentId:
           type: string
           example: doc-123
+        status:
+          type: string
+          example: completed
+          description: Status of the indexing operation.
+        chunksProcessed:
+          type: integer
+          example: 5
+          description: Number of text chunks processed.
+        chunksStoredInWeaviate:
+          type: integer
+          example: 5
+          description: Number of chunks successfully stored in Weaviate.
     QueryRequest:
       type: object
       required:
-        - query_text
-        - course_space_id
+        - queryText
+        - courseSpaceId
       properties:
-        query_text:
+        queryText:
           type: string
           example: What is this document about?
-        course_space_id:
+        courseSpaceId:
           type: string
           example: cs-456
     QueryResponse:
@@ -297,8 +309,32 @@ components:
         citations:
           type: array
           items:
-            type: string
-          example: ["doc-123", "doc-456"]
+            $ref: '#/components/schemas/Citation'
+          description: A list of citations for the generated answer.
+    Citation:
+      type: object
+      required:
+        - documentId
+        - chunkId
+        - retrievedTextPreview
+      properties:
+        documentId:
+          type: string
+          description: The ID of the document from which the citation was retrieved.
+          example: doc-123
+        chunkId:
+          type: string
+          description: A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+          example: "0"
+        documentName:
+          type: string
+          description: The name or title of the source document.
+          example: "Lecture Slides Week 5"
+          nullable: true
+        retrievedTextPreview:
+          type: string
+          description: A short snippet of the text that was retrieved and used as context.
+          example: "LangChain is a framework for developing applications powered by language models."
     UserProfile:
       type: object
       properties:

@@ -134,32 +134,36 @@ You can create a `.env` file in this root directory to manage environment variab
 Example `.env` file:
 
 ```dotenv
+# This is an example .env file. Copy to .env in the project root and fill in your values.
 
-This is an example .env file. Copy to .env in the project root and fill in your values.
---- Database Credentials & Settings ---
-DB_USER=lecturebot_user DB_PASSWORD=myverysecurepassword # Change this! DB_NAME=lecturebot_db
+# --- Database Credentials & Settings ---
+# IMPORTANT: Use a secure password. These values are used by both the 'server' and 'lecturebot-db' services.
+DB_NAME=lecturebot_db
+DB_USER=lecturebot_user
+DB_PASSWORD=myverysecurepassword # Change this!
 
---- Spring Boot / JPA Settings for Server ---
-SPRING_JPA_HIBERNATE_DDL_AUTO=none # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema. SERVER_PORT=8080
+# --- Spring Boot / JPA Settings for Server ---
+SPRING_JPA_HIBERNATE_DDL_AUTO=none # (e.g., validate, update, none). 'validate' is good if init-users.sql manages schema.
+SERVER_PORT=8080
 
---- Client URLs for CORS configuration on the server ---
+# --- Client URLs for CORS configuration on the server ---
 LECTUREBOT_CLIENT_ORIGIN=http://localhost:3000
-LECTUREBOT_CLIENT_ORIGIN=<http://localhost:3000>
---- GenAI Service Configuration ---
-Select the provider: "openai", "ollama", or "tum_aet"
+
+# --- GenAI Service Configuration ---
+# Select the provider: "openai", "ollama", or "tum_aet"
 LLM_PROVIDER=openai
 
--- OpenAI Settings (if LLM_PROVIDER is "openai") --
-OPENAI_API_KEY=sk-your-actual-openai-api-key-here OPENAI_MODEL_NAME=gpt-4o-mini
+# -- OpenAI Settings (if LLM_PROVIDER is "openai") --
+OPENAI_API_KEY=sk-your-actual-openai-api-key-here
+OPENAI_MODEL_NAME=gpt-4o-mini
 
--- TUM AET Settings (if LLM_PROVIDER is "tum_aet") --
-TUM_AET_LLM_API_BASE=https://gpu.aet.cit.tum.de/api TUM_AET_LLM_API_KEY=sk-your-tum-aet-key-here TUM_AET_LLM_MODEL_NAME=llama3.3:latest
-TUM_AET_LLM_API_BASE=<https://gpu.aet.cit.tum.de/api>
+# -- TUM AET Settings (if LLM_PROVIDER is "tum_aet") --
+TUM_AET_LLM_API_BASE=https://gpu.aet.cit.tum.de/api
 TUM_AET_LLM_API_KEY=sk-your-tum-aet-key-here
 TUM_AET_LLM_MODEL_NAME=llama3.3:latest
--- Ollama Settings (if LLM_PROVIDER is "ollama") --
-OLLAMA_BASE_URL=<http://host.docker.internal:11434> # For Docker Desktop on Mac/Windows
-OLLAMA_BASE_URL=http://host.docker.internal:11434 # For Docker Desktop on Mac/Windows
+
+# -- Ollama Settings (if LLM_PROVIDER is "ollama") --
+OLLAMA_BASE_URL=http://host.docker.internal:11434 # For Docker Desktop (Mac/Windows)
 ```
 
 If this file is not present, the defaults specified in `docker-compose.yml` will be used. **You must provide an `OPENAI_API_KEY` if using the default OpenAI setup.**
@@ -244,7 +248,7 @@ Ensure all services are running via `docker-compose up --build`.
 **Test Indexing Document via Server:** This sends a request to the server, which then calls the `genai-service`.
 
 ```bash
-curl -X POST "http://localhost:8080/api/test/genai/index" -H "Content-Type: application/json" -d '{ "documentId": "server-readme-test-doc-001", "courseSpaceId": "cs-readme-test-101", "textContent": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
+curl -X POST "http://localhost:8080/api/v1/genai/index" -H "Content-Type: application/json" -d '{ "document_id": "server-readme-test-doc-001", "course_space_id": "cs-readme-test-101", "text_content": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
 ```
 
 *Expected Output:* JSON response from the `genai-service` relayed by the server, or an error message if the call failed. Check server and genai-service logs.
@@ -310,3 +314,46 @@ The `genai-service` will now attempt to connect to your locally running Ollama i
 ## API Documentation (Server)
 
 The REST API should be clearly defined. API documentation is planned via Swagger/OpenAPI (typically accessible at `/swagger-ui.html` or `/v3/api-docs` on the running server once `springdoc-openapi-starter-webmvc-ui` is added and configured).
+
+## GenAI Service API Usage
+
+### Index a Document
+
+To index a document directly with the GenAI service:
+
+```bash
+curl -X POST "http://localhost:8001/api/v1/index" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_id": "test-doc-001",
+    "course_space_id": "cs-test-101",
+    "text_content": "This is a test document for indexing via the GenAI service API."
+}'
+```
+
+### Query a Document
+
+To query indexed content:
+
+```bash
+curl -X POST "http://localhost:8001/api/v1/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query_text": "What is this document about?",
+    "course_space_id": "cs-test-101"
+}'
+```
+
+### Health Check
+
+Check if the GenAI service is running:
+
+```bash
+curl http://localhost:8001/health
+```
+
+A healthy response will look like:
+
+```json
+{"status": "healthy", "module_name": "GenAI Module for LECture-bot", "version": "0.1.0"}
+```

@@ -26,8 +26,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+      - SERVER_PORT=${SERVER_PORT:-8080}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/${DB_NAME:-lecturebot_db}
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none} # or validate for prod
@@ -36,9 +36,8 @@ services:
 
     depends_on:
       lecturebot-db: { condition: service_healthy }
-      # ollama-setup: { condition: service_completed_successfully } # Ollama is now run externally
-      genai-service: # Server depends on GenAI service
-        condition: service_started # Or service_healthy if you add a healthcheck
+      genai-service:
+        condition: service_healthy # Wait for GenAI service to be healthy before starting
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -67,6 +66,12 @@ services:
     networks:
       - lecturebot-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s # Give the service time to load models before checking
     depends_on:
       weaviate: { condition: service_started } # Weaviate doesn't have a simple built-in healthcheck for compose v1 style
 
@@ -103,9 +108,9 @@ services:
     image: postgres:16
     container_name: lecturebot-postgres-db
     environment:
-      POSTGRES_DB: lecturebot_db
-      POSTGRES_USER: lecturebot_user
-      POSTGRES_PASSWORD: mysecretpassword # Ensure this matches SPRING_DATASOURCE_PASSWORD above
+      POSTGRES_DB: ${DB_NAME:-lecturebot_db}
+      POSTGRES_USER: ${DB_USER:-lecturebot_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mysecretpassword} # This now consistently uses the same variable as the server
     ports:
       - "5432:5432" 
     volumes:

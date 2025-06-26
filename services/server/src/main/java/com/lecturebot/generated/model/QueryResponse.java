@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.lecturebot.generated.model.Citation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,13 +22,13 @@ import jakarta.annotation.Generated;
  * QueryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-24T13:39:51.049480600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class QueryResponse {
 
   private @Nullable String answer;
 
   @Valid
-  private List<String> citations = new ArrayList<>();
+  private List<@Valid Citation> citations = new ArrayList<>();
 
   public QueryResponse answer(String answer) {
     this.answer = answer;
@@ -49,12 +50,12 @@ public class QueryResponse {
     this.answer = answer;
   }
 
-  public QueryResponse citations(List<String> citations) {
+  public QueryResponse citations(List<@Valid Citation> citations) {
     this.citations = citations;
     return this;
   }
 
-  public QueryResponse addCitationsItem(String citationsItem) {
+  public QueryResponse addCitationsItem(Citation citationsItem) {
     if (this.citations == null) {
       this.citations = new ArrayList<>();
     }
@@ -63,17 +64,17 @@ public class QueryResponse {
   }
 
   /**
-   * Get citations
+   * A list of citations for the generated answer.
    * @return citations
    */
-  
-  @Schema(name = "citations", example = "[\"doc-123\",\"doc-456\"]", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Valid 
+  @Schema(name = "citations", description = "A list of citations for the generated answer.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("citations")
-  public List<String> getCitations() {
+  public List<@Valid Citation> getCitations() {
     return citations;
   }
 
-  public void setCitations(List<String> citations) {
+  public void setCitations(List<@Valid Citation> citations) {
     this.citations = citations;
   }
 

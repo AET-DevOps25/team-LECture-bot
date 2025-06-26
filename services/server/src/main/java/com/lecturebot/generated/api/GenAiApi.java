@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-24T13:39:51.049480600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {
@@ -85,7 +85,7 @@ public interface GenAiApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"documentId\" : \"doc-123\", \"message\" : \"Document indexed successfully\" }";
+                    String exampleString = "{ \"chunksProcessed\" : 5, \"documentId\" : \"doc-123\", \"chunksStoredInWeaviate\" : 5, \"message\" : \"Document indexed successfully\", \"status\" : \"completed\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -141,7 +141,7 @@ public interface GenAiApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"citations\" : [ \"doc-123\", \"doc-456\" ], \"answer\" : \"This document is about...\" }";
+                    String exampleString = "{ \"citations\" : [ { \"retrievedTextPreview\" : \"LangChain is a framework for developing applications powered by language models.\", \"documentId\" : \"doc-123\", \"documentName\" : \"Lecture Slides Week 5\", \"chunkId\" : \"0\" }, { \"retrievedTextPreview\" : \"LangChain is a framework for developing applications powered by language models.\", \"documentId\" : \"doc-123\", \"documentName\" : \"Lecture Slides Week 5\", \"chunkId\" : \"0\" } ], \"answer\" : \"This document is about...\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

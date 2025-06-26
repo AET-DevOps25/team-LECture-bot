@@ -77,7 +77,7 @@ The API is versioned under `/api/v1`.
 
 ### 1. Index Document
 
-* **Endpoint:** `POST /api/v1/index/index`
+* **Endpoint:** `POST /api/v1/index`
 * **Summary:** Receives document text, chunks it, generates embeddings, and stores them in the vector DB.
 * **Request Body:** `application/json`
 
@@ -89,20 +89,21 @@ The API is versioned under `/api/v1`.
     }
     ```
 
-* **Response (Success 200 OK):** `application/json`
+* **Example curl:**
 
-    ```json
-    {
-        "message": "Document indexed successfully",
-        "documentId": "doc-123"
-    }
+    ```bash
+    curl -X POST "http://localhost:8001/api/v1/index" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "document_id": "test-doc-001",
+        "course_space_id": "cs-test-101",
+        "text_content": "This is a test document for indexing via the GenAI service API."
+    }'
     ```
-
-* **Response (Error):** Standard FastAPI error responses (e.g., 422 Unprocessable Entity for validation errors, 500 Internal Server Error).
 
 ### 2. Query Document
 
-* **Endpoint:** `POST /api/v1/query/query`
+* **Endpoint:** `POST /api/v1/query`
 * **Summary:** Receives a query, retrieves relevant context from the vector DB, and generates an answer using an LLM.
 * **Request Body:** `application/json`
 
@@ -113,30 +114,32 @@ The API is versioned under `/api/v1`.
     }
     ```
 
-* **Response (Success 200 OK):** `application/json`
+* **Example curl:**
 
-    ```json
-    {
-        "answer": "This document is about...",
-        "citations": ["doc-123", "doc-456"]
-    }
+    ```bash
+    curl -X POST "http://localhost:8001/api/v1/query" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query_text": "What is this document about?",
+        "course_space_id": "cs-test-101"
+    }'
     ```
-
-* **Response (Error):** Standard FastAPI error responses.
 
 ### 3. Health Check
 
 * **Endpoint:** `GET /health`
 * **Summary:** Basic health check for the service.
-* **Response (Success 200 OK):** `application/json`
+* **Example curl:**
 
-    ```json
-    {
-        "status": "UP",
-        "message": "GenAI service is running!",
-        "llm_provider": "openai"
-    }
+    ```bash
+    curl http://localhost:8001/health
     ```
+
+A healthy response will look like:
+
+```json
+{"status": "healthy", "module_name": "GenAI Module for LECture-bot", "version": "0.1.0"}
+```
 
 ## Project Structure (within `/genai`)
 

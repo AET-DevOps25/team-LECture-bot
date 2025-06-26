@@ -26,11 +26,15 @@ public class GenAiClient {
     }
 
     public Optional<IndexResponse> indexDocument(IndexRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/index/index";
+        String url = genAiServiceBaseUrl + "/api/v1/index";
         try {
             logger.info("Sending indexing request to GenAI service for documentId: {}", request.getDocumentId());
             IndexResponse response = restTemplate.postForObject(url, request, IndexResponse.class);
-            logger.info("Successfully received indexing response from GenAI service.");
+            if (response != null) {
+                logger.info("Successfully received indexing response from GenAI service. Response: {}", response);
+            } else {
+                logger.warn("Received null IndexResponse from GenAI service for documentId: {}", request.getDocumentId());
+            }
             return Optional.ofNullable(response);
         } catch (RestClientException e) {
             logger.error("Error calling GenAI indexing service at {}: {}", url, e.getMessage());
@@ -39,7 +43,7 @@ public class GenAiClient {
     }
 
     public Optional<QueryResponse> submitQuery(QueryRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/query/query";
+        String url = genAiServiceBaseUrl + "/api/v1/query";
         try {
             logger.info("Sending query to GenAI service for courseSpaceId: {}", request.getCourseSpaceId());
             QueryResponse response = restTemplate.postForObject(url, request, QueryResponse.class);

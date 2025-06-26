@@ -190,32 +190,66 @@ export interface components {
         };
         IndexRequest: {
             /** @example doc-123 */
-            document_id: string;
+            documentId: string;
             /** @example cs-456 */
-            course_space_id: string;
+            courseSpaceId: string;
             /** @example This is the content of the document. */
-            text_content: string;
+            textContent: string;
         };
         IndexResponse: {
             /** @example Document indexed successfully */
             message?: string;
             /** @example doc-123 */
             documentId?: string;
+            /**
+             * @description Status of the indexing operation.
+             * @example completed
+             */
+            status?: string;
+            /**
+             * @description Number of text chunks processed.
+             * @example 5
+             */
+            chunksProcessed?: number;
+            /**
+             * @description Number of chunks successfully stored in Weaviate.
+             * @example 5
+             */
+            chunksStoredInWeaviate?: number;
         };
         QueryRequest: {
             /** @example What is this document about? */
-            query_text: string;
+            queryText: string;
             /** @example cs-456 */
-            course_space_id: string;
+            courseSpaceId: string;
         };
         QueryResponse: {
             /** @example This document is about... */
             answer?: string;
-            /** @example [
-             *       "doc-123",
-             *       "doc-456"
-             *     ] */
-            citations?: string[];
+            /** @description A list of citations for the generated answer. */
+            citations?: components["schemas"]["Citation"][];
+        };
+        Citation: {
+            /**
+             * @description The ID of the document from which the citation was retrieved.
+             * @example doc-123
+             */
+            documentId: string;
+            /**
+             * @description A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+             * @example 0
+             */
+            chunkId: string;
+            /**
+             * @description The name or title of the source document.
+             * @example Lecture Slides Week 5
+             */
+            documentName?: string | null;
+            /**
+             * @description A short snippet of the text that was retrieved and used as context.
+             * @example LangChain is a framework for developing applications powered by language models.
+             */
+            retrievedTextPreview: string;
         };
         UserProfile: {
             /** Format: int64 */
