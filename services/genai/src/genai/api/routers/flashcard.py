@@ -7,7 +7,7 @@ router = APIRouter()
 flashcard_pipeline = FlashcardPipeline()
 
 @router.post(
-    "/generate-flashcards",
+    "/generate",
     response_model=schemas.FlashcardResponse,
     summary="Generate flashcards from a document",
     description="Generates flashcards based on the provided document ID and course space ID. It retrieves all chunks of the document, processes them, and generates flashcards using an LLM.",

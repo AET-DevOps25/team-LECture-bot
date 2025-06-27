@@ -7,13 +7,15 @@ import SignInPage from '@pages/SignInPage';
 import ProtectedRoute from '@components/auth/ProtectedRoute';
 import ProfilePage from '@pages/ProfilePage'; // <-- Add this import
 import { useAuth } from './context/AuthContext';
-
+import FlashcardViewer from '@src/components/flashcards/FlashcardViewer';
 
 function Dashboard() {
     return (
         <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
             <h1 className="text-4xl font-bold text-indigo-400">Welcome to your Dashboard!</h1>
             <p className="mt-4">You have successfully logged in.</p>
+            <h2 className="mt-6 text-2xl">Flashcards:</h2>
+            <FlashcardViewer />
         </div>
     );
 }

@@ -18,31 +18,42 @@ import jakarta.annotation.Generated;
  * FlashcardRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-25T17:57:04.683390+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-26T03:58:34.910092+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class FlashcardRequest {
 
-  private @Nullable String corseSpaceId;
+  private String courseSpaceId;
 
   private @Nullable String documentId = null;
 
-  public FlashcardRequest corseSpaceId(String corseSpaceId) {
-    this.corseSpaceId = corseSpaceId;
+  public FlashcardRequest() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public FlashcardRequest(String courseSpaceId) {
+    this.courseSpaceId = courseSpaceId;
+  }
+
+  public FlashcardRequest courseSpaceId(String courseSpaceId) {
+    this.courseSpaceId = courseSpaceId;
     return this;
   }
 
   /**
-   * Get corseSpaceId
-   * @return corseSpaceId
+   * Get courseSpaceId
+   * @return courseSpaceId
    */
-  
-  @Schema(name = "corse_space_id", example = "cs-456", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("corse_space_id")
-  public String getCorseSpaceId() {
-    return corseSpaceId;
+  @NotNull 
+  @Schema(name = "course_space_id", example = "cs-456", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("course_space_id")
+  public String getCourseSpaceId() {
+    return courseSpaceId;
   }
 
-  public void setCorseSpaceId(String corseSpaceId) {
-    this.corseSpaceId = corseSpaceId;
+  public void setCourseSpaceId(String courseSpaceId) {
+    this.courseSpaceId = courseSpaceId;
   }
 
   public FlashcardRequest documentId(String documentId) {
@@ -74,20 +85,20 @@ public class FlashcardRequest {
       return false;
     }
     FlashcardRequest flashcardRequest = (FlashcardRequest) o;
-    return Objects.equals(this.corseSpaceId, flashcardRequest.corseSpaceId) &&
+    return Objects.equals(this.courseSpaceId, flashcardRequest.courseSpaceId) &&
         Objects.equals(this.documentId, flashcardRequest.documentId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(corseSpaceId, documentId);
+    return Objects.hash(courseSpaceId, documentId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FlashcardRequest {\n");
-    sb.append("    corseSpaceId: ").append(toIndentedString(corseSpaceId)).append("\n");
+    sb.append("    courseSpaceId: ").append(toIndentedString(courseSpaceId)).append("\n");
     sb.append("    documentId: ").append(toIndentedString(documentId)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -144,76 +144,8 @@ class FlashcardPipeline:
             else:
                 print(f"No valid flashcards generated for document {doc_id}.")
 
-        return schemas.FlashcardResponse(course_space_id=request.course_space_id, results=all_results)
+        return schemas.FlashcardResponse(course_space_id=request.course_space_id, flashcards=all_results)
 
 
     
-    def generate_flashcards(self, request: schemas.FlashcardRequest) -> schemas.FlashcardResponse:
-        """
-        Generate flashcards based on the provided request.
-        
-        Args:
-            request: FlashcardRequest containing document_id and optionally, course_space_id and number of flashcards.
-        
-        Returns:
-            FlashcardResponse containing the generated flashcards.
-        """
-        print(f"Generating flashcards for document_id: {request.document_id}")
-
-
-        # 1. Retrieve all chunks for the document
-        full_context = self._retrieve_context(
-            request=request
-        )
-
-        if not full_context:
-            raise ValueError("Could not find any content for the specified scope.")
-
-
-        llm_input_data = { 
-            "context": full_context,
-        }
-
-        llm_response_str = self.llm_service.generate_response(
-                prompt_template_str=settings.FLASHCARD_PROMPT_TEMPLATE,
-                input_data= llm_input_data
-        )
-
-
-        print(f"LLM response received: {llm_response_str}")
-
-        flaschcards = []
-        try: 
-            flashcards_data = json.loads(llm_response_str)
-
-            if not isinstance(flashcards_data, list):
-                print(f"LLM response did not return a JSON list. Response: {llm_response_str}")
-                raise ValueError(f"LLM response failed to generate flashcards in the expected format. Response is not a valid JSON list: {llm_response_str}")
-
-            for item in flashcards_data:
-                if isinstance(item, dict) and 'question' in item and 'answer' in item:
-                    flaschcards.append(schemas.Flashcard(**item))
-                else:
-                    print(f"Skipping invalid flashcard item: {item}")
-
-            if not flaschcards:
-                raise ValueError(f"LLM response did not return any valid flashcards. Response: {llm_response_str}")
-
-            flashcards = [schemas.Flashcard(**fc) for fc in flashcards_data]
-        except json.JSONDecodeError as e:
-            print(f"Error {e} while parsing LLM response:", llm_response_str)
-            raise ValueError(f"Failed to parse LLM response: {llm_response_str}") 
-        except Exception as e:
-            print(f"Unexpected error while processing LLM response: {llm_response_str}")
-            raise 
-
-
-
-        response_scope = request.document_id if request.document_id else request.course_space_id
-
-        return schemas.FlashcardResponse(
-            scope=response_scope,
-            flashcards=flashcards,
-            status="success",
-            message="Flashcards generated successfully"
-        )
+    

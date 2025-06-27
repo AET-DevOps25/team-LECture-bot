@@ -333,7 +333,7 @@ components:
       required:
         - course_space_id
       properties:
-        corse_space_id:
+        course_space_id:
           type: string
           example: cs-456
         document_id:

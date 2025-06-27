@@ -53,10 +53,10 @@ public class GenAiClient {
         }
     }
 
-    public Optional<FlashcardResponse> getFlashcards(FlashcardRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/flashcard/generate-flashcards";
+    public Optional<FlashcardResponse> generateFlashcards(FlashcardRequest request) {
+        String url = genAiServiceBaseUrl + "/api/v1/flashcards/generate";
         try {
-            logger.info("Sending flashcard request to GenAI service for courseSpaceId: {}", request.getCorseSpaceId());
+            logger.info("Sending flashcard request to GenAI service for courseSpaceId: {}", request.getCourseSpaceId());
             FlashcardResponse response = restTemplate.postForObject(url, request, FlashcardResponse.class);
             logger.info("Successfully received flashcard response from GenAI service.");
             return Optional.ofNullable(response);

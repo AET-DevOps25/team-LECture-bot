@@ -9,8 +9,8 @@ type UserProfileResponseBody = components['schemas']['UserProfile'];
 type UpdateUserProfileRequestBody = components['schemas']['UpdateUserProfileRequest'];
 type UpdateUserProfileResponseBody = components['schemas']['UpdateUserProfileResponse'];
 type ChangePasswordRequestBody = components['schemas']['ChangePasswordRequest'];
-type FlashcardRequestBody = components['schemas']['FlashcardRequest'];
-type FlashcardResponseBody = components['schemas']['FlashcardResponse'];
+export type FlashcardRequestBody = components['schemas']['FlashcardRequest'];
+export type FlashcardResponseBody = components['schemas']['FlashcardResponse'];
 
 
 // Correct base URL for the backend API, including the /api/v1 context path.
@@ -111,6 +111,6 @@ export const changePassword = async (data: ChangePasswordRequestBody): Promise<v
 
 // --- Flashcard API Calls ---
 export const generateFlashcards = async (data: FlashcardRequestBody): Promise<FlashcardResponseBody> => {
-    // Path for generateFlashcards is /flashcards/generate
+    // Path for generateFlashcards is /genai/generate-flashcards
     return fetchApi<FlashcardResponseBody, FlashcardRequestBody>('/genai/generate-flashcards', 'POST', data);
 }

@@ -14,7 +14,7 @@ app = FastAPI(
 # Include the API routers
 app.include_router(indexing.router, prefix="/api/v1/index", tags=["indexing"])
 app.include_router(query.router, prefix="/api/v1/query", tags=["query"])
-app.include_router(flashcard.router, prefix="/api/v1/flashcard", tags=["flashcard"])
+app.include_router(flashcard.router, prefix="/api/v1/flashcards", tags=["flashcard"])
 
 # Basic health check endpoint
 @app.get(f"{settings.API_V1_STR}/health", summary="Health Check", tags=["Monitoring"])

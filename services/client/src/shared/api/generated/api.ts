@@ -239,7 +239,7 @@ export interface components {
         };
         FlashcardRequest: {
             /** @example cs-456 */
-            corse_space_id?: string;
+            course_space_id: string;
             /** @example doc-123 */
             document_id?: string | null;
         };

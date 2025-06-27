@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * LoginResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-25T17:57:04.683390+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-26T03:58:34.910092+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class LoginResponse {
 
   private @Nullable String token;

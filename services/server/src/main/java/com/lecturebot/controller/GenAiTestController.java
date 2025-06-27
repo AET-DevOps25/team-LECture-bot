@@ -1,6 +1,8 @@
 package com.lecturebot.controller;
 
 import com.lecturebot.service.genai.GenAiClient;
+import com.lecturebot.generated.model.FlashcardRequest;
+import com.lecturebot.generated.model.FlashcardResponse;
 import com.lecturebot.generated.model.IndexRequest;
 import com.lecturebot.generated.model.IndexResponse;
 import com.lecturebot.generated.model.QueryRequest;
@@ -35,5 +37,12 @@ public class GenAiTestController {
         Optional<QueryResponse> response = genAiClient.submitQuery(request);
         return response.<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(500).body("Failed to get query response from GenAI service"));
+    }
+
+    @PostMapping("/generate-flashcards")
+    public ResponseEntity<?> testGenerateFlashcards(@RequestBody FlashcardRequest request) {
+        Optional<FlashcardResponse> response = genAiClient.generateFlashcards(request);
+        return response.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(500).body("Failed to generate flashcards via GenAI service"));
     }
 }
