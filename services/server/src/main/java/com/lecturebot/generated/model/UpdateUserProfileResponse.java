@@ -19,7 +19,7 @@ import jakarta.annotation.Generated;
  * UpdateUserProfileResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-29T11:05:16.422515+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class UpdateUserProfileResponse {
 
   private @Nullable UserProfile userProfile;
@@ -58,8 +58,8 @@ public class UpdateUserProfileResponse {
    * @return requireReauth
    */
   
-  @Schema(name = "requireReauth", example = "false", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("requireReauth")
+  @Schema(name = "require_reauth", example = "false", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("require_reauth")
   public Boolean getRequireReauth() {
     return requireReauth;
   }

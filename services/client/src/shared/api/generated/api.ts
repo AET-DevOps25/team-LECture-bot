@@ -190,17 +190,17 @@ export interface components {
         };
         IndexRequest: {
             /** @example doc-123 */
-            documentId: string;
+            document_id: string;
             /** @example cs-456 */
-            courseSpaceId: string;
+            course_space_id: string;
             /** @example This is the content of the document. */
-            textContent: string;
+            text_content: string;
         };
         IndexResponse: {
             /** @example Document indexed successfully */
             message?: string;
             /** @example doc-123 */
-            documentId?: string;
+            document_id?: string;
             /**
              * @description Status of the indexing operation.
              * @example completed
@@ -210,18 +210,18 @@ export interface components {
              * @description Number of text chunks processed.
              * @example 5
              */
-            chunksProcessed?: number;
+            chunks_processed?: number;
             /**
              * @description Number of chunks successfully stored in Weaviate.
              * @example 5
              */
-            chunksStoredInWeaviate?: number;
+            chunks_stored_in_weaviate?: number;
         };
         QueryRequest: {
             /** @example What is this document about? */
-            queryText: string;
+            query_text: string;
             /** @example cs-456 */
-            courseSpaceId: string;
+            course_space_id: string;
         };
         QueryResponse: {
             /** @example This document is about... */
@@ -234,22 +234,22 @@ export interface components {
              * @description The ID of the document from which the citation was retrieved.
              * @example doc-123
              */
-            documentId: string;
+            document_id: string;
             /**
              * @description A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
              * @example 0
              */
-            chunkId: string;
+            chunk_id: string;
             /**
              * @description The name or title of the source document.
              * @example Lecture Slides Week 5
              */
-            documentName?: string | null;
+            document_name?: string | null;
             /**
              * @description A short snippet of the text that was retrieved and used as context.
              * @example LangChain is a framework for developing applications powered by language models.
              */
-            retrievedTextPreview: string;
+            retrieved_text_preview: string;
         };
         UserProfile: {
             /** Format: int64 */
@@ -272,13 +272,13 @@ export interface components {
             email?: string;
         };
         ChangePasswordRequest: {
-            oldPassword?: string;
-            newPassword?: string;
+            old_password?: string;
+            new_password?: string;
         };
         UpdateUserProfileResponse: {
             userProfile?: components["schemas"]["UserProfile"];
             /** @example false */
-            requireReauth?: boolean;
+            require_reauth?: boolean;
             /** @example Profile updated successfully. */
             message?: string;
         };

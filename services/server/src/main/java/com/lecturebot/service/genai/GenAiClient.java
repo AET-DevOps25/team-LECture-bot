@@ -3,7 +3,6 @@ package com.lecturebot.service.genai;
 import com.lecturebot.generated.model.IndexRequest;
 import com.lecturebot.generated.model.IndexResponse;
 import com.lecturebot.generated.model.QueryRequest;
-import com.lecturebot.generated.model.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.lecturebot.generated.model.QueryResponse;
 import java.util.Optional;
 
 @Service
@@ -25,32 +25,40 @@ public class GenAiClient {
         this.genAiServiceBaseUrl = genAiServiceBaseUrl;
     }
 
-    public Optional<IndexResponse> indexDocument(IndexRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/index";
+    /**
+     * Submits a document for indexing to the GenAI service.
+     *
+     * @param indexRequest The indexing request object.
+     * @return An Optional containing the IndexResponse if successful, otherwise empty.
+     */
+    public Optional<IndexResponse> indexDocument(IndexRequest indexRequest) {
+        String indexUrl = genAiServiceBaseUrl + "/api/v1/index";
         try {
-            logger.info("Sending indexing request to GenAI service for documentId: {}", request.getDocumentId());
-            IndexResponse response = restTemplate.postForObject(url, request, IndexResponse.class);
-            if (response != null) {
-                logger.info("Successfully received indexing response from GenAI service. Response: {}", response);
-            } else {
-                logger.warn("Received null IndexResponse from GenAI service for documentId: {}", request.getDocumentId());
-            }
-            return Optional.ofNullable(response);
+            logger.info("Sending indexing request to GenAI service for documentId: {}", indexRequest.getDocumentId());
+            IndexResponse indexResponse = restTemplate.postForObject(indexUrl, indexRequest, IndexResponse.class);
+            logger.info("Successfully received indexing response from GenAI service.");
+            return Optional.ofNullable(indexResponse);
         } catch (RestClientException e) {
-            logger.error("Error calling GenAI indexing service at {}: {}", url, e.getMessage());
+            logger.error("Error calling GenAI indexing service. URL: {}, Error: {}", indexUrl, e.getMessage());
             return Optional.empty();
         }
     }
 
-    public Optional<QueryResponse> submitQuery(QueryRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/query";
+    /**
+     * Submits a query to the GenAI service.
+     *
+     * @param queryRequest The query request object.
+     * @return An Optional containing the QueryResponse if successful, otherwise empty.
+     */
+    public Optional<QueryResponse> submitQuery(QueryRequest queryRequest) {
+        String queryUrl = genAiServiceBaseUrl + "/api/v1/query";
         try {
-            logger.info("Sending query to GenAI service for courseSpaceId: {}", request.getCourseSpaceId());
-            QueryResponse response = restTemplate.postForObject(url, request, QueryResponse.class);
+            logger.info("Sending query to GenAI service for course space: {}", queryRequest.getCourseSpaceId());
+            QueryResponse queryResponse = restTemplate.postForObject(queryUrl, queryRequest, QueryResponse.class);
             logger.info("Successfully received query response from GenAI service.");
-            return Optional.ofNullable(response);
+            return Optional.ofNullable(queryResponse);
         } catch (RestClientException e) {
-            logger.error("Error calling GenAI query service at {}: {}", url, e.getMessage());
+            logger.error("Error calling GenAI service for query. URL: {}, Error: {}", queryUrl, e.getMessage());
             return Optional.empty();
         }
     }

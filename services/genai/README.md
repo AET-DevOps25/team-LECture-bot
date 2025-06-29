@@ -71,6 +71,33 @@ You can run the GenAI service locally for development without the full Docker Co
     poetry run uvicorn src.genai.main:app --host 0.0.0.0 --port 8001 --reload
     ```
 
+## 🧪 Running Tests with Poetry
+
+1. **Install test dependencies:**
+
+   If `pytest` is not already in your dependencies, add it:
+   
+   ```bash
+   poetry add --dev pytest
+   ```
+
+2. **Run the tests:**
+
+   From the `services/genai` directory (or project root):
+   
+   ```bash
+   poetry run pytest
+   ```
+
+   Or to run a specific test file:
+   
+   ```bash
+   poetry run pytest tests/unit/test_qa_pipeline.py
+   ```
+
+- Make sure your virtual environment is activated by Poetry (it does this automatically when using `poetry run`).
+- All test dependencies should be listed in `pyproject.toml` under `[tool.poetry.dev-dependencies]`.
+
 ## API Endpoints
 
 The API is versioned under `/api/v1`.
@@ -141,6 +168,14 @@ A healthy response will look like:
 {"status": "healthy", "module_name": "GenAI Module for LECture-bot", "version": "0.1.0"}
 ```
 
+### 4. User Profile Endpoints
+
+* `GET /api/v1/user/profile` – Get user profile
+* `PUT /api/v1/user/profile` – Update user profile
+* `POST /api/v1/user/change-password` – Change user password
+
+See the main README for example curl commands and frontend usage.
+
 ## Project Structure (within `/genai`)
 
 * `src/genai/`: Main source code directory.
@@ -153,3 +188,32 @@ A healthy response will look like:
 * `Dockerfile`: For containerizing the service.
 * `pyproject.toml`: Project metadata and dependencies (Poetry).
 * `.env.example`: Example environment variables.
+
+### Testing the Q&A Pipeline
+
+#### Automated Tests
+- Integration and unit tests for the Q&A pipeline are provided in `services/genai/tests/`.
+- Tests use `python-dotenv` to load environment variables and set `WEAVIATE_URL` to the correct port for local testing.
+- LLM and vector store calls are monkeypatched/mocked for fast, reliable test runs.
+
+To run tests:
+
+```bash
+poetry install
+poetry run pytest
+```
+
+#### Manual API Testing
+
+You can test the Q&A endpoint using curl (replace values as needed):
+
+```bash
+curl -X POST "http://localhost:8001/api/v1/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query_text": "What is this document about?",
+    "course_space_id": "cs-test-101"
+}'
+```
+
+A successful response will include an `answer` and a list of `citations`.

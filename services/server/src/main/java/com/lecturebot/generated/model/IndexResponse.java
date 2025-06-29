@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * IndexResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-29T11:05:16.422515+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class IndexResponse {
 
   private @Nullable String message;
@@ -61,8 +61,8 @@ public class IndexResponse {
    * @return documentId
    */
   
-  @Schema(name = "documentId", example = "doc-123", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("documentId")
+  @Schema(name = "document_id", example = "doc-123", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("document_id")
   public String getDocumentId() {
     return documentId;
   }
@@ -101,8 +101,8 @@ public class IndexResponse {
    * @return chunksProcessed
    */
   
-  @Schema(name = "chunksProcessed", example = "5", description = "Number of text chunks processed.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("chunksProcessed")
+  @Schema(name = "chunks_processed", example = "5", description = "Number of text chunks processed.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("chunks_processed")
   public Integer getChunksProcessed() {
     return chunksProcessed;
   }
@@ -121,8 +121,8 @@ public class IndexResponse {
    * @return chunksStoredInWeaviate
    */
   
-  @Schema(name = "chunksStoredInWeaviate", example = "5", description = "Number of chunks successfully stored in Weaviate.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("chunksStoredInWeaviate")
+  @Schema(name = "chunks_stored_in_weaviate", example = "5", description = "Number of chunks successfully stored in Weaviate.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("chunks_stored_in_weaviate")
   public Integer getChunksStoredInWeaviate() {
     return chunksStoredInWeaviate;
   }

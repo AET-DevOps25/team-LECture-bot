@@ -10,9 +10,9 @@ public class HealthController implements HealthApi {
 
     @Override
     public ResponseEntity<HealthStatus> healthCheck() {
-        HealthStatus status = new HealthStatus()
-                .status("UP")
-                .message("LECture-bot server is running!");
+        HealthStatus status = new HealthStatus();
+        status.setStatus("UP");
+        status.setMessage("LECture-bot server is running!");
         return ResponseEntity.ok(status);
     }
 }

@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * QueryRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-29T11:05:16.422515+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class QueryRequest {
 
   private String queryText;
@@ -47,8 +47,8 @@ public class QueryRequest {
    * @return queryText
    */
   @NotNull 
-  @Schema(name = "queryText", example = "What is this document about?", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("queryText")
+  @Schema(name = "query_text", example = "What is this document about?", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("query_text")
   public String getQueryText() {
     return queryText;
   }
@@ -67,8 +67,8 @@ public class QueryRequest {
    * @return courseSpaceId
    */
   @NotNull 
-  @Schema(name = "courseSpaceId", example = "cs-456", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("courseSpaceId")
+  @Schema(name = "course_space_id", example = "cs-456", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("course_space_id")
   public String getCourseSpaceId() {
     return courseSpaceId;
   }

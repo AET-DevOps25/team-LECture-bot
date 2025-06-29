@@ -182,11 +182,9 @@ Expected Error Response (400 Bad Request):
 
 ### 4. Manage User Profile (Update Profile & Change Password)
 
-This section is temporarily removed as the ProfileController is not yet integrated with the API-driven design. Functionality will be re-introduced once defined in the OpenAPI specification.
-
 a. Update Profile (Name/Email)
 
-* Endpoint: PUT /api/v1/users/me
+* Endpoint: `PUT /api/v1/profile`
 
 Request Body Example:
 
@@ -242,19 +240,18 @@ Note:
 If you receive a 401 Unauthorized error, ensure your JWT is valid
 
 ## Testing Server + GenAI Integration Endpoints
-
-The server includes test endpoints under `/api/v1/test/genai/` to specifically test the communication with the `genai-service` via the `GenAiClient`.
+The server includes endpoints under `/api/v1/genai/` to test communication with the `genai-service` via the `GenAiClient`.
 
 ### Temporarily Disabling Security for Test Endpoints (Development Only)
 
-By default, Spring Security protects most endpoints. For easier testing of the test endpoints without handling authentication tokens, you can temporarily modify the `SecurityConfig.java` in the server application.
+By default, Spring Security protects most endpoints. For easier testing of the `/api/v1/genai/**` endpoints without handling authentication tokens, you can temporarily modify the `SecurityConfig.java` in the server application.
 
 File: services/server/src/main/java/com/lecturebot/config/SecurityConfig.java
 
-Add .requestMatchers("/test/genai/**").permitAll() to your security configuration. Example:
+Add .requestMatchers("/genai/**").permitAll() to your security configuration. Example:
 
 ```java
-// Inside SecurityConfig.java, within the securityFilterChain method: http .csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz .requestMatchers("/test/genai/").permitAll() // <<< ADD THIS LINE .requestMatchers("/auth/", "/health").permitAll() .anyRequest().authenticated() ) // ... other configurations ... 
+// Inside SecurityConfig.java, within the securityFilterChain method: http .csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz .requestMatchers("/genai/**").permitAll() // <<< ADD THIS LINE .requestMatchers("/auth/", "/health").permitAll() .anyRequest().authenticated() ) // ... other configurations ... 
 ```
 
 Important: After adding this line, rebuild and restart the server service:
@@ -273,9 +270,9 @@ Ensure all services are running via docker-compose up --build.
 1. Test Indexing Document via Server: This sends a request to the server, which then calls the genai-service.
 
 ```bash
- curl -X POST "http://localhost:8080/api/v1/test/genai/index"
--H "Content-Type: application/json"
--d '{ "document_id": "server-readme-test-doc-001", "course_space_id": "cs-readme-test-101", "text_content": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }' 
+ curl -X POST "http://localhost:8080/api/v1/genai/index" \
+-H "Content-Type: application/json" \
+-d '{ "document_id": "server-readme-test-doc-001", "course_space_id": "cs-readme-test-101", "text_content": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
 ```
 
 *Expected Output*: JSON response from the genai-service relayed by the server, or an error message if the call failed. Check server and genai-service logs.
@@ -283,9 +280,9 @@ Ensure all services are running via docker-compose up --build.
 2. Test Submitting Query via Server:
 
 ```bash
- curl -X POST "http://localhost:8080/api/v1/test/genai/query"
--H "Content-Type: application/json"
--d '{ "query_text": "What does this document about README instructions talk about?", "course_space_id": "cs-readme-test-101" }' 
+ curl -X POST "http://localhost:8080/api/v1/genai/query" \
+-H "Content-Type: application/json" \
+-d '{ "query_text": "What does this document about README instructions talk about?", "course_space_id": "cs-readme-test-101" }'
 ```
 
 *Expected Output*: JSON response (answer and citations) from the genai-service relayed by the server. Check server and genai-service logs.

@@ -44,7 +44,7 @@ The full API documentation can be found in the `genai/README.md`.
 Send some text content to the service to be chunked, embedded, and stored in the Weaviate vector database.
 
 ```bash
-curl -X POST "http://localhost:8001/api/v1/index/" \
+curl -X POST "http://localhost:8001/api/v1/index" \
 -H "Content-Type: application/json" \
 -d '{
   "document_id": "test-doc-01",
@@ -57,7 +57,7 @@ curl -X POST "http://localhost:8001/api/v1/index/" \
 Use the query endpoint to ask a question related to the content you just indexed.
 
 ```bash
-curl -X POST "http://localhost:8001/api/v1/query/query" \
+curl -X POST "http://localhost:8001/api/v1/query" \
 -H "Content-Type: application/json" \
 -d '{
   "query_text": "What is LangChain?",

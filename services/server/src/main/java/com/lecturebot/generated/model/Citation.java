@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * Citation
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-29T11:05:16.422515+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class Citation {
 
   private String documentId;
@@ -52,8 +52,8 @@ public class Citation {
    * @return documentId
    */
   @NotNull 
-  @Schema(name = "documentId", example = "doc-123", description = "The ID of the document from which the citation was retrieved.", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("documentId")
+  @Schema(name = "document_id", example = "doc-123", description = "The ID of the document from which the citation was retrieved.", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("document_id")
   public String getDocumentId() {
     return documentId;
   }
@@ -72,8 +72,8 @@ public class Citation {
    * @return chunkId
    */
   @NotNull 
-  @Schema(name = "chunkId", example = "0", description = "A unique identifier for the specific chunk within the document (e.g., chunk index, page number).", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("chunkId")
+  @Schema(name = "chunk_id", example = "0", description = "A unique identifier for the specific chunk within the document (e.g., chunk index, page number).", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("chunk_id")
   public String getChunkId() {
     return chunkId;
   }
@@ -92,8 +92,8 @@ public class Citation {
    * @return documentName
    */
   
-  @Schema(name = "documentName", example = "Lecture Slides Week 5", description = "The name or title of the source document.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("documentName")
+  @Schema(name = "document_name", example = "Lecture Slides Week 5", description = "The name or title of the source document.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("document_name")
   public String getDocumentName() {
     return documentName;
   }
@@ -112,8 +112,8 @@ public class Citation {
    * @return retrievedTextPreview
    */
   @NotNull 
-  @Schema(name = "retrievedTextPreview", example = "LangChain is a framework for developing applications powered by language models.", description = "A short snippet of the text that was retrieved and used as context.", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("retrievedTextPreview")
+  @Schema(name = "retrieved_text_preview", example = "LangChain is a framework for developing applications powered by language models.", description = "A short snippet of the text that was retrieved and used as context.", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("retrieved_text_preview")
   public String getRetrievedTextPreview() {
     return retrievedTextPreview;
   }

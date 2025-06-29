@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-27T00:14:59.690014+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-29T11:05:16.422515+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {
@@ -85,7 +85,7 @@ public interface GenAiApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"chunksProcessed\" : 5, \"documentId\" : \"doc-123\", \"chunksStoredInWeaviate\" : 5, \"message\" : \"Document indexed successfully\", \"status\" : \"completed\" }";
+                    String exampleString = "{ \"chunks_stored_in_weaviate\" : 5, \"chunks_processed\" : 5, \"message\" : \"Document indexed successfully\", \"document_id\" : \"doc-123\", \"status\" : \"completed\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -141,7 +141,7 @@ public interface GenAiApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"citations\" : [ { \"retrievedTextPreview\" : \"LangChain is a framework for developing applications powered by language models.\", \"documentId\" : \"doc-123\", \"documentName\" : \"Lecture Slides Week 5\", \"chunkId\" : \"0\" }, { \"retrievedTextPreview\" : \"LangChain is a framework for developing applications powered by language models.\", \"documentId\" : \"doc-123\", \"documentName\" : \"Lecture Slides Week 5\", \"chunkId\" : \"0\" } ], \"answer\" : \"This document is about...\" }";
+                    String exampleString = "{ \"citations\" : [ { \"document_name\" : \"Lecture Slides Week 5\", \"retrieved_text_preview\" : \"LangChain is a framework for developing applications powered by language models.\", \"document_id\" : \"doc-123\", \"chunk_id\" : \"0\" }, { \"document_name\" : \"Lecture Slides Week 5\", \"retrieved_text_preview\" : \"LangChain is a framework for developing applications powered by language models.\", \"document_id\" : \"doc-123\", \"chunk_id\" : \"0\" } ], \"answer\" : \"This document is about...\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
