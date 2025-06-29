@@ -71,12 +71,59 @@ You can run the GenAI service locally for development without the full Docker Co
     poetry run uvicorn src.genai.main:app --host 0.0.0.0 --port 8001 --reload
     ```
 
+## 🔄 Switching Between Cloud and Local LLMs
+
+The GenAI service supports both cloud-based (OpenAI) and local (Ollama, TUM AET) LLMs. You can switch between providers using the `LLM_PROVIDER` environment variable in your `.env` file.
+
+### Supported Providers
+
+- **OpenAI** (cloud):
+  * `LLM_PROVIDER=openai`
+  * `OPENAI_API_KEY` and `OPENAI_MODEL_NAME` must be set.
+* **Ollama** (local):
+  * `LLM_PROVIDER=ollama`
+  * `OLLAMA_BASE_URL` and `OLLAMA_MODEL_NAME` must be set.
+* **TUM AET** (cloud):
+  * `LLM_PROVIDER=tum_aet`
+  * `TUM_AET_LLM_API_BASE`, `TUM_AET_LLM_API_KEY`, and `TUM_AET_LLM_MODEL_NAME` must be set.
+
+### Example `.env` Configurations
+
+**For OpenAI:**
+
+```
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL_NAME=gpt-4o-mini
+```
+
+**For Ollama:**
+
+```
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OLLAMA_MODEL_NAME=llama3:8b-instruct-q4_K_M
+```
+
+**For TUM AET:**
+
+```
+LLM_PROVIDER=tum_aet
+TUM_AET_LLM_API_BASE=https://gpu.aet.cit.tum.de/api
+TUM_AET_LLM_API_KEY=sk-...
+TUM_AET_LLM_MODEL_NAME=llama3.3:latest
+```
+
+After changing the provider or any LLM settings, restart the GenAI service for changes to take effect.
+
+If required environment variables are missing or misconfigured, the service will raise a clear error at startup.
+
 ## 🧪 Running Tests with Poetry
 
 1. **Install test dependencies:**
 
    If `pytest` is not already in your dependencies, add it:
-   
+
    ```bash
    poetry add --dev pytest
    ```
@@ -84,19 +131,19 @@ You can run the GenAI service locally for development without the full Docker Co
 2. **Run the tests:**
 
    From the `services/genai` directory (or project root):
-   
+
    ```bash
    poetry run pytest
    ```
 
    Or to run a specific test file:
-   
+
    ```bash
    poetry run pytest tests/unit/test_qa_pipeline.py
    ```
 
-- Make sure your virtual environment is activated by Poetry (it does this automatically when using `poetry run`).
-- All test dependencies should be listed in `pyproject.toml` under `[tool.poetry.dev-dependencies]`.
+* Make sure your virtual environment is activated by Poetry (it does this automatically when using `poetry run`).
+* All test dependencies should be listed in `pyproject.toml` under `[tool.poetry.dev-dependencies]`.
 
 ## API Endpoints
 
@@ -192,9 +239,10 @@ See the main README for example curl commands and frontend usage.
 ### Testing the Q&A Pipeline
 
 #### Automated Tests
+
 - Integration and unit tests for the Q&A pipeline are provided in `services/genai/tests/`.
-- Tests use `python-dotenv` to load environment variables and set `WEAVIATE_URL` to the correct port for local testing.
-- LLM and vector store calls are monkeypatched/mocked for fast, reliable test runs.
+* Tests use `python-dotenv` to load environment variables and set `WEAVIATE_URL` to the correct port for local testing.
+* LLM and vector store calls are monkeypatched/mocked for fast, reliable test runs.
 
 To run tests:
 
