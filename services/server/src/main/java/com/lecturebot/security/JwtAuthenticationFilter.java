@@ -55,4 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    @Override
+    protected boolean shouldNotFilter(@org.springframework.lang.NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        boolean skip = path.equals("/api/v1/courses") || path.equals("/api/v1/courses/") || path.startsWith("/api/v1/courses/");
+        System.out.println("[JwtAuthenticationFilter] shouldNotFilter path: " + path + " skip: " + skip);
+        return skip;
+    }
 }

@@ -48,7 +48,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions for JWT
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/auth/**", "/health", "/genai/**").permitAll() // Permit auth, health, and GenAI endpoints
+                    // Paths are matched without the context path.
+                    .requestMatchers("/auth/**", "/health", "/genai/**", "/coursespaces/**").permitAll()
                     .anyRequest().authenticated() // Secure all other endpoints
             );
 

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.UUID;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -15,54 +16,54 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * HealthStatus
+ * CourseSpace
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-30T18:33:02.482669+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
-public class HealthStatus {
+public class CourseSpace {
 
-  private @Nullable String status;
+  private @Nullable UUID id;
 
-  private @Nullable String message;
+  private @Nullable String name;
 
-  public HealthStatus status(String status) {
-    this.status = status;
+  public CourseSpace id(UUID id) {
+    this.id = id;
     return this;
   }
 
   /**
-   * Get status
-   * @return status
+   * Get id
+   * @return id
    */
-  
-  @Schema(name = "status", example = "UP", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("status")
-  public String getStatus() {
-    return status;
+  @Valid 
+  @Schema(name = "id", example = "123e4567-e89b-12d3-a456-426614174000", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  public UUID getId() {
+    return id;
   }
 
-  public void setStatus(String status) {
-    this.status = status;
+  public void setId(UUID id) {
+    this.id = id;
   }
 
-  public HealthStatus message(String message) {
-    this.message = message;
+  public CourseSpace name(String name) {
+    this.name = name;
     return this;
   }
 
   /**
-   * Get message
-   * @return message
+   * Get name
+   * @return name
    */
   
-  @Schema(name = "message", example = "LECture-bot server is running!", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("message")
-  public String getMessage() {
-    return message;
+  @Schema(name = "name", example = "Introduction to AI", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("name")
+  public String getName() {
+    return name;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
@@ -73,22 +74,22 @@ public class HealthStatus {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    HealthStatus healthStatus = (HealthStatus) o;
-    return Objects.equals(this.status, healthStatus.status) &&
-        Objects.equals(this.message, healthStatus.message);
+    CourseSpace courseSpace = (CourseSpace) o;
+    return Objects.equals(this.id, courseSpace.id) &&
+        Objects.equals(this.name, courseSpace.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status, message);
+    return Objects.hash(id, name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class HealthStatus {\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("class CourseSpace {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("}");
     return sb.toString();
   }

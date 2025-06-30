@@ -5,7 +5,7 @@
  */
 package com.lecturebot.generated.api;
 
-import com.lecturebot.generated.model.HealthStatus;
+import com.lecturebot.generated.model.CourseSpace;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,43 +35,48 @@ import jakarta.annotation.Generated;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-30T18:33:02.482669+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
-@Tag(name = "Health", description = "the Health API")
-public interface HealthApi {
+@Tag(name = "CourseSpaces", description = "the CourseSpaces API")
+public interface CourseSpacesApi {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
 
     /**
-     * GET /health : Health Check
-     * Checks if the server is running.
+     * GET /coursespaces : Get all course spaces for the current user
+     * Retrieves a list of all course spaces associated with the authenticated user.
      *
-     * @return Server is up and running. (status code 200)
+     * @return A list of the user&#39;s course spaces. (status code 200)
+     *         or Unauthorized. (status code 401)
      */
     @Operation(
-        operationId = "healthCheck",
-        summary = "Health Check",
-        description = "Checks if the server is running.",
-        tags = { "Health" },
+        operationId = "getCourseSpaces",
+        summary = "Get all course spaces for the current user",
+        description = "Retrieves a list of all course spaces associated with the authenticated user.",
+        tags = { "CourseSpaces" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "Server is up and running.", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = HealthStatus.class))
-            })
+            @ApiResponse(responseCode = "200", description = "A list of the user's course spaces.", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseSpace.class)))
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized.")
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/health",
+        value = "/coursespaces",
         produces = { "application/json" }
     )
     
-    default ResponseEntity<HealthStatus> healthCheck(
+    default ResponseEntity<List<CourseSpace>> getCourseSpaces(
         
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"message\" : \"LECture-bot server is running!\", \"status\" : \"UP\" }";
+                    String exampleString = "[ { \"name\" : \"Introduction to AI\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"name\" : \"Introduction to AI\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

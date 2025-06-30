@@ -182,54 +182,25 @@ Expected Error Response (400 Bad Request):
 
 ### 4. Manage User Profile (Update Profile & Change Password)
 
-a. Update Profile (Name/Email)
+a. **Update Profile (Name/Email)**
+   - **Endpoint:** `PUT /api/v1/profile`
+   - **`curl` Example:**
+     ```bash
+     curl -X PUT http://localhost:8080/api/v1/profile \
+       -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+       -H "Content-Type: application/json" \
+       -d '{"name": "New Name", "email": "new.email@example.com"}'
+     ```
 
-* Endpoint: `PUT /api/v1/profile`
-
-Request Body Example:
-
-```json
-{ "name": "New Name", "email": "new.email@example.com" } 
-```
-
-Curl Example
-
-```bash
- curl -X PUT <http://localhost:8080/api/v1/users/me>
--H "Authorization: Bearer "
--H "Content-Type: application/json"
--d '{"name": "New Name", "email": "<new.email@example.com>"}'
-```
-
-Expected Response:
-200 OK with the updated user object, or an error message if validation fails or the email is already taken.
-
-Example successful response:
-
-```json
-{ "id": 6, "email": "new.email@example.com", "passwordHash": "$2a$10$JCnEfokhtT4igB3manzAtuidgWwE3jlpSEsRfHgq/JXgvnmcoqOUO", "name": "New Name" } 
-```
-
-b. Change Password
-
-* Endpoint: POST /api/v1/users/me/change-password
-Request Body Example:
-
-```json
-{ "currentPassword": "oldpassword123", "newPassword": "newpassword456" }
-```
-
-Curl Example
-
-```bash
- curl -X POST http://localhost:8080/api/v1/users/me/change-password
--H "Authorization: Bearer "
--H "Content-Type: application/json"
--d '{"currentPassword": "oldpassword123", "newPassword": "newpassword456"}' 
-```
-
-Expected Response:
-200 OK on success, or an error message if the current password is incorrect or validation fails.
+b. **Change Password**
+   - **Endpoint:** `PATCH /api/v1/profile/password`
+   - **`curl` Example:**
+     ```bash
+     curl -X PATCH http://localhost:8080/api/v1/profile/password \
+       -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+       -H "Content-Type: application/json" \
+       -d '{"old_password": "oldpassword123", "new_password": "newpassword456"}'
+     ```
 
 c. Using the Frontend UI
 

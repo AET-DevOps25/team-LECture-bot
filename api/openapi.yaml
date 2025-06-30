@@ -11,6 +11,7 @@ security:
 
 tags:
   - name: Profile
+  - name: CourseSpaces
 paths:
   /health:
     get:
@@ -200,6 +201,24 @@ paths:
           description: Bad Request (e.g., old password incorrect).
         '401':
           description: Unauthorized.
+  /coursespaces:
+    get:
+      summary: Get all course spaces for the current user
+      description: Retrieves a list of all course spaces associated with the authenticated user.
+      operationId: getCourseSpaces
+      tags:
+        - CourseSpaces
+      responses:
+        '200':
+          description: A list of the user's course spaces.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseSpace'
+        '401':
+          description: Unauthorized.
 
 components:
   schemas:
@@ -335,6 +354,16 @@ components:
           type: string
           description: A short snippet of the text that was retrieved and used as context.
           example: "LangChain is a framework for developing applications powered by language models."
+    CourseSpace:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Introduction to AI"
     UserProfile:
       type: object
       properties:

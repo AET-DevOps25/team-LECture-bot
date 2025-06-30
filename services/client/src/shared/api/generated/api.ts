@@ -148,6 +148,26 @@ export interface paths {
         patch: operations["changePassword"];
         trace?: never;
     };
+    "/coursespaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all course spaces for the current user
+         * @description Retrieves a list of all course spaces associated with the authenticated user.
+         */
+        get: operations["getCourseSpaces"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -250,6 +270,15 @@ export interface components {
              * @example LangChain is a framework for developing applications powered by language models.
              */
             retrieved_text_preview: string;
+        };
+        CourseSpace: {
+            /**
+             * Format: uuid
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id?: string;
+            /** @example Introduction to AI */
+            name?: string;
         };
         UserProfile: {
             /** Format: int64 */
@@ -538,6 +567,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getCourseSpaces: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of the user's course spaces. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpace"][];
+                };
             };
             /** @description Unauthorized. */
             401: {

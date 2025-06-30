@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getUserProfile, updateUserProfile, changePassword } from '../api/apiClient';
+import type { FormEvent } from 'react';
+import { apiClient } from '../api/apiClient';
 import { useAuth } from '../context/AuthContext';
 import type { components } from '../shared/api/generated/api';
 
@@ -20,11 +21,14 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const data = await getUserProfile();
-                setName(data.name || '');
-                setEmail(data.email || '');
+                const { data, error: apiError } = await apiClient.GET('/profile');
+                if (apiError) throw new Error('Failed to fetch profile');
+                if (data) {
+                    setName(data.name || '');
+                    setEmail(data.email || '');
+                }
             } catch (err) {
-                setError('Could not load profile data.');
+                setError((err as Error).message);
             } finally {
                 setLoading(false);
             }
@@ -32,22 +36,25 @@ const ProfilePage: React.FC = () => {
         fetchProfile();
     }, []);
 
-    const handleProfileUpdate = async (e: React.FormEvent) => {
+    const handleProfileUpdate = async (e: FormEvent) => {
         e.preventDefault();
         const body: UpdateUserProfileRequest = { name, email };
         try {
-            const data = await updateUserProfile(body);
-            alert(data.message || 'Profile updated!');
-            if ((data as any).require_reauth) {
-                alert('Your email was changed. Please log in again.');
-                logout();
+            const { data, error: apiError } = await apiClient.PUT('/profile', { body });
+            if (apiError) throw new Error('Failed to update profile');
+            if (data) {
+                alert(data.message || 'Profile updated!');
+                if (data.require_reauth) {
+                    alert('Your email was changed. Please log in again.');
+                    logout();
+                }
             }
         } catch (err) {
-            alert('Error updating profile.');
+            alert((err as Error).message);
         }
     };
 
-    const handlePasswordChange = async (e: React.FormEvent) => {
+    const handlePasswordChange = async (e: FormEvent) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
             alert('New passwords do not match.');
@@ -58,7 +65,8 @@ const ProfilePage: React.FC = () => {
             new_password: newPassword,
         };
         try {
-            await changePassword(body);
+            const { error: apiError } = await apiClient.PATCH('/profile/password', { body });
+            if (apiError) throw new Error('Failed to change password. Check current password.');
             alert('Password changed successfully!');
             setCurrentPassword('');
             setNewPassword('');
