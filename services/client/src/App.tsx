@@ -7,7 +7,7 @@ import SignInPage from '@pages/SignInPage';
 import ProtectedRoute from '@components/auth/ProtectedRoute';
 import ProfilePage from '@pages/ProfilePage'; // <-- Add this import
 import { useAuth } from './context/AuthContext';
-
+import PdfUploadPage from '@pages/PdfUploadPage';
 
 function Dashboard() {
     return (
@@ -51,6 +51,9 @@ function App() {
                                 <Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link>
                             </li>
                             <li>
+                                <Link to="/pdf-upload" className="hover:text-gray-300">PDF Upload</Link>
+                            </li>
+                            <li>
                                 <Link to="/" onClick={logout} className="hover:text-gray-300">Logout</Link>
                             </li>
                         </>
@@ -66,7 +69,8 @@ function App() {
                     <Route path="/login" element={<SignInPage />} />
                     <Route element={<ProtectedRoute />}>
                         <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/profile" element={<ProfilePage />} /> {/* <-- Add this route */}
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/pdf-upload" element={<PdfUploadPage />} /> {/* <-- Add this line */}
                     </Route>
                 </Routes>
             </div>
