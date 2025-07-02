@@ -1,0 +1,100 @@
+.studyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    font-family: sans-serif;
+}
+
+.cardScene {
+    width: 400px;
+    height: 250px;
+    perspective: 1000px; /* Essential for the 3D effect */
+}
+
+.flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.8s;
+}
+
+.flashcard.isFlipped {
+    transform: rotateY(180deg);
+}
+
+.cardFace {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Hides the back of the element when it's not facing the screen */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.cardFront {
+    background-color: #ffffff;
+    color: #333;
+}
+
+.cardBack {
+    background-color: #e0f7fa; /* A light blue for the answer side */
+    color: #004d40;
+    transform: rotateY(180deg); /* Pre-rotates the back face */
+}
+
+.cardText {
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 400px;
+    margin-top: 1.5rem;
+}
+
+.navigation button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.navigation button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.navigation button:not(:disabled):hover {
+    background-color: #0056b3;
+}
+
+.shuffleButton {
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.shuffleButton:hover {
+    background-color: #218838;
+}

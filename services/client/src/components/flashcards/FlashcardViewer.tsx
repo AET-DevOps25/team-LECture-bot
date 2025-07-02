@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import type { FlashcardRequestBody, FlashcardResponseBody } from '@src/api/apiClient';
 import { generateFlashcards } from '@src/api/apiClient';
-import type { components } from '@src/shared/api/generated/api';
+import { FlashcardView, type FlashcardResponse } from './FlashcardView';
 
-type FlashcardForDocument = components['schemas']['FlashcardsForDocument'];
 
 function FlashcardViewer() {
-    const [groupedFlashcards, setGroupedFlashcards] = useState<FlashcardForDocument[]>([]);
+    const [groupedFlashcards, setGroupedFlashcards] = useState<FlashcardResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const couseSpaceId = 'CS101'; // Example course space ID
@@ -23,9 +22,9 @@ function FlashcardViewer() {
             const response: FlashcardResponseBody = await generateFlashcards(requestBody);
 
             if (response && response.flashcards) {
-                setGroupedFlashcards(response.flashcards);
+                setGroupedFlashcards(response);
             } else {
-                setGroupedFlashcards([]);
+                setGroupedFlashcards(null);
             }
         } catch (err) {
             console.log("Failed to fetch flashcards:", err);
@@ -44,20 +43,8 @@ function FlashcardViewer() {
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            {groupedFlashcards.length > 0 ? (
-                groupedFlashcards.map((csResult) => (
-                    <div key={csResult.document_id} style={{ marginTop: '20px' }}>
-                        <h3>Document: {csResult.document_id}</h3>
-                        <ul>
-                            {csResult.flashcards && csResult.flashcards.map((flashcard, index) => (
-                                <li key={index}>
-                                    <p><strong>Question:</strong>{flashcard.question}</p>
-                                    <p><strong>Answer:</strong>{flashcard.answer}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))
+            {groupedFlashcards ? (
+                <FlashcardView flashcardData={groupedFlashcards} />
             ) : (
                 !isLoading && <p>No flashcards generated. Click the button to start.</p>
             )}
