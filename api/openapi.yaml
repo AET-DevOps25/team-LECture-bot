@@ -180,6 +180,7 @@ paths:
           description: Bad Request (e.g., validation error, email already in use).
         '401':
           description: Unauthorized.
+
   /profile/password:
     patch:
       summary: Change current user's password
@@ -201,6 +202,7 @@ paths:
           description: Bad Request (e.g., old password incorrect).
         '401':
           description: Unauthorized.
+
   /coursespaces:
     get:
       summary: Get all course spaces for the current user
@@ -216,9 +218,59 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CourseSpace'
+                  $ref: '#/components/schemas/CourseSpaceDto'
         '401':
           description: Unauthorized.
+    post:
+      summary: Create a new course space
+      description: Creates a new course space for the authenticated user.
+      operationId: createCourseSpace
+      tags:
+        - CourseSpaces
+      requestBody:
+        description: The details of the course space to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseSpaceRequest'
+      responses:
+        '201':
+          description: Course space created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSpaceDto'
+        '400':
+          description: Bad Request (e.g., validation error).
+        '401':
+          description: Unauthorized.
+  /coursespaces/{courseSpaceId}:
+    delete:
+      summary: Delete a course space
+      description: Permanently deletes a course space by its ID.
+      operationId: deleteCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId 
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to delete.
+      responses:
+        '204':
+          description: Course space deleted successfully.
+        '400':
+          description: Bad Request (e.g., invalid ID).
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Course space not found.
+
+
 
 components:
   schemas:
@@ -354,7 +406,7 @@ components:
           type: string
           description: A short snippet of the text that was retrieved and used as context.
           example: "LangChain is a framework for developing applications powered by language models."
-    CourseSpace:
+    CourseSpaceDto:
       type: object
       properties:
         id:
@@ -364,6 +416,26 @@ components:
         name:
           type: string
           example: "Introduction to AI"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        owner:
+          $ref: '#/components/schemas/UserProfile'
+    CreateCourseSpaceRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the course space to create.
+          example: "Introduction to AI"
+
     UserProfile:
       type: object
       properties:

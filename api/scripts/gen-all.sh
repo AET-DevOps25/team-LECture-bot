@@ -18,7 +18,7 @@ rm -rf "${TEMP_SERVER_OUTPUT_DIR}"
 mkdir -p "${TEMP_SERVER_OUTPUT_DIR}"
 
 # Using openapi-generator-cli.
-openapi-generator-cli generate \
+npx @openapitools/openapi-generator-cli generate \
     -i "${API_SPEC_FILE}" \
     -g spring \
     -o "${TEMP_SERVER_OUTPUT_DIR}" \
@@ -42,7 +42,7 @@ echo "Generating TypeScript client code..."
 mkdir -p "$(dirname "${CLIENT_OUTPUT_DIR}")"
 
 # Using openapi-typescript.
-openapi-typescript "${API_SPEC_FILE}" --output "${CLIENT_OUTPUT_DIR}/api.ts"
+npx openapi-typescript "${API_SPEC_FILE}" --output "${CLIENT_OUTPUT_DIR}/api.ts"
 
 echo "TypeScript client generated at ${CLIENT_OUTPUT_DIR}/api.ts"
 

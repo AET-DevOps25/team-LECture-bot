@@ -12,10 +12,10 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <nav className="bg-gray-800 text-white p-4 mb-4">
+        <nav className="bg-gray-800 text-white p-4">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/dashboard" className="text-xl font-bold">LECture-bot</Link>
-                <div>
+                <div className="flex items-center">
                     <Link to="/dashboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Dashboard</Link>
                     <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Profile</Link>
                     <button onClick={handleLogout} className="ml-4 px-3 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700">

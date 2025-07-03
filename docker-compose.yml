@@ -30,7 +30,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/${DB_NAME:-lecturebot_db}
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none} # or validate for prod
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update} # or validate for prod
       - GENAI_SERVICE_BASE_URL=http://genai-service:8001 # URL for GenAI service
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
 

@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * QueryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-30T18:33:02.482669+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T19:50:22.687940+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class QueryResponse {
 
   private @Nullable String answer;

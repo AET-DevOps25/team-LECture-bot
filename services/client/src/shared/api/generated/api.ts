@@ -161,8 +161,32 @@ export interface paths {
          */
         get: operations["getCourseSpaces"];
         put?: never;
-        post?: never;
+        /**
+         * Create a new course space
+         * @description Creates a new course space for the authenticated user.
+         */
+        post: operations["createCourseSpace"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coursespaces/{courseSpaceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a course space
+         * @description Permanently deletes a course space by its ID.
+         */
+        delete: operations["deleteCourseSpace"];
         options?: never;
         head?: never;
         patch?: never;
@@ -271,7 +295,7 @@ export interface components {
              */
             retrieved_text_preview: string;
         };
-        CourseSpace: {
+        CourseSpaceDto: {
             /**
              * Format: uuid
              * @example 123e4567-e89b-12d3-a456-426614174000
@@ -279,6 +303,24 @@ export interface components {
             id?: string;
             /** @example Introduction to AI */
             name?: string;
+            /**
+             * Format: date-time
+             * @example 2023-10-01T12:00:00Z
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @example 2023-10-01T12:00:00Z
+             */
+            updated_at?: string;
+            owner?: components["schemas"]["UserProfile"];
+        };
+        CreateCourseSpaceRequest: {
+            /**
+             * @description The name of the course space to create.
+             * @example Introduction to AI
+             */
+            name: string;
         };
         UserProfile: {
             /** Format: int64 */
@@ -592,11 +634,92 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CourseSpace"][];
+                    "application/json": components["schemas"]["CourseSpaceDto"][];
                 };
             };
             /** @description Unauthorized. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The details of the course space to create. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCourseSpaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Course space created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpaceDto"];
+                };
+            };
+            /** @description Bad Request (e.g., validation error). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the course space to delete. */
+                courseSpaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Course space deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request (e.g., invalid ID). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course space not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

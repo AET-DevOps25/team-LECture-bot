@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.UUID;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -16,47 +15,36 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * CourseSpace
+ * CreateCourseSpaceRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-30T18:33:02.482669+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
-public class CourseSpace {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T19:50:22.687940+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+public class CreateCourseSpaceRequest {
 
-  private @Nullable UUID id;
+  private String name;
 
-  private @Nullable String name;
-
-  public CourseSpace id(UUID id) {
-    this.id = id;
-    return this;
+  public CreateCourseSpaceRequest() {
+    super();
   }
 
   /**
-   * Get id
-   * @return id
+   * Constructor with only required parameters
    */
-  @Valid 
-  @Schema(name = "id", example = "123e4567-e89b-12d3-a456-426614174000", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("id")
-  public UUID getId() {
-    return id;
+  public CreateCourseSpaceRequest(String name) {
+    this.name = name;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public CourseSpace name(String name) {
+  public CreateCourseSpaceRequest name(String name) {
     this.name = name;
     return this;
   }
 
   /**
-   * Get name
+   * The name of the course space to create.
    * @return name
    */
-  
-  @Schema(name = "name", example = "Introduction to AI", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "name", example = "Introduction to AI", description = "The name of the course space to create.", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -74,21 +62,19 @@ public class CourseSpace {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CourseSpace courseSpace = (CourseSpace) o;
-    return Objects.equals(this.id, courseSpace.id) &&
-        Objects.equals(this.name, courseSpace.name);
+    CreateCourseSpaceRequest createCourseSpaceRequest = (CreateCourseSpaceRequest) o;
+    return Objects.equals(this.name, createCourseSpaceRequest.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CourseSpace {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("class CreateCourseSpaceRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("}");
     return sb.toString();

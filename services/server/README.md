@@ -257,3 +257,73 @@ Ensure all services are running via docker-compose up --build.
 ```
 
 *Expected Output*: JSON response (answer and citations) from the genai-service relayed by the server. Check server and genai-service logs.
+
+
+## 5. Manage Course Spaces
+All endpoints in this section require authentication. You must include the Authorization: Bearer <YOUR_JWT_TOKEN> header in your requests.
+
+1. Get All Course Spaces
+
+- Endpoint: `GET /api/v1/coursespaces`
+- Description: Retrieves a list of all course spaces for the currently authenticated user.
+
+`curl` Example:
+```bash
+curl -X GET http://localhost:8080/api/v1/coursespaces \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+```
+*Expected Success Response (200 OK)*: 
+```json
+[
+    {
+        "id": "generated-uuid-1",
+        "name": "Introduction to AI"
+    },
+    {
+        "id": "generated-uuid-2",
+        "name": "Software Engineering"
+    }
+]
+```
+
+
+2. Create a new CourseSpace
+
+- Endpoint: `POST /api/v1/coursespaces`
+- Description: Creates a new course space for the user.
+- Request Body (JSON):
+- name: (String) The name of the new course space. Required.
+
+`curl` Example:
+```bash
+curl -X POST http://localhost:8080/api/v1/coursespaces \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Advanced Algorithms"}'
+```
+
+*Expected Success Response (201 Created):*
+```json
+{
+    "id": "newly-generated-uuid",
+    "name": "Advanced Algorithms"
+}
+```
+
+3. Delete a Course Space
+- Endpoint: `DELETE /api/v1/coursespaces/{courseSpaceId}`
+- Description: Deletes a specific course space by its ID.
+- `curl` Example:
+```bash
+curl -X DELETE http://localhost:8080/api/v1/coursespaces/{newly-generated-uuid} \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+```
+
+*Expected Success Response (204 No Content):* An empty response with a 204 status code indicates successful deletion.
+
+
+
+##6. Check OPENAPI docs
+You can see the OpenAPI Swagger UI documentation by navigating to the following URL in your web browser once the server is running:
+
+[`http://localhost:8080/api/v1/swagger-ui.html`](http://localhost:8080/api/v1/swagger-ui/index.html) (when started)

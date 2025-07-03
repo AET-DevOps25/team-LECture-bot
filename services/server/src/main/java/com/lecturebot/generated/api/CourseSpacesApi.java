@@ -5,7 +5,9 @@
  */
 package com.lecturebot.generated.api;
 
-import com.lecturebot.generated.model.CourseSpace;
+import com.lecturebot.generated.model.CourseSpaceDto;
+import com.lecturebot.generated.model.CreateCourseSpaceRequest;
+import java.util.UUID;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-30T18:33:02.482669+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T19:50:22.687940+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "CourseSpaces", description = "the CourseSpaces API")
 public interface CourseSpacesApi {
@@ -41,6 +43,93 @@ public interface CourseSpacesApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * POST /coursespaces : Create a new course space
+     * Creates a new course space for the authenticated user.
+     *
+     * @param createCourseSpaceRequest The details of the course space to create. (required)
+     * @return Course space created successfully. (status code 201)
+     *         or Bad Request (e.g., validation error). (status code 400)
+     *         or Unauthorized. (status code 401)
+     */
+    @Operation(
+        operationId = "createCourseSpace",
+        summary = "Create a new course space",
+        description = "Creates a new course space for the authenticated user.",
+        tags = { "CourseSpaces" },
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Course space created successfully.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = CourseSpaceDto.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad Request (e.g., validation error)."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized.")
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/coursespaces",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    
+    default ResponseEntity<CourseSpaceDto> createCourseSpace(
+        @Parameter(name = "CreateCourseSpaceRequest", description = "The details of the course space to create.", required = true) @Valid @RequestBody CreateCourseSpaceRequest createCourseSpaceRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    /**
+     * DELETE /coursespaces/{courseSpaceId} : Delete a course space
+     * Permanently deletes a course space by its ID.
+     *
+     * @param courseSpaceId The ID of the course space to delete. (required)
+     * @return Course space deleted successfully. (status code 204)
+     *         or Bad Request (e.g., invalid ID). (status code 400)
+     *         or Unauthorized. (status code 401)
+     *         or Course space not found. (status code 404)
+     */
+    @Operation(
+        operationId = "deleteCourseSpace",
+        summary = "Delete a course space",
+        description = "Permanently deletes a course space by its ID.",
+        tags = { "CourseSpaces" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Course space deleted successfully."),
+            @ApiResponse(responseCode = "400", description = "Bad Request (e.g., invalid ID)."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized."),
+            @ApiResponse(responseCode = "404", description = "Course space not found.")
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = "/coursespaces/{courseSpaceId}"
+    )
+    
+    default ResponseEntity<Void> deleteCourseSpace(
+        @Parameter(name = "courseSpaceId", description = "The ID of the course space to delete.", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") UUID courseSpaceId
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * GET /coursespaces : Get all course spaces for the current user
@@ -56,7 +145,7 @@ public interface CourseSpacesApi {
         tags = { "CourseSpaces" },
         responses = {
             @ApiResponse(responseCode = "200", description = "A list of the user's course spaces.", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseSpace.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseSpaceDto.class)))
             }),
             @ApiResponse(responseCode = "401", description = "Unauthorized.")
         },
@@ -70,13 +159,13 @@ public interface CourseSpacesApi {
         produces = { "application/json" }
     )
     
-    default ResponseEntity<List<CourseSpace>> getCourseSpaces(
+    default ResponseEntity<List<CourseSpaceDto>> getCourseSpaces(
         
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"name\" : \"Introduction to AI\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"name\" : \"Introduction to AI\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
+                    String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
