@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-26T03:58:34.910092+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-04T15:24:09.205210+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Profile", description = "the Profile API")
 public interface ProfileApi {
@@ -165,7 +165,7 @@ public interface ProfileApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"requireReauth\" : false, \"message\" : \"Profile updated successfully.\", \"userProfile\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" } }";
+                    String exampleString = "{ \"message\" : \"Profile updated successfully.\", \"userProfile\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"require_reauth\" : false }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

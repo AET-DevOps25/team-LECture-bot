@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import type { components } from "@src/shared/api/generated/api";
-import styles from "./FlashcardView.module.css";
 
 export type Flashcard = components["schemas"]["Flashcard"];
 export type FlashcardResponse = components["schemas"]["FlashcardResponse"];
@@ -60,28 +59,49 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ flashcardData }) =
     const currentCard = shuffledCards[currentIndex];
 
     return (
-        <div className={styles.flashcardContainer}>
-            <div className={styles.cardScene}>
+        <div className="flex flex-col items-center gap-6">
+            {/* The 3D container for the card flip effect */}
+            <div className="w-full max-w-xl h-64 [perspective:1000px]">
                 <div
-                    className={`${styles.flashcard} ${isFlipped ? styles.isFlipped : ''}`}
+                    className={`relative w-full h-full text-center transition-transform duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}
                     onClick={() => setIsFlipped(!isFlipped)}
                 >
-                    <div className={`${styles.cardFace} ${styles.cardFront}`}>
-                        <p className={styles.cardText}>{currentCard.question}</p>
+                    {/* Front of Card */}
+                    <div className="absolute w-full h-full p-6 bg-white border border-gray-200 rounded-xl shadow-lg flex items-center justify-center cursor-pointer [backface-visibility:hidden]">
+                        <p className="text-2xl font-semibold text-gray-800">{currentCard.question}</p>
                     </div>
-                    <div className={`${styles.cardFace} ${styles.cardBack}`}>
-                        <p className={styles.cardText}>{currentCard.answer}</p>
+
+                    {/* Back of Card */}
+                    <div className="absolute w-full h-full p-6 bg-blue-50 border border-blue-200 rounded-xl shadow-lg flex items-center justify-center cursor-pointer [transform:rotateY(180deg)] [backface-visibility:hidden]">
+                        <p className="text-xl text-gray-700">{currentCard.answer}</p>
                     </div>
                 </div>
             </div>
 
-            <div className={styles.navigation}>
-                <button onClick={goPrevious} disabled={currentIndex === 0}> &larr; Previous</button>
-                <span>{currentIndex + 1} / {shuffledCards.length}</span>
-                <button onClick={goNext} disabled={currentIndex === shuffledCards.length - 1}>Next &rarr;</button>
+            {/* Navigation Controls */}
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={goPrevious}
+                    disabled={currentIndex === 0}
+                    className="px-4 py-2 font-bold text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                    &larr; Previous
+                </button>
+                <span className="text-gray-700 font-medium">{currentIndex + 1} / {shuffledCards.length}</span>
+                <button
+                    onClick={goNext}
+                    disabled={currentIndex === shuffledCards.length - 1}
+                    className="px-4 py-2 font-bold text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                    Next &rarr;
+                </button>
             </div>
 
-            <button onClick={handleShuffle} className={styles.shuffleButton}>
+            {/* Shuffle Button */}
+            <button
+                onClick={handleShuffle}
+                className="px-5 py-2 font-semibold text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition-colors"
+            >
                 Shuffle Deck
             </button>
         </div>

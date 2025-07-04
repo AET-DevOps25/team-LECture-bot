@@ -12,7 +12,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException; // Added import
 import org.springframework.stereotype.Service;
 
@@ -27,9 +29,9 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtTokenProvider jwtTokenProvider) {
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -66,10 +68,9 @@ public class UserService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
+                            loginRequest.getPassword()));
 
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
             return new LoginResponse().token(jwt);
         } catch (AuthenticationException e) {
@@ -77,7 +78,8 @@ public class UserService {
             throw new RuntimeException("Invalid credentials", e);
         }
     }
-/**
+
+    /**
      * Retrieves the profile of a user by email.
      *
      * @param email The email of the user.
@@ -99,7 +101,8 @@ public class UserService {
      * @param oldEmail The current email of the user (used to find the user).
      * @param request  The request containing new name and email.
      * @return Updated UserProfile DTO.
-     * @throws IllegalArgumentException if the new email already exists for another user.
+     * @throws IllegalArgumentException  if the new email already exists for another
+     *                                   user.
      * @throws UsernameNotFoundException if the user is not found.
      */
     public UserProfile updateUserProfile(String oldEmail, UpdateUserProfileRequest request) {
@@ -124,5 +127,25 @@ public class UserService {
         }
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    public User getCurrentAuthenticatedUser() {
+        // Get the authentication object from the security context
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        // Look up the user in the database and return it
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 }

@@ -52,16 +52,15 @@ public class SecurityConfig {
                                                                                                               // sessions
                                                                                                               // for JWT
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        // .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
-                        // requests
-                        .requestMatchers("/auth/**", "/health").permitAll() // Permit auth and health endpoints
-                        .anyRequest().permitAll()// .authenticated() // Secure all other endpoints
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Allow
+                        .requestMatchers("/auth/**", "/health", "/genai/**").permitAll()
+                        // "/coursespaces/**").permitAll()
+                        .anyRequest().authenticated() // Secure all other endpoints
                 );
 
         // Add the JWT filter before the standard username/password authentication
         // filter
-        // http.addFilterBefore(jwtAuthenticationFilter,
-        // UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

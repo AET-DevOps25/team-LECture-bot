@@ -1,40 +1,41 @@
 .
-├── LICENSE
-├── README.md
 ├── api
+│   ├── openapi.yaml
+│   └── scripts
+│       └── gen-all.sh
 ├── compose.aws.yml
 ├── docker-compose.yml
 ├── docs
-│   ├── AnalysisObjectModel.pdf
 │   ├── analysis-object-model-description.md
+│   ├── AnalysisObjectModel.pdf
 │   ├── architecture-description.md
 │   ├── architecture.png
 │   ├── component-diagram-explanation.md
 │   ├── component-diagram-plantuml-version.png
 │   ├── component-diagram.png
+│   ├── genai-getting-started.md
 │   ├── initial_concept.md
 │   ├── use-case-diagram-explanation.md
 │   └── use-case-diagram.png
 ├── errors.txt
 ├── helm
-│   ├── README.md
-│   └── lecture-bot-app
-│       ├── Chart.yaml
-│       ├── templates
-│       │   ├── app-config.yaml
-│       │   ├── client-config.yaml
-│       │   ├── client-deployment.yaml
-│       │   ├── client-service.yaml
-│       │   ├── db-deployment.yaml
-│       │   ├── db-init-configmap.yaml
-│       │   ├── db-service.yaml
-│       │   ├── ingress.yaml
-│       │   ├── pvc.yaml
-│       │   ├── server-deployment.yaml
-│       │   └── server-service.yaml
-│       └── values.yaml
+│   ├── lecture-bot-app
+│   │   ├── Chart.yaml
+│   │   ├── templates
+│   │   │   ├── app-config.yaml
+│   │   │   ├── client-config.yaml
+│   │   │   ├── client-deployment.yaml
+│   │   │   ├── client-service.yaml
+│   │   │   ├── db-deployment.yaml
+│   │   │   ├── db-init-configmap.yaml
+│   │   │   ├── db-service.yaml
+│   │   │   ├── ingress.yaml
+│   │   │   ├── pvc.yaml
+│   │   │   ├── server-deployment.yaml
+│   │   │   └── server-service.yaml
+│   │   └── values.yaml
+│   └── README.md
 ├── infra
-│   ├── README.md
 │   ├── ansible
 │   │   ├── playbook.yml
 │   │   └── roles
@@ -43,17 +44,19 @@
 │   │               ├── install_packages.yml
 │   │               ├── main.yml
 │   │               └── post_install.yml
+│   ├── README.md
 │   └── terraform
 │       ├── main.tf
 │       └── terraform.tfvars
-├── node_modules
-│   └── @types
+├── LICENSE
+├── openapitools.json
 ├── package-lock.json
 ├── package.json
+├── qa.md
+├── README.md
 ├── services
 │   ├── client
 │   │   ├── Dockerfile
-│   │   ├── README.md
 │   │   ├── eslint.config.js
 │   │   ├── index.html
 │   │   ├── nginx.conf
@@ -63,11 +66,12 @@
 │   │   ├── public
 │   │   │   ├── config.json
 │   │   │   └── vite.svg
+│   │   ├── README.md
 │   │   ├── src
-│   │   │   ├── App.css
-│   │   │   ├── App.tsx
 │   │   │   ├── api
 │   │   │   │   └── apiClient.ts
+│   │   │   ├── App.css
+│   │   │   ├── App.tsx
 │   │   │   ├── assets
 │   │   │   │   └── react.svg
 │   │   │   ├── components
@@ -86,6 +90,10 @@
 │   │   │   │   └── SignUpPage.tsx
 │   │   │   ├── router
 │   │   │   │   └── index.tsx
+│   │   │   ├── shared
+│   │   │   │   └── api
+│   │   │   │       └── generated
+│   │   │   │           └── api.ts
 │   │   │   ├── utils
 │   │   │   │   └── storage.ts
 │   │   │   └── vite-env.d.ts
@@ -95,136 +103,205 @@
 │   │   ├── tsconfig.node.json
 │   │   └── vite.config.ts
 │   ├── genai
+│   │   ├── Dockerfile
+│   │   ├── poetry.lock
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   └── genai
+│   │   │       ├── api
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── routers
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── indexing.py
+│   │   │       │   │   └── query.py
+│   │   │       │   └── schemas.py
+│   │   │       ├── core
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── config.py
+│   │   │       │   ├── exceptions.py
+│   │   │       │   ├── llm_client.py
+│   │   │       │   └── llm_factory.py
+│   │   │       ├── main.py
+│   │   │       ├── pipelines
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── indexing_pipeline.py
+│   │   │       │   └── qa_pipeline.py
+│   │   │       ├── services
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── embedding_service.py
+│   │   │       │   ├── llm_service.py
+│   │   │       │   ├── text_processing_service.py
+│   │   │       │   └── vector_store_service.py
+│   │   │       └── utils
+│   │   │           └── __init__.py
+│   │   └── tests
+│   │       ├── __init__.py
+│   │       ├── integration
+│   │       │   └── __init__.py
+│   │       └── unit
+│   │           └── __init__.py
 │   └── server
-│       ├── Dockerfile
-│       ├── README.md
 │       ├── bin
-│       │   ├── default
 │       │   ├── generated-sources
 │       │   │   └── annotations
 │       │   └── main
 │       │       ├── application.properties
 │       │       └── com
 │       │           └── lecturebot
-│       │               ├── LectureBotApplication.class
 │       │               ├── config
+│       │               │   ├── AppConfig.class
 │       │               │   └── SecurityConfig.class
 │       │               ├── controller
 │       │               │   ├── AuthController.class
+│       │               │   ├── GenAiTestController.class
 │       │               │   ├── HealthController.class
 │       │               │   └── ProfileController.class
-│       │               ├── dto
-│       │               │   ├── ChangePasswordRequest.class
-│       │               │   ├── LoginRequest.class
-│       │               │   ├── LoginResponse.class
-│       │               │   ├── RegisterRequest.class
-│       │               │   ├── UpdateUserProfileRequest.class
-│       │               │   └── UserDto.class
 │       │               ├── entity
 │       │               │   └── User.class
+│       │               ├── generated
+│       │               │   ├── api
+│       │               │   │   ├── ApiUtil.class
+│       │               │   │   ├── AuthenticationApi.class
+│       │               │   │   ├── GenAiApi.class
+│       │               │   │   ├── HealthApi.class
+│       │               │   │   └── ProfileApi.class
+│       │               │   └── model
+│       │               │       ├── ChangePasswordRequest.class
+│       │               │       ├── HealthStatus.class
+│       │               │       ├── IndexRequest.class
+│       │               │       ├── IndexResponse.class
+│       │               │       ├── LoginRequest.class
+│       │               │       ├── LoginResponse.class
+│       │               │       ├── QueryRequest.class
+│       │               │       ├── QueryResponse.class
+│       │               │       ├── RegisterRequest.class
+│       │               │       ├── UpdateUserProfileRequest.class
+│       │               │       ├── UpdateUserProfileResponse.class
+│       │               │       └── UserProfile.class
+│       │               ├── LectureBotApplication.class
 │       │               ├── repository
 │       │               │   └── UserRepository.class
 │       │               ├── security
 │       │               │   ├── JwtAuthenticationFilter.class
 │       │               │   └── JwtTokenProvider.class
 │       │               └── service
+│       │                   ├── genai
+│       │                   │   └── GenAiClient.class
 │       │                   └── UserService.class
+│       ├── build
+│       │   ├── classes
+│       │   │   └── java
+│       │   │       ├── main
+│       │   │       │   └── com
+│       │   │       │       └── lecturebot
+│       │   │       │           ├── config
+│       │   │       │           │   ├── AppConfig.class
+│       │   │       │           │   └── SecurityConfig.class
+│       │   │       │           ├── controller
+│       │   │       │           │   ├── AuthController.class
+│       │   │       │           │   ├── GenAiController.class
+│       │   │       │           │   ├── HealthController.class
+│       │   │       │           │   └── ProfileController.class
+│       │   │       │           ├── entity
+│       │   │       │           │   └── User.class
+│       │   │       │           ├── generated
+│       │   │       │           │   ├── api
+│       │   │       │           │   │   ├── ApiUtil.class
+│       │   │       │           │   │   ├── AuthenticationApi.class
+│       │   │       │           │   │   ├── GenAiApi.class
+│       │   │       │           │   │   ├── HealthApi.class
+│       │   │       │           │   │   └── ProfileApi.class
+│       │   │       │           │   └── model
+│       │   │       │           │       ├── ChangePasswordRequest.class
+│       │   │       │           │       ├── Citation.class
+│       │   │       │           │       ├── HealthStatus.class
+│       │   │       │           │       ├── IndexRequest.class
+│       │   │       │           │       ├── IndexResponse.class
+│       │   │       │           │       ├── LoginRequest.class
+│       │   │       │           │       ├── LoginResponse.class
+│       │   │       │           │       ├── QueryRequest.class
+│       │   │       │           │       ├── QueryResponse.class
+│       │   │       │           │       ├── RegisterRequest.class
+│       │   │       │           │       ├── UpdateUserProfileRequest.class
+│       │   │       │           │       └── UserProfile.class
+│       │   │       │           ├── LectureBotApplication.class
+│       │   │       │           ├── repository
+│       │   │       │           │   └── UserRepository.class
+│       │   │       │           ├── security
+│       │   │       │           │   ├── JwtAuthenticationFilter.class
+│       │   │       │           │   └── JwtTokenProvider.class
+│       │   │       │           └── service
+│       │   │       │               ├── genai
+│       │   │       │               │   └── GenAiClient.class
+│       │   │       │               └── UserService.class
+│       │   │       └── test
+│       │   ├── reports
+│       │   │   └── problems
+│       │   │       └── problems-report.html
+│       │   └── resources
+│       │       ├── main
+│       │       │   └── application.properties
+│       │       └── test
 │       ├── build.gradle
 │       ├── db-init
 │       │   └── init-users.sql
 │       ├── docker-compose.yml
+│       ├── Dockerfile
 │       ├── gradle
 │       │   └── wrapper
 │       │       ├── gradle-wrapper.jar
 │       │       └── gradle-wrapper.properties
 │       ├── gradlew
 │       ├── gradlew.bat
+│       ├── README.md
 │       └── src
 │           └── main
 │               ├── java
 │               │   └── com
 │               │       └── lecturebot
-│               │           ├── LectureBotApplication.java
 │               │           ├── config
+│               │           │   ├── AppConfig.java
 │               │           │   └── SecurityConfig.java
 │               │           ├── controller
 │               │           │   ├── AuthController.java
+│               │           │   ├── GenAiTestController.java
 │               │           │   ├── HealthController.java
 │               │           │   └── ProfileController.java
-│               │           ├── dto
-│               │           │   ├── ChangePasswordRequest.java
-│               │           │   ├── LoginRequest.java
-│               │           │   ├── LoginResponse.java
-│               │           │   ├── RegisterRequest.java
-│               │           │   ├── UpdateUserProfileRequest.java
-│               │           │   └── UserDto.java
 │               │           ├── entity
 │               │           │   └── User.java
+│               │           ├── generated
+│               │           │   ├── api
+│               │           │   │   ├── ApiUtil.java
+│               │           │   │   ├── AuthenticationApi.java
+│               │           │   │   ├── GenAiApi.java
+│               │           │   │   ├── HealthApi.java
+│               │           │   │   └── ProfileApi.java
+│               │           │   └── model
+│               │           │       ├── ChangePasswordRequest.java
+│               │           │       ├── HealthStatus.java
+│               │           │       ├── IndexRequest.java
+│               │           │       ├── IndexResponse.java
+│               │           │       ├── LoginRequest.java
+│               │           │       ├── LoginResponse.java
+│               │           │       ├── QueryRequest.java
+│               │           │       ├── QueryResponse.java
+│               │           │       ├── RegisterRequest.java
+│               │           │       ├── UpdateUserProfileRequest.java
+│               │           │       ├── UpdateUserProfileResponse.java
+│               │           │       └── UserProfile.java
+│               │           ├── LectureBotApplication.java
 │               │           ├── repository
 │               │           │   └── UserRepository.java
 │               │           ├── security
 │               │           │   ├── JwtAuthenticationFilter.java
 │               │           │   └── JwtTokenProvider.java
 │               │           └── service
+│               │               ├── genai
+│               │               │   └── GenAiClient.java
 │               │               └── UserService.java
 │               └── resources
 │                   └── application.properties
-├── tree.txt
-└── venv
-    └── lib
-        └── python3.12
-            └── site-packages
-                ├── build
-                │   ├── __init__.py
-                │   ├── __main__.py
-                │   ├── __pycache__
-                │   │   ├── __init__.cpython-312.pyc
-                │   │   ├── __main__.cpython-312.pyc
-                │   │   ├── _builder.cpython-312.pyc
-                │   │   ├── _ctx.cpython-312.pyc
-                │   │   ├── _exceptions.cpython-312.pyc
-                │   │   ├── _types.cpython-312.pyc
-                │   │   ├── _util.cpython-312.pyc
-                │   │   ├── env.cpython-312.pyc
-                │   │   └── util.cpython-312.pyc
-                │   ├── _builder.py
-                │   ├── _compat
-                │   │   ├── __init__.py
-                │   │   ├── __pycache__
-                │   │   │   ├── __init__.cpython-312.pyc
-                │   │   │   ├── importlib.cpython-312.pyc
-                │   │   │   ├── tarfile.cpython-312.pyc
-                │   │   │   └── tomllib.cpython-312.pyc
-                │   │   ├── importlib.py
-                │   │   ├── tarfile.py
-                │   │   └── tomllib.py
-                │   ├── _ctx.py
-                │   ├── _exceptions.py
-                │   ├── _types.py
-                │   ├── _util.py
-                │   ├── env.py
-                │   ├── py.typed
-                │   └── util.py
-                └── pip
-                    └── _internal
-                        └── operations
-                            └── build
-                                ├── __init__.py
-                                ├── __pycache__
-                                │   ├── __init__.cpython-312.pyc
-                                │   ├── build_tracker.cpython-312.pyc
-                                │   ├── metadata.cpython-312.pyc
-                                │   ├── metadata_editable.cpython-312.pyc
-                                │   ├── metadata_legacy.cpython-312.pyc
-                                │   ├── wheel.cpython-312.pyc
-                                │   ├── wheel_editable.cpython-312.pyc
-                                │   └── wheel_legacy.cpython-312.pyc
-                                ├── build_tracker.py
-                                ├── metadata.py
-                                ├── metadata_editable.py
-                                ├── metadata_legacy.py
-                                ├── wheel.py
-                                ├── wheel_editable.py
-                                └── wheel_legacy.py
+└── tree.txt
 
-71 directories, 157 files
+98 directories, 207 files

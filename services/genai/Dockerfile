@@ -1,49 +1,31 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim AS builder
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install Poetry
-RUN pip install poetry==1.7.1 # Or your preferred/latest compatible version
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy only necessary files for installing dependencies
-COPY poetry.lock pyproject.toml ./
-
-# Export dependencies to requirements.txt
-# --without-hashes: Simplifies installation in Docker, though hashes add security.
-# --no-dev: Excludes development dependencies.
-# RUN poetry export -f requirements.txt --output requirements.txt --without-hashes --extras "standard"
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
-
-
-
-RUN echo "--- requirements.txt content ---" && cat requirements.txt && echo "--- end requirements.txt ---"
-
-# --- Second Stage: Final Image ---
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Set the working directory in the container
+# Set environment variables to optimize python and poetry
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
+ENV PYTHONPATH=/app/src
+
 WORKDIR /app
 
-# Copy requirements.txt from the builder stage
-COPY --from=builder /app/requirements.txt .
+# Install system dependencies, including curl for the healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install dependencies using pip
-RUN pip install --no-cache-dir -r requirements.txt
+# Install poetry
+RUN pip install --no-cache-dir poetry
 
-# Copy the application source code
-COPY ./src/genai ./genai
+# Copy only the dependency files to leverage Docker cache
+COPY poetry.lock pyproject.toml ./
 
-# Expose the port the app runs on
-EXPOSE 8001
+# Install dependencies
+RUN poetry install --no-root --no-interaction --no-ansi
 
-# Define the command to run the application
-# Note: We use 0.0.0.0 to bind to all available network interfaces in the container
-CMD ["python", "-m", "uvicorn", "genai.main:app", "--host", "0.0.0.0", "--port", "8001"]
+# Copy the rest of the application code
+COPY ./src ./src
+
+# Command to run the application
+CMD ["poetry", "run", "uvicorn", "src.genai.main:app", "--host", "0.0.0.0", "--port", "8001"]

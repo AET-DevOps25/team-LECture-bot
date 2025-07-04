@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * ChangePasswordRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-26T03:58:34.910092+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-04T15:24:09.205210+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class ChangePasswordRequest {
 
   private @Nullable String oldPassword;
@@ -35,8 +35,8 @@ public class ChangePasswordRequest {
    * @return oldPassword
    */
   
-  @Schema(name = "oldPassword", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("oldPassword")
+  @Schema(name = "old_password", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("old_password")
   public String getOldPassword() {
     return oldPassword;
   }
@@ -55,8 +55,8 @@ public class ChangePasswordRequest {
    * @return newPassword
    */
   @Size(min = 8) 
-  @Schema(name = "newPassword", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("newPassword")
+  @Schema(name = "new_password", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("new_password")
   public String getNewPassword() {
     return newPassword;
   }

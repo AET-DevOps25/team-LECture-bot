@@ -21,6 +21,10 @@ app.include_router(flashcard.router, prefix="/api/v1/flashcards", tags=["flashca
 async def health_check():
     return {"status": "healthy", "module_name": settings.APP_NAME, "version": app.version}
 
+@app.get("/health", summary="Container Health Check", tags=["Monitoring"])
+def container_health_check():
+    return {"status": "healthy", "module_name": settings.APP_NAME, "version": app.version}
+
 # Optional: Basic root endpoint
 @app.get("/", tags=["Root"])
 async def read_root():

@@ -1,77 +1,43 @@
-import './App.css'
-import { Routes, Route, Link } from 'react-router-dom';
-import HomePage from '@pages/Home';
-import AboutPage from '@pages/About';
-import SignUpPage from '@pages/SignUpPage';
-import SignInPage from '@pages/SignInPage';
-import ProtectedRoute from '@components/auth/ProtectedRoute';
-import ProfilePage from '@pages/ProfilePage'; // <-- Add this import
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import FlashcardViewer from '@src/components/flashcards/FlashcardViewer';
 
-function Dashboard() {
-    return (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
-            <h1 className="text-4xl font-bold text-indigo-400">Welcome to your Dashboard!</h1>
-            <p className="mt-4">You have successfully logged in.</p>
-            <h2 className="mt-6 text-2xl">Flashcards:</h2>
-            <FlashcardViewer />
-        </div>
-    );
-}
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from '@pages/ProfilePage';
+import CourseSpacePage from './pages/CourseSpacePage';
+import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
-    const { isAuthenticated, logout } = useAuth();
+    const auth = useAuth();
+    const location = useLocation();
+
+    // Do not render Navbar on login/register pages
+    const showNavbar = auth.isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register';
 
     return (
-        <div>
-            {/* Basic Navigation (optional, for testing) */}
-            <nav className="bg-gray-800 p-4 text-white">
-                <ul className="flex space-x-4">
-                    <li>
-                        <Link to="/" className="hover:text-gray-300">Home</Link>
-                    </li>
-                    <li>
-                        <Link to="/about" className="hover:text-gray-300">About</Link>
-                    </li>
-                    {isAuthenticated && (
-                        <li>
-                            <Link to="/profile" className="hover:text-gray-300">Profile</Link>
-                        </li>
-                    )}
-                    {!isAuthenticated ? (
-                        <>
-                            <li>
-                                <Link to="/signup" className="hover:text-gray-300">Sign Up</Link>
-                            </li>
-                            <li>
-                                <Link to="/login" className="hover:text-gray-300">Login</Link>
-                            </li>
-                        </>
-                    ) : (
-                        <>
-                            <li>
-                                <Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link>
-                            </li>
-                            <li>
-                                <Link to="/" onClick={logout} className="hover:text-gray-300">Logout</Link>
-                            </li>
-                        </>
-                    )}
-                </ul>
-            </nav>
-            {/* Page Content */}
-            <div className="p-6">
+        <div className="min-h-screen bg-gray-50">
+            {showNavbar && <Navbar />}
+            <main className="p-4 sm:p-6">
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/signup" element={<SignUpPage />} />
-                    <Route path="/login" element={<SignInPage />} />
-                    <Route element={<ProtectedRoute />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/profile" element={<ProfilePage />} /> {/* <-- Add this route */}
-                    </Route>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+
+                    {/* Protected Routes */}
+                    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                    <Route path="/coursespaces/:courseSpaceId" element={<ProtectedRoute><CourseSpacePage /></ProtectedRoute>} />
+
+                    {/* Default route */}
+                    <Route
+                        path="*"
+                        element={
+                            <Navigate to={auth.isAuthenticated ? "/dashboard" : "/login"} replace />
+                        }
+                    />
                 </Routes>
-            </div>
+            </main>
         </div>
     );
 }

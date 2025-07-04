@@ -182,56 +182,25 @@ Expected Error Response (400 Bad Request):
 
 ### 4. Manage User Profile (Update Profile & Change Password)
 
-This section is temporarily removed as the ProfileController is not yet integrated with the API-driven design. Functionality will be re-introduced once defined in the OpenAPI specification.
+a. **Update Profile (Name/Email)**
+   - **Endpoint:** `PUT /api/v1/profile`
+   - **`curl` Example:**
+     ```bash
+     curl -X PUT http://localhost:8080/api/v1/profile \
+       -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+       -H "Content-Type: application/json" \
+       -d '{"name": "New Name", "email": "new.email@example.com"}'
+     ```
 
-a. Update Profile (Name/Email)
-
-* Endpoint: PUT /api/v1/users/me
-
-Request Body Example:
-
-```json
-{ "name": "New Name", "email": "new.email@example.com" } 
-```
-
-Curl Example
-
-```bash
- curl -X PUT <http://localhost:8080/api/v1/users/me>
--H "Authorization: Bearer "
--H "Content-Type: application/json"
--d '{"name": "New Name", "email": "<new.email@example.com>"}'
-```
-
-Expected Response:
-200 OK with the updated user object, or an error message if validation fails or the email is already taken.
-
-Example successful response:
-
-```json
-{ "id": 6, "email": "new.email@example.com", "passwordHash": "$2a$10$JCnEfokhtT4igB3manzAtuidgWwE3jlpSEsRfHgq/JXgvnmcoqOUO", "name": "New Name" } 
-```
-
-b. Change Password
-
-* Endpoint: POST /api/v1/users/me/change-password
-Request Body Example:
-
-```json
-{ "currentPassword": "oldpassword123", "newPassword": "newpassword456" }
-```
-
-Curl Example
-
-```bash
- curl -X POST http://localhost:8080/api/v1/users/me/change-password
--H "Authorization: Bearer "
--H "Content-Type: application/json"
--d '{"currentPassword": "oldpassword123", "newPassword": "newpassword456"}' 
-```
-
-Expected Response:
-200 OK on success, or an error message if the current password is incorrect or validation fails.
+b. **Change Password**
+   - **Endpoint:** `PATCH /api/v1/profile/password`
+   - **`curl` Example:**
+     ```bash
+     curl -X PATCH http://localhost:8080/api/v1/profile/password \
+       -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+       -H "Content-Type: application/json" \
+       -d '{"old_password": "oldpassword123", "new_password": "newpassword456"}'
+     ```
 
 c. Using the Frontend UI
 
@@ -242,19 +211,18 @@ Note:
 If you receive a 401 Unauthorized error, ensure your JWT is valid
 
 ## Testing Server + GenAI Integration Endpoints
-
-The server includes test endpoints under `/api/v1/test/genai/` to specifically test the communication with the `genai-service` via the `GenAiClient`.
+The server includes endpoints under `/api/v1/genai/` to test communication with the `genai-service` via the `GenAiClient`.
 
 ### Temporarily Disabling Security for Test Endpoints (Development Only)
 
-By default, Spring Security protects most endpoints. For easier testing of the test endpoints without handling authentication tokens, you can temporarily modify the `SecurityConfig.java` in the server application.
+By default, Spring Security protects most endpoints. For easier testing of the `/api/v1/genai/**` endpoints without handling authentication tokens, you can temporarily modify the `SecurityConfig.java` in the server application.
 
 File: services/server/src/main/java/com/lecturebot/config/SecurityConfig.java
 
-Add .requestMatchers("/test/genai/**").permitAll() to your security configuration. Example:
+Add .requestMatchers("/genai/**").permitAll() to your security configuration. Example:
 
 ```java
-// Inside SecurityConfig.java, within the securityFilterChain method: http .csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz .requestMatchers("/test/genai/").permitAll() // <<< ADD THIS LINE .requestMatchers("/auth/", "/health").permitAll() .anyRequest().authenticated() ) // ... other configurations ... 
+// Inside SecurityConfig.java, within the securityFilterChain method: http .csrf(csrf -> csrf.disable()) .authorizeHttpRequests(authz -> authz .requestMatchers("/genai/**").permitAll() // <<< ADD THIS LINE .requestMatchers("/auth/", "/health").permitAll() .anyRequest().authenticated() ) // ... other configurations ... 
 ```
 
 Important: After adding this line, rebuild and restart the server service:
@@ -273,9 +241,9 @@ Ensure all services are running via docker-compose up --build.
 1. Test Indexing Document via Server: This sends a request to the server, which then calls the genai-service.
 
 ```bash
- curl -X POST "http://localhost:8080/api/v1/test/genai/index"
--H "Content-Type: application/json"
--d '{ "document_id": "server-readme-test-doc-001", "course_space_id": "cs-readme-test-101", "text_content": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }' 
+ curl -X POST "http://localhost:8080/api/v1/genai/index" \
+-H "Content-Type: application/json" \
+-d '{ "document_id": "server-readme-test-doc-001", "course_space_id": "cs-readme-test-101", "text_content": "This is a test document sent via the server to the GenAI service for README instructions. It talks about Spring Boot and RestTemplate." }'
 ```
 
 *Expected Output*: JSON response from the genai-service relayed by the server, or an error message if the call failed. Check server and genai-service logs.
@@ -283,9 +251,79 @@ Ensure all services are running via docker-compose up --build.
 2. Test Submitting Query via Server:
 
 ```bash
- curl -X POST "http://localhost:8080/api/v1/test/genai/query"
--H "Content-Type: application/json"
--d '{ "query_text": "What does this document about README instructions talk about?", "course_space_id": "cs-readme-test-101" }' 
+ curl -X POST "http://localhost:8080/api/v1/genai/query" \
+-H "Content-Type: application/json" \
+-d '{ "query_text": "What does this document about README instructions talk about?", "course_space_id": "cs-readme-test-101" }'
 ```
 
 *Expected Output*: JSON response (answer and citations) from the genai-service relayed by the server. Check server and genai-service logs.
+
+
+## 5. Manage Course Spaces
+All endpoints in this section require authentication. You must include the Authorization: Bearer <YOUR_JWT_TOKEN> header in your requests.
+
+1. Get All Course Spaces
+
+- Endpoint: `GET /api/v1/coursespaces`
+- Description: Retrieves a list of all course spaces for the currently authenticated user.
+
+`curl` Example:
+```bash
+curl -X GET http://localhost:8080/api/v1/coursespaces \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+```
+*Expected Success Response (200 OK)*: 
+```json
+[
+    {
+        "id": "generated-uuid-1",
+        "name": "Introduction to AI"
+    },
+    {
+        "id": "generated-uuid-2",
+        "name": "Software Engineering"
+    }
+]
+```
+
+
+2. Create a new CourseSpace
+
+- Endpoint: `POST /api/v1/coursespaces`
+- Description: Creates a new course space for the user.
+- Request Body (JSON):
+- name: (String) The name of the new course space. Required.
+
+`curl` Example:
+```bash
+curl -X POST http://localhost:8080/api/v1/coursespaces \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Advanced Algorithms"}'
+```
+
+*Expected Success Response (201 Created):*
+```json
+{
+    "id": "newly-generated-uuid",
+    "name": "Advanced Algorithms"
+}
+```
+
+3. Delete a Course Space
+- Endpoint: `DELETE /api/v1/coursespaces/{courseSpaceId}`
+- Description: Deletes a specific course space by its ID.
+- `curl` Example:
+```bash
+curl -X DELETE http://localhost:8080/api/v1/coursespaces/{newly-generated-uuid} \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+```
+
+*Expected Success Response (204 No Content):* An empty response with a 204 status code indicates successful deletion.
+
+
+
+##6. Check OPENAPI docs
+You can see the OpenAPI Swagger UI documentation by navigating to the following URL in your web browser once the server is running:
+
+[`http://localhost:8080/api/v1/swagger-ui.html`](http://localhost:8080/api/v1/swagger-ui/index.html) (when started)
