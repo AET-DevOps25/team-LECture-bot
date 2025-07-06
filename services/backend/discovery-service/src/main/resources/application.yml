@@ -1,0 +1,42 @@
+server:
+  port: 8761
+
+
+spring:
+  application:
+    name: eureka-server
+  security:
+    user:
+      # credentials that clients should use
+      name: eureka-user 
+      password: "eureka-password" 
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # This explicitly makes the health endpoint available
+        include: health,info,prometheus
+  endpoint:
+    health:
+      # This ensures the health check gets detailed status information
+      show-details: always
+
+# --- Eureka Server-Specific Settings ---
+eureka:
+  client:
+    # These two settings are crucial for a standalone Eureka server
+    register-with-eureka: false # Tells the server not to register itself
+    fetch-registry: false # Tells the server not to try and fetch a registry from another server
+  server:
+    # In a production environment, you might configure peer replication here
+    # For now, these defaults are fine.
+    wait-time-in-ms-when-sync-empty: 5 # Reduces startup time for a single-node server
+
+# --- Logging Configuration ---
+logging:
+  level:
+    # Set the logging level for Eureka to WARN to reduce noise
+    com.netflix.eureka: WARN
+    com.netflix.discovery: WARN

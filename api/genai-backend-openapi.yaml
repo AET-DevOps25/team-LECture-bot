@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: GenAI Service API
+  description: API for GenAI functionalities.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/api/v1
+    description: Local development server for genai-backend-microservice
+security:
+  - bearerAuth: []
+
+tags:
+  - name: GenAI
+
+paths:
+  /genai/index:
+    post:
+      summary: Index a document
+      description: Sends a document's content to the GenAI service for indexing.
+      operationId: indexDocument
+      tags:
+        - GenAI
+      requestBody:
+        description: Document indexing request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexRequest'
+      responses:
+        '200':
+          description: Document indexed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexResponse'
+        '500':
+          description: Internal Server Error - Failed to index document.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to index document via GenAI service
+
+  /genai/query:
+    post:
+      summary: Submit a query
+      description: Sends a natural language query to the GenAI service for RAG.
+      operationId: submitQuery
+      tags:
+        - GenAI
+      requestBody:
+        description: Query request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Query processed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '500':
+          description: Internal Server Error - Failed to get query response.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Faioled to get query response from GenAI service
+  /genai/generate-flashcards:
+    post:
+      summary: Generate flashcards
+      description: Generates flashcards from a specific document or from all documents in a course space.
+      operationId: generateFlashcards
+      tags:
+        - GenAI
+      requestBody:
+        description: Flashcard generation request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardRequest'
+      responses:
+        '200':
+          description: Flashcards generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardResponse'
+        '500':
+          description: Internal Server Error - Failed to generate flashcards.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to generate flashcards via GenAI service
+
+components:
+  schemas:
+    IndexRequest:
+      type: object
+      required:
+        - document_id
+        - course_space_id
+        - text_content
+      properties:
+        document_id:
+          type: string
+          example: doc-123
+        course_space_id:
+          type: string
+          example: cs-456
+        text_content:
+          type: string
+          example: This is the content of the document.
+    IndexResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Document indexed successfully
+        document_id:
+          type: string
+          example: doc-123
+        status:
+          type: string
+          example: completed
+          description: Status of the indexing operation.
+        chunks_processed:
+          type: integer
+          example: 5
+          description: Number of text chunks processed.
+        chunks_stored_in_weaviate:
+          type: integer
+          example: 5
+          description: Number of chunks successfully stored in Weaviate.
+    QueryRequest:
+      type: object
+      required:
+        - query_text
+        - course_space_id
+      properties:
+        query_text:
+          type: string
+          example: What is this document about?
+        course_space_id:
+          type: string
+          example: cs-456
+    QueryResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+          example: This document is about...
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+    FlashcardRequest:
+      type: object
+      required:
+        - course_space_id
+      properties:
+        course_space_id:
+          type: string
+          example: cs-456
+        document_id:
+          type: string
+          nullable: true
+          example: "doc-123"
+    Flashcard:
+      type: object
+      properties:
+        question:
+          type: string
+          example: What is the capital of France?
+        answer:
+          type: string
+          example: Paris
+    FlashcardsForDocument:
+      type: object
+      properties:
+        document_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flashcard'
+    FlashcardResponse:
+      type: object
+      properties:
+        course_space_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlashcardsForDocument'
+    Citation:
+      type: object
+      required:
+        - document_id
+        - chunk_id
+        - retrieved_text_preview
+      properties:
+        document_id:
+          type: string
+          description: The ID of the document from which the citation was retrieved.
+          example: doc-123
+        chunk_id:
+          type: string
+          description: A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+          example: "0"
+        document_name:
+          type: string
+          description: The name or title of the source document.
+          example: "Lecture Slides Week 5"
+          nullable: true
+        retrieved_text_preview:
+          type: string
+          description: A short snippet of the text that was retrieved and used as context.
+          example: "LangChain is a framework for developing applications powered by language models."
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

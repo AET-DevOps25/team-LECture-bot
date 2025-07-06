@@ -28,4 +28,4 @@ RUN poetry install --no-root --no-interaction --no-ansi
 COPY ./src ./src
 
 # Command to run the application
-CMD ["poetry", "run", "uvicorn", "src.genai.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["poetry", "run", "uvicorn", "src.genai.main:app", "--host", "0.0.0.0", "--port", "8011"]
