@@ -35,19 +35,17 @@ public class CourseSpacesController implements CourseSpacesApi {
 
     @Override
     public ResponseEntity<List<CourseSpaceDto>> getCourseSpaces() {
-        List<CourseSpace> courseSpaces = courseSpaceService.getCourseSpacesForCurrentUser();
+        // Get entities, map to OpenAPI DTOs
+        List<CourseSpace> courseSpaces = courseSpaceService.getCourseSpacesForCurrentUserEntities();
         return ResponseEntity.ok(courseSpaceMapper.toDtoList(courseSpaces));
 
     }
 
     @Override
     public ResponseEntity<CourseSpaceDto> createCourseSpace(CreateCourseSpaceRequest createCourseSpaceRequest) {
-        if (courseSpaceService.courseSpaceExists(createCourseSpaceRequest.getName())) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        // Use name from OpenAPI model
         try {
-            CourseSpace cs = courseSpaceService.createCourseSpace(createCourseSpaceRequest);
+            CourseSpace cs = courseSpaceService.createCourseSpaceFromOpenApi(createCourseSpaceRequest);
             CourseSpaceDto csDto = courseSpaceMapper.toDto(cs);
             return ResponseEntity.ok(csDto);
         } catch (Exception e) {
@@ -59,11 +57,13 @@ public class CourseSpacesController implements CourseSpacesApi {
 
     @Override
     public ResponseEntity<Void> deleteCourseSpace(UUID courseSpaceId) {
-        if (courseSpaceService.deleteCourseSpace(courseSpaceId)) {
+        try {
+            courseSpaceService.deleteCourseSpace(courseSpaceId);
             return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            logger.error("Error", e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
-
-        return ResponseEntity.internalServerError().build();
 
     }
 }

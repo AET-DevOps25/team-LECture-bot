@@ -44,28 +44,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter)
             throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use
-                                                                                                              // stateless
-                                                                                                              // sessions
-                                                                                                              // for JWT
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        // Paths are matched without the context path.
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Allow
-                                                                                                              // Swagger
-                                                                                                              // UI and
-                                                                                                              // API
-                                                                                                              // docs
-                        .requestMatchers("/auth/**", "/health", "/genai/**").permitAll()
-                        // "/coursespaces/**").permitAll()
-                        .anyRequest().authenticated() // Secure all other endpoints
-                );
-
-        // Add the JWT filter before the standard username/password authentication
-        // filter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authz -> authz
+                .anyRequest().permitAll() // Disable all authentication for now
+            );
+        // Do NOT add the JWT filter while auth is disabled
         return http.build();
     }
 

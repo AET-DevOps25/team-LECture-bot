@@ -15,7 +15,7 @@ public interface CourseSpaceRepository extends JpaRepository<CourseSpace, UUID> 
 
     Optional<CourseSpace> findById(UUID id);
 
-    Optional<CourseSpace> findByOwnerAndName(User user, String name);
+    Optional<CourseSpace> findByOwnerAndTitle(User user, String title);
 
     List<CourseSpace> findByOwner(User user);
 

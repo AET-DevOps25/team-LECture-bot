@@ -21,20 +21,38 @@ const RegisterPage: React.FC = () => {
         const body: RegisterRequest = { name, email, password };
 
         try {
-            const { data, error: apiError } = await apiClient.POST('/auth/register', { body });
+            const { data, error: apiError, response } = await apiClient.POST('/auth/register', { body });
 
             if (apiError) {
-                // The error from openapi-fetch might be an object.
-                // Let's try to get a meaningful message from it.
-                const errorMessage = (apiError as any).detail || 'Registration failed. Please try again.';
+                // Try to get a meaningful message from the error object or response
+                const errorMessage =
+                    (apiError as any).detail ||
+                    (response && response.status === 400 && "Email already exists") ||
+                    'Registration failed. Please try again.';
                 throw new Error(errorMessage);
             }
 
-            if (data) {
-                setSuccess(data); // The API returns a plain text message
+            if (response && response.status === 200) {
+                // Always read as text if data is undefined
+                let message = "Registration successful! Redirecting to login...";
+                try {
+                    if (typeof data === 'string') {
+                        message = data;
+                    } else if (!data && response) {
+                        // Always read the response as text
+                        message = await response.clone().text();
+                    } else if (data && typeof data === 'object' && 'message' in data) {
+                        message = (data as any).message;
+                    }
+                } catch (e) {
+                    // fallback to default message
+                }
+                setSuccess(message);
                 setTimeout(() => {
                     navigate('/login');
-                }, 2000); // Redirect to login after 2 seconds
+                }, 2000);
+            } else {
+                setError("Registration failed. Please try again.");
             }
         } catch (err) {
             setError((err as Error).message);

@@ -21,8 +21,12 @@ public class CourseSpace {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+
     @Column(nullable = false)
-    private String name;
+    private String title;
+
+    @Column(nullable = true)
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -36,8 +40,9 @@ public class CourseSpace {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public CourseSpace(String name, User owner) {
-        this.name = name;
+    public CourseSpace(String title, String description, User owner) {
+        this.title = title;
+        this.description = description;
         this.owner = owner;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();

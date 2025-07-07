@@ -1,5 +1,11 @@
--- Insert 5 sample users
--- IMPORTANT: Passwords are in plain text for this initial setup.
+
+-- Enable pgcrypto for UUID support (required by Hibernate for UUID columns)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pgcrypto') THEN
+        CREATE EXTENSION pgcrypto;
+    END IF;
+END$$;
 
 CREATE TABLE IF NOT EXISTS app_user (
     id SERIAL PRIMARY KEY,
@@ -14,20 +20,11 @@ INSERT INTO app_user (email, password_hash, name) VALUES
 ('carlos@example.com', 'carlospass', 'Carlos Mejia'),
 ('max@example.com', 'maxpass', 'Max Mustermann'),
 ('erika@example.com', 'erikapass', 'Erika Mustermann')
-ON CONFLICT (email) DO NOTHING; -- Optional: Prevents error if an email already exists, useful if script runs multiple times against a non-empty DB somehow, though initdb.d scripts usually don't.
-
-SELECT 'Finished initializing users from init-users.sql' AS status;
+ON CONFLICT (email) DO NOTHING;
 
 
 
-CREATE TABLE IF NOT EXISTS course_spaces (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    user_id SERIAL NOT NULL,
-    created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-    CONSTRAINT fk_course_space_user FOREIGN KEY (user_id) REFERENCES app_user(id) 
-)
 
-SELECT 'Finished initializing course_spaces from init-users.sql' AS status;
+
+
 
