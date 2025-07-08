@@ -3,50 +3,35 @@ namespace:
 
 namespacename: team-lecture-bot
 
-# server:
-#   image:
-#     repository: ghcr.io/aet-devops25/team-lecture-bot/server
-#     tag: latest
-#     pullPolicy: Always
-#   service:
-#     type: ClusterIP
-#     port: 8080
-#     targetPort: 8080
-#   replicaCount: 1
-#   env:
-#     - name:  SPRING_PROFILES_ACTIVE
-#       value: dev
-#     - name: SPRING_DATASOURCE_URL
-#       value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
-#     - name: SPRING_DATASOURCE_USERNAME
-#       value: lecturebot_user
-#     - name: SPRING_DATASOURCE_PASSWORD
-#       value: mysecretpassword
-#     - name: LECTUREBOT_CLIENT_ORIGIN
-#       value: https://team-lecture-bot.student.k8s.aet.cit.tum.de
-#     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-#       value: update
-#     - name: APP_JWT_EXPIRATION_IN_MS
-#       value: "86400000" # 24 hours
-#     - name: APP_JWT_SECRET
-#       value: ng5hl+XNBp8tM5S+8pbHEzimyjOR5DBXdATzMbrkHpNL2KsJMRL547GO7VuQqDz9BQNrBa+Dhqr1vB3OhzYPIw==
+global:
+  image:
+    tag: 43-feature-44-task-flashcard-generation-backend-refactoring
+
 client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/client
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
     port: 3000
     targetPort: 3000
   replicaCount: 1
+  env:
+    - name: PUBLIC_API_URL
+      value: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api/v1
+    - name: VITE_API_BASE_URL
+      valueFrom:
+        configMapKeyRef:
+          name: app-config
+          key: PUBLIC_API_URL
 
 
 apiGateway:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/api-gateway
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -68,7 +53,7 @@ apiGateway:
 userCourseMicroservice:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/user-course-microservice
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -98,7 +83,7 @@ userCourseMicroservice:
 genaiBackendMicroservice:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/genai-backend-microservice
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -107,9 +92,9 @@ genaiBackendMicroservice:
   replicaCount: 1
   env:
     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-      value: "update"
+      value: update
     - name: SPRING_DATASOURCE_URL
-      value: jdbc:postgresql//genai-backend-db:5432/genai_db
+      value: jdbc:postgresql://genai-backend-db:5432/genai_db
     - name: SPRING_DATASOURCE_USERNAME
       value: genai_user
     - name: SPRING_DATASOURCE_PASSWORD
@@ -127,7 +112,7 @@ genaiBackendMicroservice:
 discoveryService:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/discovery-service
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -145,7 +130,7 @@ discoveryService:
 genaiService:
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/genai
-    tag: latest
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -177,7 +162,8 @@ genaiService:
 weaviate:
   image:
     repository: semitechnologies/weaviate
-    tag: latest
+    tag: latest 
+    #tag: {{ .Values.global.image.tag }}
     pullPolicy: Always
   service:
     type: ClusterIP

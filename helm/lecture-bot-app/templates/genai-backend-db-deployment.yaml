@@ -25,6 +25,8 @@ spec:
               value: "{{ .Values.genaiBackendDb.postgresUser }}"
             - name: POSTGRES_PASSWORD
               value: "{{ .Values.genaiBackendDb.postgresPassword }}"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
           volumeMounts:
             - name: genai-db-data
               mountPath: /var/lib/postgresql/data

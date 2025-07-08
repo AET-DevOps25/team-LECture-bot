@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: genai-backend-microservice
-          image: "{{ .Values.genaiBackendMicroservice.image.repository }}:{{ .Values.genaiBackendMicroservice.image.tag }}"
+          image: "{{ .Values.genaiBackendMicroservice.image.repository }}:{{ .Values.genaiBackendMicroservice.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.genaiBackendMicroservice.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.genaiBackendMicroservice.service.targetPort }}
@@ -24,3 +24,16 @@ spec:
             - name: {{ .name }}
               value: "{{ .value }}"
             {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+

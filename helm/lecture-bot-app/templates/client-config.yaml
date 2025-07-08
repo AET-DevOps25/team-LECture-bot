@@ -5,5 +5,5 @@ metadata:
   namespace: {{ .Values.namespacename }}
 data:
   config.json: |-
-{{ tpl (printf "{\n  \"PUBLIC_API_URL\": \"https://%s.student.k8s.aet.cit.tum.de/api\"\n}" .Values.namespacename) . | indent 4 }}
+{{ tpl (printf "{\n  \"PUBLIC_API_URL\": \"https://%s.student.k8s.aet.cit.tum.de/api/v1\"\n}" .Values.namespacename) . | indent 4 }}
 

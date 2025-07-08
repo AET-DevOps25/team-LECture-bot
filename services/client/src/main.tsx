@@ -5,16 +5,18 @@ import { AuthProvider } from './context/AuthContext';
 import App from './App';
 import './index.css'
 import { CourseSpaceProvider } from './context/CourseSpaceContext';
+import { apiClientPromise } from './api/apiClient';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <AuthProvider>
-                <CourseSpaceProvider>
-                    <App />
-                </CourseSpaceProvider>
-            </AuthProvider>
-        </BrowserRouter>
-    </React.StrictMode>,
-)
-
+apiClientPromise.then(() => {
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+        <React.StrictMode>
+            <BrowserRouter>
+                <AuthProvider>
+                    <CourseSpaceProvider>
+                        <App />
+                    </CourseSpaceProvider>
+                </AuthProvider>
+            </BrowserRouter>
+        </React.StrictMode>,
+    )
+});

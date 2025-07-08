@@ -13,9 +13,13 @@ spec:
       labels:
         app: user-course-microservice
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup lecturebot-db; do echo waiting for db; sleep 2; done;']
       containers:
         - name: user-course-microservice
-          image: "{{ .Values.userCourseMicroservice.image.repository }}:{{ .Values.userCourseMicroservice.image.tag }}"
+          image: "{{ .Values.userCourseMicroservice.image.repository }}:{{ .Values.userCourseMicroservice.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.userCourseMicroservice.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.userCourseMicroservice.service.targetPort }}
@@ -24,3 +28,15 @@ spec:
             - name: {{ .name }}
               value: "{{ .value }}"
             {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.userCourseMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: 
+              path: /actuator/health
+              port: {{ .Values.userCourseMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10

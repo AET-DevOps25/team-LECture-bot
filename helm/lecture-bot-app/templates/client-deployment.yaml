@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: lecture-bot-client
-          image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
+          image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.client.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.client.service.targetPort }}

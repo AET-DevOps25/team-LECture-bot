@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: "{{ .Values.apiGateway.image.repository }}:{{ .Values.apiGateway.image.tag }}"
+          image: "{{ .Values.apiGateway.image.repository }}:{{ .Values.apiGateway.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.apiGateway.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.apiGateway.service.targetPort }}
@@ -24,3 +24,15 @@ spec:
             - name: {{ .name }}
               value: "{{ .value }}"
             {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.apiGateway.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.apiGateway.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10

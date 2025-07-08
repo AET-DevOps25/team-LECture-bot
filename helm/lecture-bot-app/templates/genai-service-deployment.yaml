@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: genai-service
-          image: "{{ .Values.genaiService.image.repository }}:{{ .Values.genaiService.image.tag }}"
+          image: "{{ .Values.genaiService.image.repository }}:{{ .Values.genaiService.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.genaiService.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.genaiService.service.targetPort }}
@@ -24,3 +24,16 @@ spec:
             - name: {{ .name }}
               value: "{{ .value }}"
             {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.genaiService.service.targetPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.genaiService.service.targetPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 10
+ 
