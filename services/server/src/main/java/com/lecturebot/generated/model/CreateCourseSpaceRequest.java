@@ -18,10 +18,10 @@ import jakarta.annotation.Generated;
  * CreateCourseSpaceRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T19:50:22.687940+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T22:55:56.606033+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class CreateCourseSpaceRequest {
 
-  private String name;
+  private String title;
 
   public CreateCourseSpaceRequest() {
     super();
@@ -30,28 +30,28 @@ public class CreateCourseSpaceRequest {
   /**
    * Constructor with only required parameters
    */
-  public CreateCourseSpaceRequest(String name) {
-    this.name = name;
+  public CreateCourseSpaceRequest(String title) {
+    this.title = title;
   }
 
-  public CreateCourseSpaceRequest name(String name) {
-    this.name = name;
+  public CreateCourseSpaceRequest title(String title) {
+    this.title = title;
     return this;
   }
 
   /**
-   * The name of the course space to create.
-   * @return name
+   * The title of the course space to create.
+   * @return title
    */
   @NotNull 
-  @Schema(name = "name", example = "Introduction to AI", description = "The name of the course space to create.", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("name")
-  public String getName() {
-    return name;
+  @Schema(name = "title", example = "Introduction to AI", description = "The title of the course space to create.", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("title")
+  public String getTitle() {
+    return title;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   @Override
@@ -63,19 +63,19 @@ public class CreateCourseSpaceRequest {
       return false;
     }
     CreateCourseSpaceRequest createCourseSpaceRequest = (CreateCourseSpaceRequest) o;
-    return Objects.equals(this.name, createCourseSpaceRequest.name);
+    return Objects.equals(this.title, createCourseSpaceRequest.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(title);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class CreateCourseSpaceRequest {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
   }

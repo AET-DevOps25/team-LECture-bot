@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T19:50:22.687940+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T22:55:56.606033+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "CourseSpaces", description = "the CourseSpaces API")
 public interface CourseSpacesApi {
@@ -82,7 +82,7 @@ public interface CourseSpacesApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
+                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"description\" : \"description\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\", \"title\" : \"Introduction to AI\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -165,7 +165,7 @@ public interface CourseSpacesApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
+                    String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"description\" : \"description\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\", \"title\" : \"Introduction to AI\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"description\" : \"description\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\", \"title\" : \"Introduction to AI\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

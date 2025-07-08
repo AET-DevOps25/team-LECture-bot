@@ -21,8 +21,7 @@ public class CourseSpaceMapper {
         if (request == null || owner == null) {
             throw new IllegalArgumentException("Request and owner must not be null");
         }
-        // Use name from request, no description in OpenAPI model
-        CourseSpace courseSpace = new CourseSpace(request.getName(), null, owner);
+        CourseSpace courseSpace = new CourseSpace(request.getTitle(), null, owner);
         return courseSpace;
     }
 
@@ -37,7 +36,8 @@ public class CourseSpaceMapper {
 
         return new CourseSpaceDto()
                 .id(entity.getId())
-                .name(entity.getTitle())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
                 .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC))
                 .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC));
     }

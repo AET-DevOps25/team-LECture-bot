@@ -94,7 +94,7 @@ const DashboardPage: React.FC = () => {
                                 to={`/coursespaces/${course.id}`}
                                 className="block"
                             >
-                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">{course.name}</h5>
+                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">{course.title}</h5>
                                 <p className="font-normal text-gray-600">Click to enter this course space and start learning.</p>
                                 <div className="mt-4 flex justify-end">
                                     <span className="text-blue-600 hover:text-blue-800 font-semibold text-lg">Enter &rarr;</span>
@@ -134,7 +134,7 @@ const DashboardPage: React.FC = () => {
                 isOpen={isModalOpen}
                 mode={modalMode}
                 initialData={modalMode === 'edit' && editingCourse ? {
-                    title: editingCourse.name || '',
+                    title: editingCourse.title ?? '',
                     description: editingCourse.description || ''
                 } : undefined}
                 onCancel={() => {
@@ -143,13 +143,13 @@ const DashboardPage: React.FC = () => {
                 }}
                 onSubmit={async ({ title, description }) => {
                     if (modalMode === 'edit' && editingCourse) {
-                        const updated = await updateCourseSpace(editingCourse.id!, { name: title, description });
+                        const updated = await updateCourseSpace(editingCourse.id!, { title, description });
                         setCourses((prevCourses) => prevCourses.map((c) => c.id === editingCourse.id ? updated : c));
                         setIsModalOpen(false);
                         setEditingCourse(null);
                     } else {
-                        // Backend expects { name, description }
-                        const body: any = { name: title, description };
+                        // OpenAPI expects { title, description }
+                        const body: any = { title, description };
                         const { data, error } = await apiClient.POST('/coursespaces', { body });
                         if (error || !data) throw new Error('Failed to create course space.');
                         setCourses((prevCourses) => [...prevCourses, data]);

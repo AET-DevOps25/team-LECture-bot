@@ -19,11 +19,11 @@ public class CourseSpaceService {
     // For OpenAPI controller: create from OpenAPI model
     public CourseSpace createCourseSpaceFromOpenApi(com.lecturebot.generated.model.CreateCourseSpaceRequest request) {
         User currentUser = userService.getCurrentAuthenticatedUser();
-        // Check for duplicate name for this user using repository method
-        if (courseSpaceRepository.findByOwnerAndTitle(currentUser, request.getName()).isPresent()) {
-            throw new IllegalArgumentException("A course space with this name already exists for you.");
+        // Check for duplicate title for this user using repository method
+        if (courseSpaceRepository.findByOwnerAndTitle(currentUser, request.getTitle()).isPresent()) {
+            throw new IllegalArgumentException("A course space with this title already exists for you.");
         }
-        CourseSpace courseSpace = new CourseSpace(request.getName(), null, currentUser);
+        CourseSpace courseSpace = new CourseSpace(request.getTitle(), null, currentUser);
         return courseSpaceRepository.save(courseSpace);
     }
 

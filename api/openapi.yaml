@@ -413,7 +413,7 @@ components:
           type: string
           format: uuid
           example: "123e4567-e89b-12d3-a456-426614174000"
-        name:
+        title:
           type: string
           example: "Introduction to AI"
         description:
@@ -431,11 +431,11 @@ components:
     CreateCourseSpaceRequest:
       type: object
       required:
-        - name
+        - title
       properties:
-        name:
+        title:
           type: string
-          description: The name of the course space to create.
+          description: The title of the course space to create.
           example: "Introduction to AI"
 
     UserProfile:

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-import { apiClient, getCourses, updateCourseSpace } from '../api/apiClient';
+import { apiClient, getCourses } from '../api/apiClient';
 import CourseSpaceModal from '../components/CourseSpaceModal';
 
 const CourseListPage: React.FC = () => {
@@ -15,6 +15,26 @@ const CourseListPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingCourse, setEditingCourse] = useState<any | null>(null);
+  const [deletingCourse, setDeletingCourse] = useState<any | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  // Handler for deleting a course space
+  const handleDeleteCourse = async () => {
+    if (!deletingCourse) return;
+    setDeleteLoading(true);
+    setDeleteError(null);
+    try {
+      // Use the correct OpenAPI path: '/coursespaces/{courseSpaceId}'
+      const res = await apiClient.DELETE('/coursespaces/{courseSpaceId}', { params: { path: { courseSpaceId: deletingCourse.id } } });
+      if (res.error) throw new Error('Failed to delete course space.');
+      setCourses((prev) => prev.filter((c) => c.id !== deletingCourse.id));
+      setDeletingCourse(null);
+    } catch (err: any) {
+      setDeleteError(err.message || 'An error occurred.');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
   const navigate = useNavigate();
 
 
@@ -33,8 +53,8 @@ const CourseListPage: React.FC = () => {
 
   // Handler for creating a new course space
   const handleCreateCourse = async ({ title, description }: { title: string; description: string }) => {
-    // Backend expects { name, description }
-    const body: any = { name: title, description };
+    // OpenAPI expects { title, description }
+    const body: any = { title, description };
     const { data, error } = await apiClient.POST('/coursespaces', { body });
     if (error || !data) throw new Error('Failed to create course space.');
     setCourses((prev) => [data, ...prev]);
@@ -42,11 +62,17 @@ const CourseListPage: React.FC = () => {
   };
 
   // Handler for editing an existing course space
+  // Use the OpenAPI client for PUT (edit) operation
   const handleEditCourse = async ({ title, description }: { title: string; description: string }) => {
     if (!editingCourse) return;
-    const body = { name: title, description };
-    const data = await updateCourseSpace(editingCourse.id, body);
-    setCourses((prev) => prev.map((c) => (c.id === editingCourse.id ? data : c)));
+    const body = { title, description };
+    // Use the correct OpenAPI path and param name
+    const res = await apiClient.PUT('/coursespaces/{courseSpaceId}' as any, {
+      params: { path: { courseSpaceId: editingCourse.id } },
+      body
+    });
+    if (res.error || !res.data) throw new Error('Failed to update course space.');
+    setCourses((prev) => prev.map((c) => (c.id === editingCourse.id ? res.data : c)));
     setModalOpen(false);
     setEditingCourse(null);
   };
@@ -84,11 +110,37 @@ const CourseListPage: React.FC = () => {
           Create New Course Space
         </button>
       </div>
+      {/* Delete Confirmation Modal */}
+      {deletingCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Delete Course Space</h2>
+            <p className="mb-4">Are you sure you want to delete <span className="font-semibold">{deletingCourse.title}</span>? This action cannot be undone.</p>
+            {deleteError && <p className="text-red-500 text-sm mb-2">{deleteError}</p>}
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                onClick={() => setDeletingCourse(null)}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                onClick={handleDeleteCourse}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <CourseSpaceModal
         isOpen={modalOpen}
         mode={modalMode}
         initialData={modalMode === 'edit' && editingCourse ? {
-          title: editingCourse.name || editingCourse.title || '',
+          title: editingCourse.title ?? '',
           description: editingCourse.description || ''
         } : undefined}
         onSubmit={modalMode === 'edit' ? handleEditCourse : handleCreateCourse}
@@ -105,16 +157,25 @@ const CourseListPage: React.FC = () => {
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1 cursor-pointer" onClick={() => navigate(`/courses/${course.id}`)}>
-                  <h2 className="text-xl font-semibold mb-2">{course.name || course.title}</h2>
+                  <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
                   <p className="text-gray-600">{course.description}</p>
                 </div>
-                <button
-                  className="ml-2 px-2 py-1 text-sm bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200"
-                  onClick={() => openEditModal(course)}
-                  title="Edit Course Space"
-                >
-                  Edit
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    className="px-2 py-1 text-sm bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200"
+                    onClick={() => openEditModal(course)}
+                    title="Edit Course Space"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="px-2 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200"
+                    onClick={() => setDeletingCourse(course)}
+                    title="Delete Course Space"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))}

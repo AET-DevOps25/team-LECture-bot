@@ -1,5 +1,5 @@
 // Helper to update a course space (since OpenAPI client does not support PUT for /coursespaces/{id})
-export async function updateCourseSpace(id: string, data: { name: string; description: string }) {
+export async function updateCourseSpace(id: string, data: { title: string; description: string }) {
     const token = storage.getItem<string>('jwtToken');
     const res = await fetch(`${API_BASE_URL}/coursespaces/${id}`, {
         method: 'PUT',

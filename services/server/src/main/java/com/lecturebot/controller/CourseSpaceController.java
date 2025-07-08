@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/course-spaces")
+@RequestMapping("/coursespaces")
 @RequiredArgsConstructor
 public class CourseSpaceController {
     private final CourseSpaceService courseSpaceService;
@@ -23,9 +23,9 @@ public class CourseSpaceController {
         return courseSpaceService.getCourseSpacesForCurrentUser();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CourseSpaceResponse> getCourseSpace(@PathVariable UUID id) {
-        return ResponseEntity.ok(courseSpaceService.getCourseSpaceById(id));
+    @GetMapping("/{courseSpaceId}")
+    public ResponseEntity<CourseSpaceResponse> getCourseSpace(@PathVariable UUID courseSpaceId) {
+        return ResponseEntity.ok(courseSpaceService.getCourseSpaceById(courseSpaceId));
     }
 
     @PostMapping
@@ -33,14 +33,14 @@ public class CourseSpaceController {
         return ResponseEntity.ok(courseSpaceService.createCourseSpace(request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CourseSpaceResponse> updateCourseSpace(@PathVariable UUID id, @Valid @RequestBody UpdateCourseSpaceRequest request) {
-        return ResponseEntity.ok(courseSpaceService.updateCourseSpace(id, request));
+    @PutMapping("/{courseSpaceId}")
+    public ResponseEntity<CourseSpaceResponse> updateCourseSpace(@PathVariable UUID courseSpaceId, @Valid @RequestBody UpdateCourseSpaceRequest request) {
+        return ResponseEntity.ok(courseSpaceService.updateCourseSpace(courseSpaceId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourseSpace(@PathVariable UUID id) {
-        courseSpaceService.deleteCourseSpace(id);
+    @DeleteMapping("/{courseSpaceId}")
+    public ResponseEntity<Void> deleteCourseSpace(@PathVariable UUID courseSpaceId) {
+        courseSpaceService.deleteCourseSpace(courseSpaceId);
         return ResponseEntity.noContent().build();
     }
 }

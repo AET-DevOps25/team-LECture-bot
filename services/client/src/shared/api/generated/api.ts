@@ -302,7 +302,7 @@ export interface components {
              */
             id?: string;
             /** @example Introduction to AI */
-            name?: string;
+            title?: string;
             description?: string;
             /**
              * Format: date-time
@@ -318,10 +318,10 @@ export interface components {
         };
         CreateCourseSpaceRequest: {
             /**
-             * @description The name of the course space to create.
+             * @description The title of the course space to create.
              * @example Introduction to AI
              */
-            name: string;
+            title: string;
         };
         UserProfile: {
             /** Format: int64 */
