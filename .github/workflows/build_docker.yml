@@ -19,7 +19,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        working-directory: services/server
+        working-directory: services/backend
         run: ./gradlew build
 
   build:
