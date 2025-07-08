@@ -1,4 +1,3 @@
-
 # Server (LECture-bot Backend)
 
 This directory contains the Spring Boot backend application for LECture-bot.
@@ -262,8 +261,7 @@ Ensure all services are running via docker-compose up --build.
 ## 5. Manage Course Spaces
 All endpoints in this section require authentication. You must include the Authorization: Bearer <YOUR_JWT_TOKEN> header in your requests.
 
-1. Get All Course Spaces
-
+### 1. Get All Course Spaces
 - Endpoint: `GET /api/v1/coursespaces`
 - Description: Retrieves a list of all course spaces for the currently authenticated user.
 
@@ -272,55 +270,91 @@ All endpoints in this section require authentication. You must include the Autho
 curl -X GET http://localhost:8080/api/v1/coursespaces \
   -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
 ```
-*Expected Success Response (200 OK)*: 
+*Expected Success Response (200 OK):* 
 ```json
 [
-    {
-        "id": "generated-uuid-1",
-        "name": "Introduction to AI"
-    },
-    {
-        "id": "generated-uuid-2",
-        "name": "Software Engineering"
-    }
+  {
+    "id": "generated-uuid-1",
+    "title": "Introduction to AI",
+    "description": "Introductory course space for AI topics.",
+    "created_at": "2023-10-01T12:00:00Z",
+    "updated_at": "2023-10-01T12:00:00Z"
+  },
+  {
+    "id": "generated-uuid-2",
+    "title": "Software Engineering",
+    "description": "All materials for SE.",
+    "created_at": "2023-10-02T12:00:00Z",
+    "updated_at": "2023-10-02T12:00:00Z"
+  }
 ]
 ```
 
-
-2. Create a new CourseSpace
-
+### 2. Create a new Course Space
 - Endpoint: `POST /api/v1/coursespaces`
 - Description: Creates a new course space for the user.
 - Request Body (JSON):
-- name: (String) The name of the new course space. Required.
+  - title: (String) The title of the new course space. Required.
+  - description: (String) Optional description.
 
 `curl` Example:
 ```bash
 curl -X POST http://localhost:8080/api/v1/coursespaces \
   -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Advanced Algorithms"}'
+  -d '{"title": "Advanced Algorithms", "description": "All algorithm lectures."}'
 ```
-
 *Expected Success Response (201 Created):*
 ```json
 {
-    "id": "newly-generated-uuid",
-    "name": "Advanced Algorithms"
+  "id": "newly-generated-uuid",
+  "title": "Advanced Algorithms",
+  "description": "All algorithm lectures.",
+  "created_at": "2023-10-03T12:00:00Z",
+  "updated_at": "2023-10-03T12:00:00Z"
 }
 ```
 
-3. Delete a Course Space
-- Endpoint: `DELETE /api/v1/coursespaces/{courseSpaceId}`
-- Description: Deletes a specific course space by its ID.
-- `curl` Example:
+### 3. Update a Course Space
+- Endpoint: `PUT /api/v1/coursespaces/{courseSpaceId}`
+- Description: Updates the title and/or description of a course space.
+- Request Body (JSON):
+  - title: (String) The new title. Required.
+  - description: (String) The new description. Optional.
+
+`curl` Example:
 ```bash
-curl -X DELETE http://localhost:8080/api/v1/coursespaces/{newly-generated-uuid} \
-  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+curl -X PUT http://localhost:8080/api/v1/coursespaces/<COURSE_SPACE_ID> \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Updated Title", "description": "Updated description."}'
+```
+*Expected Success Response (200 OK):*
+```json
+{
+  "id": "<COURSE_SPACE_ID>",
+  "title": "Updated Title",
+  "description": "Updated description.",
+  "created_at": "2023-10-03T12:00:00Z",
+  "updated_at": "2023-10-04T12:00:00Z"
+}
 ```
 
+### 4. Delete a Course Space
+- Endpoint: `DELETE /api/v1/coursespaces/{courseSpaceId}`
+- Description: Deletes a specific course space by its ID.
+
+`curl` Example:
+```bash
+curl -X DELETE http://localhost:8080/api/v1/coursespaces/<COURSE_SPACE_ID> \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
+```
 *Expected Success Response (204 No Content):* An empty response with a 204 status code indicates successful deletion.
 
+#### Notes
+- All requests must include a valid JWT in the Authorization header: `Authorization: Bearer <YOUR_JWT_TOKEN>`
+- If you receive a 401 Unauthorized error, your JWT is missing or invalid.
+- All fields and responses match the OpenAPI spec. See `/api/v1/swagger-ui.html` for full docs.
 
 
 ##6. Check OPENAPI docs
