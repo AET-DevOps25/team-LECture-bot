@@ -45,6 +45,14 @@ services:
         condition: service_healthy
       user-course-microservice:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s # Wait for the backend to be ready before checking
+
+
   
 
   user-course-microservice:
@@ -59,6 +67,7 @@ services:
     restart: unless-stopped
     environment:
       - SERVER_PORT=8081
+      - JAVA_OPTS=-Xmx512m -Xms256m
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/${DB_NAME:-lecturebot_db}
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
@@ -76,11 +85,11 @@ services:
       discovery-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/api/v1/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"] #"http://localhost:8081/api/v1/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
 
   genai-backend-microservice:
     build:
@@ -113,11 +122,11 @@ services:
       genai-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/api/v1/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"] #"http://localhost:8082/api/v1/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
 
   discovery-service:
     build:
@@ -141,7 +150,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 20s
 
   
       
@@ -218,7 +227,7 @@ services:
       - "5432:5432" 
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
-      - ./services/user-course-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+      - ./services/backend/user-course-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -239,7 +248,7 @@ services:
       - "5433:5432" 
     volumes:
       - genai_db_data:/var/lib/postgresql/data
-      - ./services/genai-backend-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+      - ./services/backend/genai-backend-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
     networks:
       - lecturebot-net
     restart: unless-stopped

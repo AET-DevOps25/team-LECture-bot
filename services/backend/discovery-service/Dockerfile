@@ -51,6 +51,6 @@ ENV SERVER_PORT=${SERVER_PORT}
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Optional: Add a healthcheck (adjust as needed)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-CMD curl -f -u ${EUREKA_USER}:${EUREKA_PASSWORD} http://localhost:${SERVER_PORT}/actuator/health || exit 1
+#HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+#CMD curl -f -u ${EUREKA_USER}:${EUREKA_PASSWORD} http://localhost:${SERVER_PORT}/actuator/health || exit 1
 

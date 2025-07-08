@@ -54,10 +54,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/v1/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/swagger-ui.html")
                         .permitAll() // Allow
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/auth/**", "/api/v1/health", "/api/v1/actuator/health",
                                 "/api/v1/genai/**")
                         .permitAll()
-                        .requestMatchers("/api/v1/eureka/**").permitAll() // Allow Eureka endpoints
+                        .requestMatchers("/auth/**", "/genai/**").permitAll()
+                        .requestMatchers("/api/v1/eureka/**", "/eureka/**").permitAll() // Allow Eureka endpoints
                         // "/coursespaces/**").permitAll()
                         .anyRequest().authenticated() // Secure all other endpoints
                 );

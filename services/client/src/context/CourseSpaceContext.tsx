@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { apiClient } from '../api/apiClient';
 import type { components } from '../shared/api/generated/api';
+import { useAuth } from "./AuthContext";
 
 // Define the type for a single course space
 type CourseSpace = components['schemas']['CourseSpaceDto'];
@@ -19,8 +20,9 @@ const CourseSpaceContext = createContext<CourseSpaceContextType | undefined>(und
 
 // Create the Provider component
 export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
+    const { isAuthenticated } = useAuth();
     const [courseSpaces, setCourseSpaces] = useState<CourseSpace[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Function to fetch all course spaces
@@ -60,8 +62,12 @@ export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
 
     // Fetch courses on initial load
     useEffect(() => {
-        fetchCourseSpaces();
-    }, []);
+        if (isAuthenticated) {
+            fetchCourseSpaces();
+        } else {
+            setCourseSpaces([]);
+        }
+    }, [isAuthenticated]);
 
     const value = { courseSpaces, loading, error, fetchCourseSpaces, createCourseSpace };
 

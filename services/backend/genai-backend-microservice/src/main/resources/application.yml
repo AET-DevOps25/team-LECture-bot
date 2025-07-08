@@ -2,13 +2,15 @@ server:
   port: 8082
 
 spring:
-  mvc:
-    servlet:
-      path: /api/v1
-
   application:
     name: genai-backend-microservice
 
+
+#spring:
+#  mvc:
+#    servlet:
+#      path: /api/v1
+#
 eureka:
   client:
     service-url:

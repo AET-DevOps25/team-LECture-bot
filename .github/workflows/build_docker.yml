@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [client, server]
+        service: [client, api-gateway, user-course-microservice, genai-backend-microservice, discovery-service, genai]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

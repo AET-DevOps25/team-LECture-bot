@@ -23,8 +23,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                 // Secure all endpoints in this microservice
                 authorizeRequests
-                        .requestMatchers("/api/v1/actuator/health").permitAll()
-                        .requestMatchers("/api/v1/eureka/**").permitAll()
+                        .requestMatchers("/api/v1/actuator/health", "/actuator/**").permitAll()
+                        .requestMatchers("/api/v1/eureka/**", "/eureka/**").permitAll()
                         .anyRequest().authenticated());
 
         // Add our simplified JWT filter

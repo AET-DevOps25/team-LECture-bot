@@ -11,7 +11,6 @@ spring:
       name: eureka-user 
       password: "eureka-password" 
 
-
 management:
   endpoints:
     web:
@@ -30,6 +29,7 @@ eureka:
     register-with-eureka: false # Tells the server not to register itself
     fetch-registry: false # Tells the server not to try and fetch a registry from another server
   server:
+    peer-node-read-timeout-ms: 2000
     # In a production environment, you might configure peer replication here
     # For now, these defaults are fine.
     wait-time-in-ms-when-sync-empty: 5 # Reduces startup time for a single-node server

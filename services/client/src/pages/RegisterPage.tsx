@@ -21,17 +21,21 @@ const RegisterPage: React.FC = () => {
         const body: RegisterRequest = { name, email, password };
 
         try {
-            const { data, error: apiError } = await apiClient.POST('/auth/register', { body });
+            const response = await apiClient.POST('/auth/register', {
+                body,
+                parseAs: "text"
+            });
 
-            if (apiError) {
+            if (response.error) {
                 // The error from openapi-fetch might be an object.
                 // Let's try to get a meaningful message from it.
-                const errorMessage = (apiError as any).detail || 'Registration failed. Please try again.';
-                throw new Error(errorMessage);
+                //const errorMessage = (apiError as any).data || 'Registration failed. Please try again.';
+                throw new Error(response.error)
+                //throw new Error(errorMessage);
             }
 
-            if (data) {
-                setSuccess(data); // The API returns a plain text message
+            if (response.data) {
+                setSuccess(response.data); // The API returns a plain text message
                 setTimeout(() => {
                     navigate('/login');
                 }, 2000); // Redirect to login after 2 seconds

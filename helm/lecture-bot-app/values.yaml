@@ -3,33 +3,33 @@ namespace:
 
 namespacename: team-lecture-bot
 
-server:
-  image:
-    repository: ghcr.io/aet-devops25/team-lecture-bot/server
-    tag: latest
-    pullPolicy: Always
-  service:
-    type: ClusterIP
-    port: 8080
-    targetPort: 8080
-  replicaCount: 1
-  env:
-    - name:  SPRING_PROFILES_ACTIVE
-      value: dev
-    - name: SPRING_DATASOURCE_URL
-      value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
-    - name: SPRING_DATASOURCE_USERNAME
-      value: lecturebot_user
-    - name: SPRING_DATASOURCE_PASSWORD
-      value: mysecretpassword
-    - name: LECTUREBOT_CLIENT_ORIGIN
-      value: https://team-lecture-bot.student.k8s.aet.cit.tum.de
-    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-      value: update
-    - name: APP_JWT_EXPIRATION_IN_MS
-      value: "86400000" # 24 hours
-    - name: APP_JWT_SECRET
-      value: ng5hl+XNBp8tM5S+8pbHEzimyjOR5DBXdATzMbrkHpNL2KsJMRL547GO7VuQqDz9BQNrBa+Dhqr1vB3OhzYPIw==
+# server:
+#   image:
+#     repository: ghcr.io/aet-devops25/team-lecture-bot/server
+#     tag: latest
+#     pullPolicy: Always
+#   service:
+#     type: ClusterIP
+#     port: 8080
+#     targetPort: 8080
+#   replicaCount: 1
+#   env:
+#     - name:  SPRING_PROFILES_ACTIVE
+#       value: dev
+#     - name: SPRING_DATASOURCE_URL
+#       value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+#     - name: SPRING_DATASOURCE_USERNAME
+#       value: lecturebot_user
+#     - name: SPRING_DATASOURCE_PASSWORD
+#       value: mysecretpassword
+#     - name: LECTUREBOT_CLIENT_ORIGIN
+#       value: https://team-lecture-bot.student.k8s.aet.cit.tum.de
+#     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+#       value: update
+#     - name: APP_JWT_EXPIRATION_IN_MS
+#       value: "86400000" # 24 hours
+#     - name: APP_JWT_SECRET
+#       value: ng5hl+XNBp8tM5S+8pbHEzimyjOR5DBXdATzMbrkHpNL2KsJMRL547GO7VuQqDz9BQNrBa+Dhqr1vB3OhzYPIw==
 client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
   image:
@@ -41,6 +41,161 @@ client:
     port: 3000
     targetPort: 3000
   replicaCount: 1
+
+
+apiGateway:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/api-gateway
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name: SERVER_PORT
+      value: 8080
+    - name: EUREKA_URI
+      value: http://discovery-service:8761/eureka/
+    - name: LECTUREBOT_CLIENT_ORIGIN
+      value: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de
+    - name: app.jwtSecret
+      value: c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=
+    - name: app.jwtExpirationInMs
+      value: "86400000" # 24 hours
+
+userCourseMicroservice:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/user-course-microservice
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8081
+    targetPort: 8081
+  replicaCount: 1
+  env:
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: lecturebot_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: mysecretpassword
+    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+      value: update
+    - name: GENAI_SERVICE_BASE_URL
+      value: http://genai-service:8011
+    - name: LECTUREBOT_CLIENT_ORIGIN
+      value: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de
+    - name: app.jwtSecret
+      value: c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=
+    - name: app.jwtExpirationInMs
+      value: "86400000" # 24 hours
+    - name: EUREKA_URI
+      value: http://discovery-service:8761/eureka/
+
+genaiBackendMicroservice:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/genai-backend-microservice
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8082
+    targetPort: 8082
+  replicaCount: 1
+  env:
+    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+      value: "update"
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql//genai-backend-db:5432/genai_db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: genai_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: mysecretpassword
+    - name: GENAI_SERVICE_BASE_URL
+      value: http://genai-service:8011
+    - name: app.jwtSecret
+      value: c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=
+    - name: app.jwtExpirationInMs
+      value: "86400000" # 24 hours
+    - name: EUREKA_URI
+      value: http://discovery-service:8761/eureka/
+
+
+discoveryService:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/discovery-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8761
+    targetPort: 8761
+  replicaCount: 1
+  env:
+    - name: app.jwtSecret
+      value: c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=
+    - name: app.jwtExpirationInMs
+      value: "86400000" # 24 hours
+
+
+
+genaiService:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/genai
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8011
+    targetPort: 8011
+  replicaCount: 1
+  env:
+    - name: LLM_PROVIDER
+      value: "tum_aet"
+    - name: OLLAMA_MODEL_NAME
+      value: "llama3:8b-instruct-q4_K_M"
+    - name: OLLAMA_BASE_URL
+      value: "http://host.docker.internal:11434"
+    - name: OPENAI_API_KEY
+      value: "your_openai_key_if_using_openai"
+    - name: OPENAI_MODEL_NAME
+      value: "gpt-4o-mini"
+    - name: TUM_AET_LLM_API_BASE
+      value: "https://gpu.aet.cit.tum.de/api"
+    - name: TUM_AET_LLM_API_KEY
+      value: "sk-d56891f96ed94add810873324af99ef0"
+    - name: TUM_AET_LLM_MODEL_NAME
+      value: "llama3.3:latest"
+    - name: WEAVIATE_URL
+      value: "http://weaviate:8080"
+    - name: TOKENIZERS_PARALLELISM
+      value: "false"
+
+weaviate:
+  image:
+    repository: semitechnologies/weaviate
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 1
+  env:
+    - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+      value: true
+    - name: PERSISTENCE_DATA_PATH
+      value: /var/lib/weaviate
+    - name: DEFAULT_VECTORIZER_MODULE
+      value: "none"
+    - name: ENABLE_MODULES
+      value: ""
+    - name: CLUSTER_HOSTNAME
+      value: "node1"
+
 
 
 dbServiceName: lecturebot-db
@@ -57,6 +212,21 @@ db:
     type: ClusterIP
     port: 5432
     targetPort: 5432
+
+genaiBackendDb:
+  postgresDb: genai_db
+  postgresUser: genai_user
+  postgresPassword: mysecretpassword
+  image:
+    repository: postgres
+    tag: 16
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+
+
 ingress:
   enabled: true
   className: nginx

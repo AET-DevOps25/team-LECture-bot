@@ -30,6 +30,9 @@ RUN ./gradlew build -x test --no-daemon
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
+# Install curl for healthchecks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Expose the application port
 ARG SERVER_PORT=8081
 EXPOSE ${SERVER_PORT}
@@ -40,6 +43,7 @@ EXPOSE ${SERVER_PORT}
 COPY --from=build /app/build/libs/user-course-microservice-0.0.1-SNAPSHOT.jar app.jar
 
 # Environment variables for configuration (can be overridden at runtime)
+
 ENV SERVER_PORT=${SERVER_PORT}
 # ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/lecturebot_db # Example for docker-compose
 # ENV SPRING_DATASOURCE_USERNAME=lecturebot_user
@@ -49,5 +53,5 @@ ENV SERVER_PORT=${SERVER_PORT}
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Optional: Add a healthcheck (adjust as needed)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-CMD curl -f http://localhost:${SERVER_PORT}/api/v1/actuator/health || exit 1
+#HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+#CMD curl -f http://localhost:${SERVER_PORT}/api/v1/actuator/health || exit 1

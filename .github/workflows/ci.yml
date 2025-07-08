@@ -30,14 +30,15 @@ jobs:
       - name: Lint OpenAPI Specification
         run: |
           echo "Linting api/openapi.yaml..."
-          redocly lint api/openapi.yaml
+          redocly lint api/user-course-openapi.yaml
+          redocly lint api/genai-backend-openapi.yaml
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
       - name: Verify Code Generation Script
         run: |
           echo "Verifying code generation script (gen-all.sh)..."
-          chmod +x api/scripts/gen-all.sh
-          ./api/scripts/gen-all.sh
+          chmod +x api/scripts/gen-all-v2.sh
+          ./api/scripts/gen-all-v2.sh
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
   # This job builds the server to ensure it compiles correctly with the generated code.

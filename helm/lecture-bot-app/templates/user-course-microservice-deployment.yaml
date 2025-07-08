@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-course-microservice
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.userCourseMicroservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: user-course-microservice
+  template:
+    metadata:
+      labels:
+        app: user-course-microservice
+    spec:
+      containers:
+        - name: user-course-microservice
+          image: "{{ .Values.userCourseMicroservice.image.repository }}:{{ .Values.userCourseMicroservice.image.tag }}"
+          imagePullPolicy: {{ .Values.userCourseMicroservice.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.userCourseMicroservice.service.targetPort }}
+          env:
+            {{- range .Values.userCourseMicroservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}

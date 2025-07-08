@@ -1,11 +1,11 @@
 server:
   port: 8081
 
+#spring:
+#  mvc:
+#    servlet:
+#      path: /api/v1
 spring:
-  mvc:
-    servlet:
-      path: /api/v1
-
   application:
     # This is the name that will be registered with Eureka
     name: user-course-microservice

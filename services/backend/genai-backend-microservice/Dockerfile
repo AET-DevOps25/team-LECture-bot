@@ -30,6 +30,9 @@ RUN ./gradlew build -x test --no-daemon
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
+# Install curl for healthchecks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 ARG SERVER_PORT=8082
 # Expose the application port
 EXPOSE ${SERVER_PORT}
@@ -50,5 +53,5 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 
 # Optional: Add a healthcheck (adjust as needed)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-CMD curl -f http://localhost:${SERVER_PORT}/api/v1/actuator/health || exit 1
+#HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+#CMD curl -f http://localhost:${SERVER_PORT}/api/v1/actuator/health || exit 1
