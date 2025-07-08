@@ -6,11 +6,16 @@ import CreateCourseSpaceModal from '../components/CourseSpaceModal';
 
 type CourseSpace = components['schemas']['CourseSpaceDto'];
 
+
+import { updateCourseSpace } from '../api/apiClient';
+
 const DashboardPage: React.FC = () => {
     const [courses, setCourses] = useState<CourseSpace[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+    const [editingCourse, setEditingCourse] = useState<CourseSpace | null>(null);
 
 
     useEffect(() => {
@@ -33,11 +38,6 @@ const DashboardPage: React.FC = () => {
 
 
 
-    // Called by the modal on success
-    const handleCourseCreated = (newCourse: CourseSpace) => {
-        setCourses((prevCourses) => [...prevCourses, newCourse]);
-        setIsModalOpen(false); // Close the modal
-    };
 
 
     const handleDelete = async (e: React.MouseEvent, courseSpaceId: string) => {
@@ -76,7 +76,11 @@ const DashboardPage: React.FC = () => {
             <div className='flex justify-between items-center mb-8'>
                 <h1 className="text-3xl font-bold mb-6">My Course Spaces</h1>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                        setModalMode('create');
+                        setEditingCourse(null);
+                        setIsModalOpen(true);
+                    }}
                     className='px-5 py-3 font-bold text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition-colors'
                 >
                     ✨ Create New Space
@@ -85,24 +89,37 @@ const DashboardPage: React.FC = () => {
             {courses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {courses.map((course) => (
-                        <Link
-                            key={course.id}
-                            to={`/coursespaces/${course.id}`}
-                            className="group relative block p-6 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                        >
-                            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">{course.name}</h5>
-                            <p className="font-normal text-gray-600">Click to enter this course space and start learning.</p>
+                        <div key={course.id} className="group relative block p-6 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <Link
+                                to={`/coursespaces/${course.id}`}
+                                className="block"
+                            >
+                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">{course.name}</h5>
+                                <p className="font-normal text-gray-600">Click to enter this course space and start learning.</p>
+                                <div className="mt-4 flex justify-end">
+                                    <span className="text-blue-600 hover:text-blue-800 font-semibold text-lg">Enter &rarr;</span>
+                                </div>
+                            </Link>
                             <button
                                 onClick={(e) => handleDelete(e, course.id!)}
-                                className="absolute top-4 right-4 bg-red-100 text-red-600 rounded-full h-8 w-8 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-200 transition-all duration-200 z-10" // <-- Added z-10
+                                className="absolute top-4 right-4 bg-red-100 text-red-600 rounded-full h-8 w-8 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-200 transition-all duration-200 z-10"
                                 aria-label="Delete course space"
                             >
-                                &times; {/* Using a proper 'x' icon */}
+                                &times;
                             </button>
-                            <div className="mt-4 flex justify-end">
-                                <span className="text-blue-600 hover:text-blue-800 font-semibold text-lg">Enter &rarr;</span>
-                            </div>
-                        </Link>
+                            <button
+                                onClick={() => {
+                                    setModalMode('edit');
+                                    setEditingCourse(course);
+                                    setIsModalOpen(true);
+                                }}
+                                className="absolute top-4 left-4 bg-yellow-100 text-yellow-800 rounded-full h-8 w-8 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-yellow-200 transition-all duration-200 z-10"
+                                aria-label="Edit course space"
+                                title="Edit Course Space"
+                            >
+                                ✎
+                            </button>
+                        </div>
                     ))}
                 </div>
             ) : (
@@ -112,11 +129,34 @@ const DashboardPage: React.FC = () => {
                 </div>
             )}
 
-            {/* Render the modal for creating a new course space */}
+            {/* Render the modal for creating or editing a course space */}
             <CreateCourseSpaceModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onCourseCreated={handleCourseCreated} />
+                mode={modalMode}
+                initialData={modalMode === 'edit' && editingCourse ? {
+                    title: editingCourse.name || '',
+                    description: editingCourse.description || ''
+                } : undefined}
+                onCancel={() => {
+                    setIsModalOpen(false);
+                    setEditingCourse(null);
+                }}
+                onSubmit={async ({ title, description }) => {
+                    if (modalMode === 'edit' && editingCourse) {
+                        const updated = await updateCourseSpace(editingCourse.id!, { name: title, description });
+                        setCourses((prevCourses) => prevCourses.map((c) => c.id === editingCourse.id ? updated : c));
+                        setIsModalOpen(false);
+                        setEditingCourse(null);
+                    } else {
+                        // Backend expects { name, description }
+                        const body: any = { name: title, description };
+                        const { data, error } = await apiClient.POST('/coursespaces', { body });
+                        if (error || !data) throw new Error('Failed to create course space.');
+                        setCourses((prevCourses) => [...prevCourses, data]);
+                        setIsModalOpen(false);
+                    }
+                }}
+            />
 
         </div>
     );

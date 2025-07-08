@@ -303,6 +303,7 @@ export interface components {
             id?: string;
             /** @example Introduction to AI */
             name?: string;
+            description?: string;
             /**
              * Format: date-time
              * @example 2023-10-01T12:00:00Z

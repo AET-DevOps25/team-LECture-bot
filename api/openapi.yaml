@@ -416,6 +416,8 @@ components:
         name:
           type: string
           example: "Introduction to AI"
+        description:
+          type: string
         created_at:
           type: string
           format: date-time
