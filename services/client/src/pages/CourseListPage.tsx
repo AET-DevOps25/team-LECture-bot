@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 import { apiClient, getCourses } from '../api/apiClient';
 import CourseSpaceModal from '../components/CourseSpaceModal';
+import Toast from '../components/Toast';
 
 const CourseListPage: React.FC = () => {
 
@@ -18,19 +18,22 @@ const CourseListPage: React.FC = () => {
   const [deletingCourse, setDeletingCourse] = useState<any | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
   // Handler for deleting a course space
   const handleDeleteCourse = async () => {
     if (!deletingCourse) return;
     setDeleteLoading(true);
     setDeleteError(null);
     try {
-      // Use the correct OpenAPI path: '/coursespaces/{courseSpaceId}'
       const res = await apiClient.DELETE('/coursespaces/{courseSpaceId}', { params: { path: { courseSpaceId: deletingCourse.id } } });
       if (res.error) throw new Error('Failed to delete course space.');
       setCourses((prev) => prev.filter((c) => c.id !== deletingCourse.id));
       setDeletingCourse(null);
+      setToast({ message: 'Course space deleted successfully.', type: 'success' });
     } catch (err: any) {
       setDeleteError(err.message || 'An error occurred.');
+      setToast({ message: err.message || 'An error occurred.', type: 'error' });
     } finally {
       setDeleteLoading(false);
     }
@@ -56,9 +59,13 @@ const CourseListPage: React.FC = () => {
     // OpenAPI expects { title, description }
     const body: any = { title, description };
     const { data, error } = await apiClient.POST('/coursespaces', { body });
-    if (error || !data) throw new Error('Failed to create course space.');
+    if (error || !data) {
+      setToast({ message: 'Failed to create course space.', type: 'error' });
+      throw new Error('Failed to create course space.');
+    }
     setCourses((prev) => [data, ...prev]);
     setModalOpen(false);
+    setToast({ message: 'Course space created successfully.', type: 'success' });
   };
 
   // Handler for editing an existing course space
@@ -66,15 +73,18 @@ const CourseListPage: React.FC = () => {
   const handleEditCourse = async ({ title, description }: { title: string; description: string }) => {
     if (!editingCourse) return;
     const body = { title, description };
-    // Use the correct OpenAPI path and param name
     const res = await apiClient.PUT('/coursespaces/{courseSpaceId}' as any, {
       params: { path: { courseSpaceId: editingCourse.id } },
       body
     });
-    if (res.error || !res.data) throw new Error('Failed to update course space.');
+    if (res.error || !res.data) {
+      setToast({ message: 'Failed to update course space.', type: 'error' });
+      throw new Error('Failed to update course space.');
+    }
     setCourses((prev) => prev.map((c) => (c.id === editingCourse.id ? res.data : c)));
     setModalOpen(false);
     setEditingCourse(null);
+    setToast({ message: 'Course space updated successfully.', type: 'success' });
   };
 
   const openCreateModal = () => {
@@ -180,6 +190,13 @@ const CourseListPage: React.FC = () => {
             </div>
           ))}
         </div>
+      )}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

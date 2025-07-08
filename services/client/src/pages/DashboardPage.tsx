@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { apiClient } from '../api/apiClient';
 import type { components } from '../shared/api/generated/api';
 import CreateCourseSpaceModal from '../components/CourseSpaceModal';
+import Toast from '../components/Toast';
+import type { ToastType } from '../components/Toast';
 
 type CourseSpace = components['schemas']['CourseSpaceDto'];
 
 
 import { updateCourseSpace } from '../api/apiClient';
+
 
 const DashboardPage: React.FC = () => {
     const [courses, setCourses] = useState<CourseSpace[]>([]);
@@ -16,6 +19,7 @@ const DashboardPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [editingCourse, setEditingCourse] = useState<CourseSpace | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
 
     useEffect(() => {
@@ -62,16 +66,26 @@ const DashboardPage: React.FC = () => {
 
             // If successful, remove the course space from the UI
             setCourses(prevCourses => prevCourses.filter(course => course.id !== courseSpaceId));
+            setToast({ message: 'Course space deleted successfully.', type: 'success' });
 
         } catch (err) {
-            alert((err as Error).message);
+            setToast({ message: (err as Error).message, type: 'error' });
         }
     };
+
 
     if (loading) return <div>Loading courses...</div>;
     if (error) return <div className="text-red-500">Error: {error}</div>;
 
     return (
+        <>
+        {toast && (
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+            />
+        )}
         <div className="container mx-auto">
             <div className='flex justify-between items-center mb-8'>
                 <h1 className="text-3xl font-bold mb-6">My Course Spaces</h1>
@@ -142,23 +156,30 @@ const DashboardPage: React.FC = () => {
                     setEditingCourse(null);
                 }}
                 onSubmit={async ({ title, description }) => {
-                    if (modalMode === 'edit' && editingCourse) {
-                        const updated = await updateCourseSpace(editingCourse.id!, { title, description });
-                        setCourses((prevCourses) => prevCourses.map((c) => c.id === editingCourse.id ? updated : c));
-                        setIsModalOpen(false);
-                        setEditingCourse(null);
-                    } else {
-                        // OpenAPI expects { title, description }
-                        const body: any = { title, description };
-                        const { data, error } = await apiClient.POST('/coursespaces', { body });
-                        if (error || !data) throw new Error('Failed to create course space.');
-                        setCourses((prevCourses) => [...prevCourses, data]);
-                        setIsModalOpen(false);
+                    try {
+                        if (modalMode === 'edit' && editingCourse) {
+                            const updated = await updateCourseSpace(editingCourse.id!, { title, description });
+                            setCourses((prevCourses) => prevCourses.map((c) => c.id === editingCourse.id ? updated : c));
+                            setIsModalOpen(false);
+                            setEditingCourse(null);
+                            setToast({ message: 'Course space updated successfully.', type: 'success' });
+                        } else {
+                            // OpenAPI expects { title, description }
+                            const body: any = { title, description };
+                            const { data, error } = await apiClient.POST('/coursespaces', { body });
+                            if (error || !data) throw new Error('Failed to create course space.');
+                            setCourses((prevCourses) => [...prevCourses, data]);
+                            setIsModalOpen(false);
+                            setToast({ message: 'Course space created successfully.', type: 'success' });
+                        }
+                    } catch (err) {
+                        setToast({ message: (err as Error).message, type: 'error' });
                     }
                 }}
             />
 
         </div>
+        </>
     );
 };
 
