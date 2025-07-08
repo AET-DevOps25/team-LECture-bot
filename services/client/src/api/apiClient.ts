@@ -34,7 +34,7 @@ async function initializeApiClient() {
         return;
     }
 
-    let baseUrl = 'http://localhost:8080/api/v1'; // Default for local dev
+    let baseUrl = 'http://localhost:8080/api/v1/'; // Default for local dev
 
     try {
         // This fetches the configuration file provided by your Kubernetes setup.
