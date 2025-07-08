@@ -44,6 +44,9 @@ jobs:
   # This job builds the server to ensure it compiles correctly with the generated code.
   build-server:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, discovery-service]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,6 +55,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
       - name: Build Server with Gradle
         run: ./gradlew build -x test
-        working-directory: services/server
+        working-directory: services/backend/${{ matrix.service }}
