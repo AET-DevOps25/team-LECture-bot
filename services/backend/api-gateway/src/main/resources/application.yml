@@ -10,7 +10,7 @@ spring:
       routes:
         # Route for the User & Authentication Microservice
         - id: user_course_microservice_route
-          uri: lb://USER-COURSE-MICROSERVICE
+          uri: lb://user-course-microservice
           predicates:
             # The full path, including the base, is matched here
             - Path=/api/v1/profile/**, /api/v1/coursespaces/**, /api/v1/auth/**
@@ -20,7 +20,7 @@ spring:
 
         # Route for the Flashcard QA Microservice
         - id: genai_backend_microservice_route 
-          uri: lb://GENAI-BACKEND-MICROSERVICE
+          uri: lb://genai-backend-microservice
           predicates:
             - Path=/api/v1/genai/**
           filters:
@@ -45,6 +45,9 @@ management:
 
 # --- Eureka Client Configuration ---
 eureka:
+  instance:
+    hostname: api-gateway
+    prefer-ip-address: false
   client:
     service-url:
       defaultZone: ${EUREKA_URI:http://eureka-user:eureka-password@localhost:8761/eureka/}

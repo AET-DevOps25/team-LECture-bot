@@ -12,6 +12,11 @@ spring:
 #      path: /api/v1
 #
 eureka:
+  instance:
+    # The hostname for the Eureka instance. This is used for service discovery.
+    hostname: genai-backend-microservice
+    # Use IP address instead of hostname for registration
+    prefer-ip-address: false
   client:
     service-url:
       # Use a placeholder ${EUREKA_URI}.

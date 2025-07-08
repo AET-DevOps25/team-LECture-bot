@@ -27,6 +27,11 @@ management:
       probes:
         enabled: true
 eureka:
+  instance:
+    # The hostname for the Eureka instance. This is used for service discovery.
+    hostname: user-course-microservice
+    # Use IP address instead of hostname for registration
+    prefer-ip-address: false
   client:
     service-url:
       defaultZone: ${EUREKA_URI:http://eureka-user:eureka-password@localhost:8761/eureka/}
