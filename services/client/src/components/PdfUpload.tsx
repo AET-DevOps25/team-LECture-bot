@@ -25,30 +25,72 @@ const PdfUpload: React.FC = () => {
     })));
   };
 
-  // Simulate upload (replace with real API call)
-  const uploadFile = (fileStatus: FileStatus, idx: number) => {
+  // Upload a single file using multipart/form-data
+  const uploadFile = async (fileStatus: FileStatus, idx: number) => {
     setFiles(prev =>
       prev.map((f, i) =>
-        i === idx ? { ...f, status: 'uploading', progress: 0 } : f
+        i === idx ? { ...f, status: 'uploading', progress: 0, message: undefined } : f
       )
     );
-    // Simulate progress
-    const interval = setInterval(() => {
+
+    const formData = new FormData();
+    formData.append('files', fileStatus.file);
+
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/documents'); // Change to your backend endpoint if needed
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setFiles(prev =>
+            prev.map((f, i) =>
+              i === idx ? { ...f, progress: percent } : f
+            )
+          );
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setFiles(prev =>
+            prev.map((f, i) =>
+              i === idx
+                ? { ...f, status: 'success', progress: 100, message: 'Upload successful!' }
+                : f
+            )
+          );
+        } else {
+          setFiles(prev =>
+            prev.map((f, i) =>
+              i === idx
+                ? { ...f, status: 'error', message: `Error: ${xhr.statusText}` }
+                : f
+            )
+          );
+        }
+      };
+
+      xhr.onerror = () => {
+        setFiles(prev =>
+          prev.map((f, i) =>
+            i === idx
+              ? { ...f, status: 'error', message: 'Network error' }
+              : f
+          )
+        );
+      };
+
+      xhr.send(formData);
+    } catch (err: any) {
       setFiles(prev =>
         prev.map((f, i) =>
           i === idx
-            ? {
-                ...f,
-                progress: Math.min(f.progress + 20, 100),
-                status: f.progress + 20 >= 100 ? 'success' : 'uploading',
-                message: f.progress + 20 >= 100 ? 'Upload successful!' : undefined,
-              }
+            ? { ...f, status: 'error', message: err.message || 'Upload failed' }
             : f
         )
       );
-      if (fileStatus.progress + 20 >= 100) clearInterval(interval);
-    }, 400);
-    // In real use, replace with actual upload logic and update progress/status accordingly
+    }
   };
 
   const handleUpload = () => {

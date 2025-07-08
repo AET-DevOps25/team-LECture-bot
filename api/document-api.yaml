@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: Document Service API
+  version: 1.0.0
+paths:
+  /documents:
+    post:
+      tags:
+        - Document
+      summary: Upload PDF(s)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Upload result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+  /documents/{id}:
+    get:
+      tags:
+        - Document
+      summary: Get document metadata
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+  /api/coursespaces/{courseSpaceId}/documents:
+    post:
+      tags:
+        - Document
+      summary: Upload PDF(s) to Course Space
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Upload result to course space
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+components:
+  schemas:
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        fileType:
+          type: string
+          enum: [PDF]
+        uploadDate:
+          type: string
+          format: date-time
+        extractedText:
+          type: string
+        courseId:
+          type: string
+        userId:
+          type: string
+        processingStatus:
+          type: string
+          enum: [PENDING, PROCESSING, COMPLETED, FAILED]

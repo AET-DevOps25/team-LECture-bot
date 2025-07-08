@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * IndexRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-06-24T13:39:51.049480600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-03T14:21:13.808564800+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class IndexRequest {
 
   private String documentId;

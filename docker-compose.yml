@@ -120,6 +120,29 @@ services:
       timeout: 5s
       retries: 5
 
+  #--------------------------------------------------------------------------
+  # Document Service (Spring Boot)
+  #--------------------------------------------------------------------------
+  document-service:
+    build:
+      context: ./services/document-service
+      dockerfile: Dockerfile
+    container_name: lecturebot-document-service
+    ports:
+      - "8082:8080" # Expose on a different host port to avoid conflict
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
+      # Add any other environment variables your document-service needs
+    depends_on:
+      lecturebot-db: { condition: service_healthy }
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+
 volumes:
   lecturebot_db_data: {}
   weaviate_data: {}      # Named volume for Weaviate data
