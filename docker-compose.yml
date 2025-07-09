@@ -38,10 +38,10 @@ services:
       - SERVER_PORT=8080
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000}
-      #- APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      #- APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
-      - app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      - app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
     depends_on:
       discovery-service:
         condition: service_healthy
@@ -62,6 +62,7 @@ services:
       context: ./services/backend/user-course-microservice
       dockerfile: Dockerfile
     container_name: lecturebot-user-course-microservice
+    init: true
     ports:
       - "8081:8081"
     networks:
@@ -76,10 +77,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
       - GENAI_SERVICE_BASE_URL=http://genai-service:8011 
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
-      #- APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      #- APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
-      - app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      - app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
     depends_on:
       lecturebot-db:
@@ -98,6 +99,7 @@ services:
       context: ./services/backend/genai-backend-microservice
       dockerfile: Dockerfile
     container_name: lecturebot-genai-backend-microservice
+    init: true
     ports:
       - "8082:8082"
     networks:
@@ -110,10 +112,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=${GENAI_DB_USER:-genai_user}
       - SPRING_DATASOURCE_PASSWORD=${GENAI_DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
       - GENAI_SERVICE_BASE_URL=http://genai-service:8011
-      #- APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      #- APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
-      - app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      - app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
 
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
     depends_on:
@@ -142,10 +144,10 @@ services:
     ports:
       - "8761:8761"
     environment:
-      #- APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      #- APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
-      - app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
-      - app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
 
     healthcheck:
       test: ["CMD", "curl", "-f", "-u", "${EUREKA_USER:-eureka-user}:${EUREKA_PASSWORD:-eureka-password}", "http://discovery-service:8761/actuator/health"]
@@ -183,8 +185,8 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 5 
       start_period: 90s # Give the service time to load models before checking
     depends_on:
       weaviate: { condition: service_started } # Weaviate doesn't have a simple built-in healthcheck for compose v1 style

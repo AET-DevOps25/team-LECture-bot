@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/swagger-ui.html")
                         .permitAll()
                         .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .pathMatchers("/api/v1/auth/**", "/api/v1/health", "/api/v1/genai/**",
                                 "/eureka/**", "/api/v1/eureka/**")
                         .permitAll()

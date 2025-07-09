@@ -27,17 +27,12 @@ management:
       probes:
         enabled: true
 eureka:
-  instance:
-    # The hostname for the Eureka instance. This is used for service discovery.
-    hostname: user-course-microservice
-    # Use IP address instead of hostname for registration
-    prefer-ip-address: false
   client:
     service-url:
       defaultZone: ${EUREKA_URI:http://eureka-user:eureka-password@localhost:8761/eureka/}
+      
 # JWT Configuration
-# IMPORTANT: The secret should be a long, random, base64-encoded string and kept secure.
-# You can generate a new one for production using: openssl rand -base64 3.app:
-  jwtSecret: c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=
-# Token expiration in milliseconds (e.g., 86400000 for 24 hours)
-  jwtExpirationInMs: 86400000
+app:
+  jwtSecret: ${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+   # Token expiration in milliseconds (e.g., 86400000 for 24 hours)
+  jwtExpirationInMs: ${APP_JWT_EXPIRATION_IN_MS:-86400000}
