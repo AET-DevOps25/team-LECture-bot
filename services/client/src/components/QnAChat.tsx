@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { apiClient } from "../api/apiClient";
-import type { components } from "../shared/api/generated/api";
 
-type Citation = components['schemas']['Citation'];
-type QueryRequest = components['schemas']['QueryRequest'];
+
+import storage from "../utils/storage";
+
+// Citation type for Q&A answers
+interface Citation {
+    document_id: string;
+    chunk_id?: number;
+    document_name?: string;
+    retrieved_text_preview?: string;
+}
 
 interface QAEntry {
     question: string;
@@ -33,33 +39,41 @@ const QnAChat: React.FC<QnAChatProps> = ({ courseSpaceId }) => {
         setLoading(true);
         setError(null);
 
-        const requestBody: QueryRequest = {
-            query_text: question,
-            course_space_id: courseSpaceId,
+        const requestBody = {
+            queryText: question,
+            courseId: courseSpaceId,
         };
 
         try {
-            // Use the new apiClient which handles auth automatically
-            const { data, error: apiError } = await apiClient.POST("/genai/query", {
-                body: requestBody,
+            const token = storage.getItem<string>('jwtToken');
+            const response = await fetch(`/api/coursespaces/${courseSpaceId}/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(requestBody),
             });
 
-            if (apiError) {
-                const errorMessage = (apiError as any).detail || 'An error occurred. Please try again.';
-                throw new Error(errorMessage);
+            if (!response.ok) {
+                let errorMsg = 'An error occurred. Please try again.';
+                try {
+                    const errJson = await response.json();
+                    errorMsg = errJson.error || errJson.message || JSON.stringify(errJson);
+                } catch {}
+                throw new Error(errorMsg);
             }
 
-            if (data) {
-                setHistory((prev) => [
-                    ...prev,
-                    {
-                        question,
-                        answer: data.answer || "No answer provided.",
-                        citations: data.citations,
-                    },
-                ]);
-                setQuestion("");
-            }
+            const data = await response.json();
+            setHistory((prev) => [
+                ...prev,
+                {
+                    question,
+                    answer: data.answerText || "No answer provided.",
+                    citations: data.citations,
+                },
+            ]);
+            setQuestion("");
         } catch (err: any) {
             setError(err.message);
         } finally {
