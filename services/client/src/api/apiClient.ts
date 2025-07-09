@@ -57,6 +57,7 @@ async function initializeApiClient() {
     apiClient.use({
         async onRequest({ request }) {
             const token = storage.getItem<string>('jwtToken');
+            console.log("jwtToken: " + token);
             if (token) {
                 request.headers.set("Authorization", `Bearer ${token}`);
             }
