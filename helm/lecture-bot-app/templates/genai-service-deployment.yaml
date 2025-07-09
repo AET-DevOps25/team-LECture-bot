@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genai-service
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.genaiService.replicaCount }}
+  selector:
+    matchLabels:
+      app: genai-service
+  template:
+    metadata:
+      labels:
+        app: genai-service
+    spec:
+      containers:
+        - name: genai-service
+          image: "{{ .Values.genaiService.image.repository }}:{{ .Values.genaiService.image.tag | default .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.genaiService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.genaiService.service.targetPort }}
+          env:
+            {{- range .Values.genaiService.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.genaiService.service.targetPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.genaiService.service.targetPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 10
+ 

@@ -10,7 +10,7 @@ security:
   - bearerAuth: [] # Applies JWT Bearer authentication globally to all endpoints except those with an empty security array
 
 tags:
-  - name: Profile
+  - name: CourseSpaces
 paths:
   /health:
     get:
@@ -138,7 +138,35 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: Failed to get query response from GenAI service
+                example: Faioled to get query response from GenAI service
+  /genai/generate-flashcards:
+    post:
+      summary: Generate flashcards
+      description: Generates flashcards from a specific document or from all documents in a course space.
+      operationId: generateFlashcards
+      tags:
+        - GenAI
+      requestBody:
+        description: Flashcard generation request details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardRequest'
+      responses:
+        '200':
+          description: Flashcards generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardResponse'
+        '500':
+          description: Internal Server Error - Failed to generate flashcards.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to generate flashcards via GenAI service
   /profile:
     get:
       summary: Get current user's profile
@@ -179,6 +207,7 @@ paths:
           description: Bad Request (e.g., validation error, email already in use).
         '401':
           description: Unauthorized.
+
   /profile/password:
     patch:
       summary: Change current user's password
@@ -200,6 +229,102 @@ paths:
           description: Bad Request (e.g., old password incorrect).
         '401':
           description: Unauthorized.
+
+  /coursespaces:
+    get:
+      summary: Get all course spaces for the current user
+      description: Retrieves a list of all course spaces associated with the authenticated user.
+      operationId: getCourseSpaces
+      tags:
+        - CourseSpaces
+      responses:
+        '200':
+          description: A list of the user's course spaces.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseSpaceDto'
+        '401':
+          description: Unauthorized.
+    post:
+      summary: Create a new course space
+      description: Creates a new course space for the authenticated user.
+      operationId: createCourseSpace
+      tags:
+        - CourseSpaces
+      requestBody:
+        description: The details of the course space to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseSpaceRequest'
+      responses:
+        '201':
+          description: Course space created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSpaceDto'
+        '400':
+          description: Bad Request (e.g., validation error).
+        '401':
+          description: Unauthorized.
+  /coursespaces/{courseSpaceId}:
+    get:
+      summary: Get a specific CourseSpace 
+      description: Gets the information for a chose CourseSpace
+      operationId: getCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to get
+      responses:
+          '200':
+            description: Course Space fetched successfully.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CourseSpaceDto'
+          '400':
+            description: Bad Request (e.g., invalid ID).
+          '401':
+            description: Unauthorized.
+          '404':
+            description: Course space not found.
+    delete:
+      summary: Delete a course space
+      description: Permanently deletes a course space by its ID.
+      operationId: deleteCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId 
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to delete.
+      responses:
+        '204':
+          description: Course space deleted successfully.
+        '400':
+          description: Bad Request (e.g., invalid ID).
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Course space not found.
+
+
 
 components:
   schemas:
@@ -273,9 +398,21 @@ components:
         message:
           type: string
           example: Document indexed successfully
-        documentId:
+        document_id:
           type: string
           example: doc-123
+        status:
+          type: string
+          example: completed
+          description: Status of the indexing operation.
+        chunks_processed:
+          type: integer
+          example: 5
+          description: Number of text chunks processed.
+        chunks_stored_in_weaviate:
+          type: integer
+          example: 5
+          description: Number of chunks successfully stored in Weaviate.
     QueryRequest:
       type: object
       required:
@@ -297,8 +434,103 @@ components:
         citations:
           type: array
           items:
+            $ref: '#/components/schemas/Citation'
             type: string
           example: ["doc-123", "doc-456"]
+          description: A list of citations for the generated answer.
+    FlashcardRequest:
+      type: object
+      required:
+        - course_space_id
+      properties:
+        course_space_id:
+          type: string
+          example: cs-456
+        document_id:
+          type: string
+          nullable: true
+          example: "doc-123"
+    Flashcard:
+      type: object
+      properties:
+        question:
+          type: string
+          example: What is the capital of France?
+        answer:
+          type: string
+          example: Paris
+    FlashcardsForDocument:
+      type: object
+      properties:
+        document_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flashcard'
+    FlashcardResponse:
+      type: object
+      properties:
+        course_space_id:
+          type: string
+        flashcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlashcardsForDocument'
+    Citation:
+      type: object
+      required:
+        - document_id
+        - chunk_id
+        - retrieved_text_preview
+      properties:
+        document_id:
+          type: string
+          description: The ID of the document from which the citation was retrieved.
+          example: doc-123
+        chunk_id:
+          type: string
+          description: A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+          example: "0"
+        document_name:
+          type: string
+          description: The name or title of the source document.
+          example: "Lecture Slides Week 5"
+          nullable: true
+        retrieved_text_preview:
+          type: string
+          description: A short snippet of the text that was retrieved and used as context.
+          example: "LangChain is a framework for developing applications powered by language models."
+    CourseSpaceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Introduction to AI"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        owner:
+          $ref: '#/components/schemas/UserProfile'
+    CreateCourseSpaceRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the course space to create.
+          example: "Introduction to AI"
+
     UserProfile:
       type: object
       properties:
@@ -326,9 +558,9 @@ components:
     ChangePasswordRequest:
       type: object
       properties:
-        oldPassword:
+        old_password:
           type: string
-        newPassword:
+        new_password:
           type: string
           minLength: 8
     UpdateUserProfileResponse:
@@ -336,7 +568,7 @@ components:
       properties:
         userProfile:
           $ref: '#/components/schemas/UserProfile'
-        requireReauth:
+        require_reauth:
           type: boolean
           example: false
         message:

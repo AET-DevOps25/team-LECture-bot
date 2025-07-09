@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genai-backend-microservice
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.genaiBackendMicroservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: genai-backend-microservice
+  template:
+    metadata:
+      labels:
+        app: genai-backend-microservice
+    spec:
+      containers:
+        - name: genai-backend-microservice
+          image: "{{ .Values.genaiBackendMicroservice.image.repository }}:{{ .Values.genaiBackendMicroservice.image.tag | default .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.genaiBackendMicroservice.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+          env:
+            {{- range .Values.genaiBackendMicroservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+

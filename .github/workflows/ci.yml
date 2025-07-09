@@ -22,27 +22,36 @@ jobs:
         with:
           node-version: '18' # Use a Node.js version compatible with Redocly CLI and openapi-typescript
 
-      - name: Install Redocly CLI and OpenAPI-Typescript
-        run: |
-          npm install -g @redocly/openapi-cli
-          npm install -g openapi-typescript
-
       - name: Lint OpenAPI Specification
         run: |
-          echo "Linting api/openapi.yaml..."
-          redocly lint api/openapi.yaml
+          echo "Linting OpenAPI specifications..."
+          npx @redocly/cli@latest lint api/user-course-openapi.yaml
+          npx @redocly/cli@latest lint api/genai-backend-openapi.yaml
+        working-directory: ${{ github.workspace }} # Ensure command runs from root
+
+      - name: Install openapi-typescript for generation script
+        run: npm install openapi-typescript
+
+      - name: Verify Code Generation Script
+        run: |
+          echo "Verifying code generation script (gen-all-v2.sh)..."
+          chmod +x api/scripts/gen-all-v2.sh
+          ./api/scripts/gen-all-v2.sh
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
       - name: Verify Code Generation Script
         run: |
           echo "Verifying code generation script (gen-all.sh)..."
-          chmod +x api/scripts/gen-all.sh
-          ./api/scripts/gen-all.sh
+          chmod +x api/scripts/gen-all-v2.sh
+          ./api/scripts/gen-all-v2.sh
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
   # This job builds the server to ensure it compiles correctly with the generated code.
   build-server:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, discovery-service]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,6 +60,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
       - name: Build Server with Gradle
         run: ./gradlew build -x test
-        working-directory: services/server
+        working-directory: services/backend/${{ matrix.service }}

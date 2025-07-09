@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+#spring:
+#  mvc:
+#    servlet:
+#      path: /api/v1
+spring:
+  application:
+    # This is the name that will be registered with Eureka
+    name: user-course-microservice
+
+# --- Actuator Info ---
+management:
+  endpoints:
+    web:
+      exposure:
+        # Expose specific endpoints. 'health' and 'info' are safe.
+        # 'prometheus' is for metrics scraping. Add others as needed.
+        include: health,info,prometheus
+  endpoint:
+    health:
+      # This setting shows full details (like disk space, db connection, etc.)
+      # in the /actuator/health response. Very useful for debugging.
+      show-details: always
+      # Configuration for readiness and liveness probes in k8s
+      probes:
+        enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://eureka-user:eureka-password@localhost:8761/eureka/}
+      
+# JWT Configuration
+app:
+  jwtSecret: ${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+   # Token expiration in milliseconds (e.g., 86400000 for 24 hours)
+  jwtExpirationInMs: ${APP_JWT_EXPIRATION_IN_MS:-86400000}

@@ -1,0 +1,372 @@
+openapi: 3.0.3
+info:
+  title: User & Course Service API
+  description: API for managing users and course spaces.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081/api/v1 
+    description: Local development server for user-course-microservice
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Profile
+  - name: CourseSpaces
+  - name: Authentication§
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Checks if the server is running.
+      operationId: healthCheck
+      tags:
+        - Health
+      security: [] # This endpoint does not require authentication
+      responses:
+        '200':
+          description: Server is up and running.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account.
+      operationId: registerUser
+      tags:
+        - Authentication
+      security: [] # This endpoint does not require authentication
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Registration successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Registration successful for user@example.com
+        '400':
+          description: Bad Request - Invalid input or email already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Email already exists
+  /auth/login:
+    post:
+      summary: Log in a user
+      description: Authenticates a user and returns a JWT.
+      operationId: loginUser
+      tags:
+        - Authentication
+      security: [] # This endpoint does not require authentication
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized - Bad credentials.
+
+  /profile:
+    get:
+      summary: Get current user's profile
+      description: Retrieves the profile information for the currently authenticated user.
+      operationId: getUserProfile
+      tags:
+        - Profile
+      responses:
+        '200':
+          description: User profile data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized - No or invalid token provided.
+    put:
+      summary: Update current user's profile
+      description: Updates the name and/or email for the currently authenticated user.
+      operationId: updateUserProfile
+      tags:
+        - Profile
+      requestBody:
+        description: The new profile information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserProfileResponse'
+        '400':
+          description: Bad Request (e.g., validation error, email already in use).
+        '401':
+          description: Unauthorized.
+
+  /profile/password:
+    patch:
+      summary: Change current user's password
+      description: Allows the authenticated user to change their password.
+      operationId: changePassword
+      tags:
+        - Profile
+      requestBody:
+        description: The old and new password.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+        '400':
+          description: Bad Request (e.g., old password incorrect).
+        '401':
+          description: Unauthorized.
+
+  /coursespaces:
+    get:
+      summary: Get all course spaces for the current user
+      description: Retrieves a list of all course spaces associated with the authenticated user.
+      operationId: getCourseSpaces
+      tags:
+        - CourseSpaces
+      responses:
+        '200':
+          description: A list of the user's course spaces.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseSpaceDto'
+        '401':
+          description: Unauthorized.
+    post:
+      summary: Create a new course space
+      description: Creates a new course space for the authenticated user.
+      operationId: createCourseSpace
+      tags:
+        - CourseSpaces
+      requestBody:
+        description: The details of the course space to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseSpaceRequest'
+      responses:
+        '201':
+          description: Course space created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSpaceDto'
+        '400':
+          description: Bad Request (e.g., validation error).
+        '401':
+          description: Unauthorized.
+  /coursespaces/{courseSpaceId}:
+    get:
+      summary: Get a specific CourseSpace 
+      description: Gets the information for a chose CourseSpace
+      operationId: getCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to get
+      responses:
+          '200':
+            description: Course Space fetched successfully.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CourseSpaceDto'
+          '400':
+            description: Bad Request (e.g., invalid ID).
+          '401':
+            description: Unauthorized.
+          '404':
+            description: Course space not found.
+    delete:
+      summary: Delete a course space
+      description: Permanently deletes a course space by its ID.
+      operationId: deleteCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId 
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to delete.
+      responses:
+        '204':
+          description: Course space deleted successfully.
+        '400':
+          description: Bad Request (e.g., invalid ID).
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Course space not found.
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+        message:
+          type: string
+          example: LECture-bot server is running!
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: Password123!
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+        password:
+          type: string
+          format: password
+          example: Password123!
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZGEubG92ZWxhY2VAZXhhbXBsZS5jb20iLCJpYXQiOjE2MTYyMzkwMjIsImV4cCI6MTYxNjMyNTQyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.com
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Ada L.
+        email:
+          type: string
+          format: email
+          example: ada.lovelace.new@example.com
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+    UpdateUserProfileResponse:
+      type: object
+      properties:
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
+        require_reauth:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Profile updated successfully.
+    CourseSpaceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Introduction to AI"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        owner:
+          $ref: '#/components/schemas/UserProfile'
+    CreateCourseSpaceRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the course space to create.
+          example: "Introduction to AI"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

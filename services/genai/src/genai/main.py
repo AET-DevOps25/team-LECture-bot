@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 # Make sure to import the query router from genai.api.routers
-from genai.api.routers import indexing, query # <-- Added 'query' here
+from genai.api.routers import indexing, query, flashcard # <-- Added 'query' here
 from genai.core.config import settings
 
 app = FastAPI(
@@ -14,10 +14,15 @@ app = FastAPI(
 # Include the API routers
 app.include_router(indexing.router, prefix="/api/v1/index", tags=["indexing"])
 app.include_router(query.router, prefix="/api/v1/query", tags=["query"])
+app.include_router(flashcard.router, prefix="/api/v1/flashcards", tags=["flashcard"])
 
 # Basic health check endpoint
 @app.get(f"{settings.API_V1_STR}/health", summary="Health Check", tags=["Monitoring"])
 async def health_check():
+    return {"status": "healthy", "module_name": settings.APP_NAME, "version": app.version}
+
+@app.get("/health", summary="Container Health Check", tags=["Monitoring"])
+def container_health_check():
     return {"status": "healthy", "module_name": settings.APP_NAME, "version": app.version}
 
 # Optional: Basic root endpoint

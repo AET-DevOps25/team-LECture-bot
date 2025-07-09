@@ -104,6 +104,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/genai/generate-flashcards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate flashcards
+         * @description Generates flashcards from a specific document or from all documents in a course space.
+         */
+        post: operations["generateFlashcards"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profile": {
         parameters: {
             query?: never;
@@ -146,6 +166,54 @@ export interface paths {
          * @description Allows the authenticated user to change their password.
          */
         patch: operations["changePassword"];
+        trace?: never;
+    };
+    "/coursespaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all course spaces for the current user
+         * @description Retrieves a list of all course spaces associated with the authenticated user.
+         */
+        get: operations["getCourseSpaces"];
+        put?: never;
+        /**
+         * Create a new course space
+         * @description Creates a new course space for the authenticated user.
+         */
+        post: operations["createCourseSpace"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coursespaces/{courseSpaceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a specific CourseSpace
+         * @description Gets the information for a chose CourseSpace
+         */
+        get: operations["getCourseSpace"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a course space
+         * @description Permanently deletes a course space by its ID.
+         */
+        delete: operations["deleteCourseSpace"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -200,7 +268,22 @@ export interface components {
             /** @example Document indexed successfully */
             message?: string;
             /** @example doc-123 */
-            documentId?: string;
+            document_id?: string;
+            /**
+             * @description Status of the indexing operation.
+             * @example completed
+             */
+            status?: string;
+            /**
+             * @description Number of text chunks processed.
+             * @example 5
+             */
+            chunks_processed?: number;
+            /**
+             * @description Number of chunks successfully stored in Weaviate.
+             * @example 5
+             */
+            chunks_stored_in_weaviate?: number;
         };
         QueryRequest: {
             /** @example What is this document about? */
@@ -211,11 +294,83 @@ export interface components {
         QueryResponse: {
             /** @example This document is about... */
             answer?: string;
-            /** @example [
+            /**
+             * @description A list of citations for the generated answer.
+             * @example [
              *       "doc-123",
              *       "doc-456"
-             *     ] */
-            citations?: string[];
+             *     ]
+             */
+            citations?: components["schemas"]["Citation"][];
+        };
+        FlashcardRequest: {
+            /** @example cs-456 */
+            course_space_id: string;
+            /** @example doc-123 */
+            document_id?: string | null;
+        };
+        Flashcard: {
+            /** @example What is the capital of France? */
+            question?: string;
+            /** @example Paris */
+            answer?: string;
+        };
+        FlashcardsForDocument: {
+            document_id?: string;
+            flashcards?: components["schemas"]["Flashcard"][];
+        };
+        FlashcardResponse: {
+            course_space_id?: string;
+            flashcards?: components["schemas"]["FlashcardsForDocument"][];
+        };
+        Citation: {
+            /**
+             * @description The ID of the document from which the citation was retrieved.
+             * @example doc-123
+             */
+            document_id: string;
+            /**
+             * @description A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+             * @example 0
+             */
+            chunk_id: string;
+            /**
+             * @description The name or title of the source document.
+             * @example Lecture Slides Week 5
+             */
+            document_name?: string | null;
+            /**
+             * @description A short snippet of the text that was retrieved and used as context.
+             * @example LangChain is a framework for developing applications powered by language models.
+             */
+            retrieved_text_preview: string;
+        };
+        CourseSpaceDto: {
+            /**
+             * Format: uuid
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id?: string;
+            /** @example Introduction to AI */
+            name?: string;
+            /**
+             * Format: date-time
+             * @example 2023-10-01T12:00:00Z
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @example 2023-10-01T12:00:00Z
+             */
+            updated_at?: string;
+            owner?: components["schemas"]["UserProfile"];
+        };
+        CreateCourseSpaceRequest: {
+            /**
+             * @description The name of the course space to create.
+             * @example Introduction to AI
+             */
+            name: string;
         };
         UserProfile: {
             /** Format: int64 */
@@ -238,13 +393,13 @@ export interface components {
             email?: string;
         };
         ChangePasswordRequest: {
-            oldPassword?: string;
-            newPassword?: string;
+            old_password?: string;
+            new_password?: string;
         };
         UpdateUserProfileResponse: {
             userProfile?: components["schemas"]["UserProfile"];
             /** @example false */
-            requireReauth?: boolean;
+            require_reauth?: boolean;
             /** @example Profile updated successfully. */
             message?: string;
         };
@@ -411,6 +566,40 @@ export interface operations {
             };
         };
     };
+    generateFlashcards: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Flashcard generation request details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FlashcardRequest"];
+            };
+        };
+        responses: {
+            /** @description Flashcards generated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlashcardResponse"];
+                };
+            };
+            /** @description Internal Server Error - Failed to generate flashcards. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     getUserProfile: {
         parameters: {
             query?: never;
@@ -507,6 +696,158 @@ export interface operations {
             };
             /** @description Unauthorized. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getCourseSpaces: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of the user's course spaces. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpaceDto"][];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The details of the course space to create. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCourseSpaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Course space created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpaceDto"];
+                };
+            };
+            /** @description Bad Request (e.g., validation error). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the course space to get */
+                courseSpaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Course Space fetched successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpaceDto"];
+                };
+            };
+            /** @description Bad Request (e.g., invalid ID). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course space not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the course space to delete. */
+                courseSpaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Course space deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request (e.g., invalid ID). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course space not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

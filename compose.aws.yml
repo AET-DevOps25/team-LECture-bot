@@ -1,53 +1,3 @@
-#services:
-#  reverse-proxy:
-#    image: traefik:v3.4
-#    command:
-#      - "--providers.docker=true"
-#      - "--providers.docker.exposedByDefault=false"
-#      - "--entrypoints.web.address=:80"
-#      - "--entrypoints.websecure.address=:443"
-#      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-#      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-#      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-#      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-#      - "--certificatesresolvers.letsencrypt.acme.email=admin@tum.de"
-#      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-#    restart: unless-stopped
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - ./letsencrypt:/letsencrypt
-#
-#  server:
-#    image: ghcr.io/aet-devops25/team-lecture-bot/server:latest
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=dev
-#    restart: unless-stopped
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.server.rule=Host(`${SERVER_HOST}`)"
-#      - "traefik.http.services.server.loadbalancer.server.port=8080"
-#      - "traefik.http.routers.server.entrypoints=websecure"
-#      - "traefik.http.routers.server.tls.certresolver=letsencrypt"
-#
-#  client:
-#    image: ghcr.io/aet-devops25/team-lecture-bot/client:latest
-#    environment:
-#      - PUBLIC_API_URL=${PUBLIC_API_URL}
-#    depends_on:
-#      - server
-#    restart: unless-stopped
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.client.rule=Host(`${CLIENT_HOST}`)"
-#      - "traefik.http.services.client.loadbalancer.server.port=3000"
-#      - "traefik.http.routers.client.entrypoints=websecure"
-#      - "traefik.http.routers.client.tls.certresolver=letsencrypt"
-#      - "traefik.http.middlewares.client-compress.compress=true"
-#      - "traefik.http.routers.client.middlewares=client-compress"
-#      - "traefik.http.routers.client.priority=1"
 version: '3.8'
 
 services:
@@ -74,46 +24,29 @@ services:
     networks:
       - lecturebot-net
 
-  lecturebot-db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: lecturebot_db
-      POSTGRES_USER: lecturebot_user
-      POSTGRES_PASSWORD: mysecretpassword
-    volumes:
-      - lecturebot_db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lecturebot_user -d lecturebot_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    networks:
-      - lecturebot-net
-
-  server:
-    image: ghcr.io/aet-devops25/team-lecture-bot/server:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
-      - SPRING_DATASOURCE_USERNAME=lecturebot_user
-      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
-      - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://client.${SERVER_HOST}
-      - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173
-      - APP_JWT_SECRET=${APP_JWT_SECRET}
-      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
-    restart: unless-stopped
-    depends_on:
-      lecturebot-db:
-        condition: service_healthy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.server.rule=Host(`${SERVER_HOST}`)"
-      - "traefik.http.services.server.loadbalancer.server.port=8080"
-      - "traefik.http.routers.server.entrypoints=websecure"
-      - "traefik.http.routers.server.tls.certresolver=letsencrypt"
-    networks:
-      - lecturebot-net
+ # server:
+ #   image: ghcr.io/aet-devops25/team-lecture-bot/server:latest
+ #   environment:
+ #     - SPRING_PROFILES_ACTIVE=dev
+ #     - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+ #     - SPRING_DATASOURCE_USERNAME=lecturebot_user
+ #     - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+ #     - LECTUREBOT_CLIENT_ORIGIN_PORT_3000=http://client.${SERVER_HOST}
+ #     - LECTUREBOT_CLIENT_ORIGIN_PORT_5173=http://localhost:5173
+ #     - APP_JWT_SECRET=${APP_JWT_SECRET}
+ #     - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS}
+ #   restart: unless-stopped
+ #   depends_on:
+ #     lecturebot-db:
+ #       condition: service_healthy
+ #   labels:
+ #     - "traefik.enable=true"
+ #     - "traefik.http.routers.server.rule=Host(`${SERVER_HOST}`)"
+ #     - "traefik.http.services.server.loadbalancer.server.port=8080"
+ #     - "traefik.http.routers.server.entrypoints=websecure"
+ #     - "traefik.http.routers.server.tls.certresolver=letsencrypt"
+ #   networks:
+ #     - lecturebot-net
 
   client:
     image: ghcr.io/aet-devops25/team-lecture-bot/client:latest
@@ -134,8 +67,128 @@ services:
     networks:
       - lecturebot-net
 
+  api-gateway:
+    image: ghcr.io/aet-devops25/team-lecture-bot/api-gateway:latest
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_URI=http://discovery-service:8761/eureka
+      - LECTUREBOT_CLIENT_ORIGIN=https://${CLIENT_HOST}
+      - app.jwtSecret=${APP_JWT_SECRET}
+      - app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS}
+    depends_on:
+      - discovery-service
+      - user-course-microservice
+    labels:
+      - "traefik.enable=true"
+      # The SERVER_HOST variable from your workflow will now point to the API Gateway
+      - "traefik.http.routers.api-gateway.rule=Host(`${SERVER_HOST}`)"
+      - "traefik.http.services.api-gateway.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api-gateway.entrypoints=websecure"
+      - "traefik.http.routers.api-gateway.tls.certresolver=letsencrypt"
+    networks:
+      - lecturebot-net
+
+  user-course-microservice:
+    image: ghcr.io/aet-devops25/team-lecture-bot/user-course-microservice:latest
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8081
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+      - SPRING_DATASOURCE_USERNAME=lecturebot_user
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011
+      - EUREKA_URI=http://discovery-service:8761/eureka
+    depends_on:
+      - lecturebot-db
+      - discovery-service
+    networks:
+      - lecturebot-net
+
+  genai-backend-microservice:
+    image: ghcr.io/aet-devops25/team-lecture-bot/genai-backend-microservice:latest
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8082
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://genai-backend-db:5432/genai_db
+      - SPRING_DATASOURCE_USERNAME=genai_user
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011
+      - EUREKA_URI=http://discovery-service:8761/eureka
+    depends_on:
+      - genai-backend-db
+      - discovery-service
+    networks:
+      - lecturebot-net
+
+  discovery-service:
+    image: ghcr.io/aet-devops25/team-lecture-bot/discovery-service:latest
+    restart: unless-stopped
+    networks:
+      - lecturebot-net
+
+  genai-service:
+    image: ghcr.io/aet-devops25/team-lecture-bot/genai:latest
+    restart: unless-stopped
+    environment:
+      - WEAVIATE_URL=http://weaviate:8080
+      - TOKENIZERS_PARALLELISM=false
+    depends_on:
+      - weaviate
+    networks:
+      - lecturebot-net
+
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    restart: unless-stopped
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      ENABLE_MODULES: ''
+      CLUSTER_HOSTNAME: 'node1'
+    networks:
+      - lecturebot-net
+
+  lecturebot-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: lecturebot_db
+      POSTGRES_USER: lecturebot_user
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - lecturebot_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lecturebot_user -d lecturebot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - lecturebot-net
+
+  genai-backend-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=genai_db
+      - POSTGRES_USER=genai_user
+      - POSTGRES_PASSWORD=mysecretpassword
+    volumes:
+      - genai_db_data:/var/lib/postgresql/data
+    networks:
+      - lecturebot-net
+
+
 volumes:
-  lecturebot_db_data:
+  lecturebot_db_data: {}
+  genai_db_data: {}
+  weaviate_data: {}
+  letsencrypt: {}
 
 networks:
   lecturebot-net:

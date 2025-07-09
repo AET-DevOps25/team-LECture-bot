@@ -22,6 +22,9 @@ langchain-huggingface = ">=0.2.0,<0.3.0"
 langchain-openai = ">=0.3.22,<0.4.0"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
 [tool.poetry]
 name = "genai-service"
 version = "0.1.0"
