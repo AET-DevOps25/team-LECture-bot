@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/coursespaces/{courseSpaceId}/query")
+@RequestMapping("/coursespaces/{courseSpaceId}/query")
 public class QueryController {
 
     private final QueryService queryService;
