@@ -36,6 +36,11 @@ public class QueryController {
             return ResponseEntity.badRequest().body(null);
         }
 
+        // Validate queryText is not null or blank
+        if (request.getQueryText() == null || request.getQueryText().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         // Set userId from security context if available
         org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
