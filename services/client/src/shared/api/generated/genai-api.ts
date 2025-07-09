@@ -127,6 +127,11 @@ export interface components {
         FlashcardResponse: {
             course_space_id?: string;
             flashcards?: components["schemas"]["FlashcardsForDocument"][];
+            /**
+             * @description An error message if the flashcard generation failed.
+             * @example Failed to retrieve documents from the vector store.
+             */
+            error?: string | null;
         };
         Citation: {
             /**
@@ -248,6 +253,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FlashcardResponse"];
+                };
+            };
+            /** @description No flashcards generated - No documents found in the course space. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Internal Server Error - Failed to generate flashcards. */

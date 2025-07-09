@@ -22,13 +22,15 @@ import jakarta.annotation.Generated;
  * FlashcardResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-06T20:56:02.100804+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T13:53:25.595271+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class FlashcardResponse {
 
   private @Nullable String courseSpaceId;
 
   @Valid
   private List<@Valid FlashcardsForDocument> flashcards = new ArrayList<>();
+
+  private @Nullable String error = null;
 
   public FlashcardResponse courseSpaceId(String courseSpaceId) {
     this.courseSpaceId = courseSpaceId;
@@ -78,6 +80,26 @@ public class FlashcardResponse {
     this.flashcards = flashcards;
   }
 
+  public FlashcardResponse error(String error) {
+    this.error = error;
+    return this;
+  }
+
+  /**
+   * An error message if the flashcard generation failed.
+   * @return error
+   */
+  
+  @Schema(name = "error", example = "Failed to retrieve documents from the vector store.", description = "An error message if the flashcard generation failed.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("error")
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -88,12 +110,13 @@ public class FlashcardResponse {
     }
     FlashcardResponse flashcardResponse = (FlashcardResponse) o;
     return Objects.equals(this.courseSpaceId, flashcardResponse.courseSpaceId) &&
-        Objects.equals(this.flashcards, flashcardResponse.flashcards);
+        Objects.equals(this.flashcards, flashcardResponse.flashcards) &&
+        Objects.equals(this.error, flashcardResponse.error);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(courseSpaceId, flashcards);
+    return Objects.hash(courseSpaceId, flashcards, error);
   }
 
   @Override
@@ -102,6 +125,7 @@ public class FlashcardResponse {
     sb.append("class FlashcardResponse {\n");
     sb.append("    courseSpaceId: ").append(toIndentedString(courseSpaceId)).append("\n");
     sb.append("    flashcards: ").append(toIndentedString(flashcards)).append("\n");
+    sb.append("    error: ").append(toIndentedString(error)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -5,7 +5,7 @@ namespacename: team-lecture-bot
 
 global:
   image:
-    tag: latest #43-feature-44-task-flashcard-generation-backend-refactoring
+    tag: 43-feature-44-task-flashcard-generation-backend-refactoring
 
 client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
@@ -39,6 +39,8 @@ apiGateway:
     targetPort: 8080
   replicaCount: 1
   env:
+    - name: EUREKA_INSTANCE_HOSTNAME
+      value: api-gateway
     - name: SERVER_PORT
       value: 8080
     - name: EUREKA_URI
@@ -61,6 +63,8 @@ userCourseMicroservice:
     targetPort: 8081
   replicaCount: 1
   env:
+    - name: EUREKA_INSTANCE_HOSTNAME
+      value: user-course-microservice
     - name: SPRING_DATASOURCE_URL
       value: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
     - name: SPRING_DATASOURCE_USERNAME
@@ -91,6 +95,8 @@ genaiBackendMicroservice:
     targetPort: 8082
   replicaCount: 1
   env:
+    - name: EUREKA_INSTANCE_HOSTNAME
+      value: genai-backend-microservice
     - name: SPRING_JPA_HIBERNATE_DDL_AUTO
       value: update
     - name: SPRING_DATASOURCE_URL

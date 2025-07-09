@@ -91,6 +91,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlashcardResponse'
+        '204':
+          description: No flashcards generated - No documents found in the course space.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No documents found in the course space 
         '500':
           description: Internal Server Error - Failed to generate flashcards.
           content:
@@ -199,6 +206,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FlashcardsForDocument'
+        error:
+          type: string
+          nullable: true
+          description: An error message if the flashcard generation failed.
+          example: "Failed to retrieve documents from the vector store."
     Citation:
       type: object
       required:

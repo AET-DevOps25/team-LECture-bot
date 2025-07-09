@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-06T20:55:56.270660+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T13:53:20.578466+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Health", description = "the Health API")
 public interface HealthApi {

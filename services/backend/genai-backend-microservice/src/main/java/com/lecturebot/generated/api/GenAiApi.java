@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-06T20:56:02.100804+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T13:53:25.595271+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {
@@ -53,6 +53,7 @@ public interface GenAiApi {
      *
      * @param flashcardRequest Flashcard generation request details (required)
      * @return Flashcards generated successfully. (status code 200)
+     *         or No flashcards generated - No documents found in the course space. (status code 204)
      *         or Internal Server Error - Failed to generate flashcards. (status code 500)
      */
     @Operation(
@@ -64,6 +65,10 @@ public interface GenAiApi {
             @ApiResponse(responseCode = "200", description = "Flashcards generated successfully.", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = FlashcardResponse.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = FlashcardResponse.class))
+            }),
+            @ApiResponse(responseCode = "204", description = "No flashcards generated - No documents found in the course space.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Failed to generate flashcards.", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
@@ -87,8 +92,13 @@ public interface GenAiApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"flashcards\" : [ { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" }, { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" } ], \"course_space_id\" : \"course_space_id\" }";
+                    String exampleString = "{ \"flashcards\" : [ { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" }, { \"flashcards\" : [ { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" }, { \"question\" : \"What is the capital of France?\", \"answer\" : \"Paris\" } ], \"document_id\" : \"document_id\" } ], \"error\" : \"Failed to retrieve documents from the vector store.\", \"course_space_id\" : \"course_space_id\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf(""))) {
+                    String exampleString = "";
+                    ApiUtil.setExampleResponse(request, "", exampleString);
                     break;
                 }
                 if (mediaType.isCompatibleWith(MediaType.valueOf(""))) {

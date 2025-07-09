@@ -40,6 +40,7 @@ services:
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000}
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=api-gateway
       #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
     depends_on:
@@ -79,6 +80,7 @@ services:
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=user-course-microservice
       #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
@@ -114,6 +116,7 @@ services:
       - GENAI_SERVICE_BASE_URL=http://genai-service:8011
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=genai-backend-microservice
       #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
 
