@@ -344,8 +344,6 @@ All endpoints in this section require authentication. You must include the Autho
 
 1. Get All Course Spaces
 
-- Endpoint: `GET /api/v1/coursespaces`
-- Description: Retrieves a list of all course spaces for the currently authenticated user.
 
 `curl` Example:
 ```bash
@@ -365,6 +363,68 @@ curl -X GET http://localhost:8080/api/v1/coursespaces \
     }
 ]
 ```
+
+
+---
+
+## 6. Manage Course Spaces: Frontend UI & Logic (Sub-Issue 6 & 7)
+
+### Sub-Issue 6: UI for Creating/Editing Course Spaces
+
+**Implementation:**
+- A React modal form is used for both creating and editing course spaces.
+- The form includes fields for "Title" (required) and "Description" (optional).
+- When editing, the modal is pre-filled with the current course space data.
+- The UI is styled with TailwindCSS for a modern, clean look.
+- The modal is accessible from the dashboard (list view) for both new and existing course spaces.
+
+**How it Works:**
+- To create: Click the "Create New Course Space" button. Fill in the form and submit.
+- To edit: Click the edit icon/button on a course space. The modal opens with current data. Update fields and submit.
+- Validation ensures the title is not empty before submission.
+- Cancel closes the modal without changes.
+
+**Testing:**
+1. Log in via the frontend.
+2. Click "Create New Course Space" and submit a new course space. It should appear in the list.
+3. Click the edit button on an existing course space, change the title/description, and submit. The list updates.
+4. Try submitting with an empty title; an error should appear.
+5. Cancel closes the modal with no changes.
+
+---
+
+### Sub-Issue 7: Frontend Logic for CRUD Operations
+
+**Implementation:**
+- All CRUD operations (Create, Read, Update, Delete) are handled via a React context (`CourseSpaceContext`).
+- The context manages the list of course spaces, loading state, and error/success messages.
+- API calls use the OpenAPI-generated TypeScript client, ensuring type safety and alignment with backend contracts.
+- On create/edit/delete, the context updates the UI optimistically or after a successful API response.
+- Error messages from the backend are propagated to the UI and shown in the modal or as toast notifications.
+
+**How it Works:**
+- **Create:** Calls `POST /api/v1/coursespaces` with form data. On success, adds the new course space to the list.
+- **Read:** Calls `GET /api/v1/coursespaces` on load and after any change. Updates the dashboard list.
+- **Update:** Calls `PUT /api/v1/coursespaces/{id}` with updated data. On success, updates the item in the list.
+- **Delete:** Calls `DELETE /api/v1/coursespaces/{id}` after confirmation. Removes the item from the list.
+- All requests include the JWT for authentication.
+
+**Testing:**
+1. Create, edit, and delete course spaces via the UI. The list should update immediately.
+2. Try editing with invalid data (e.g., empty title) to see validation in action.
+3. Simulate backend errors (e.g., duplicate name, unauthorized) and verify error messages are shown.
+4. Refresh the page; the list should persist (fetched from backend).
+
+**API Endpoints Used:**
+- `GET /api/v1/coursespaces` — fetch all course spaces
+- `POST /api/v1/coursespaces` — create new course space
+- `PUT /api/v1/coursespaces/{id}` — update course space
+- `DELETE /api/v1/coursespaces/{id}` — delete course space
+
+**Notes:**
+- All endpoints require a valid JWT (handled automatically by the frontend if logged in).
+- The UI provides clear feedback for all actions (success, error, loading).
+- The implementation matches the acceptance criteria in the sub-issues and epic.
 
 
 2. Create a new CourseSpace
