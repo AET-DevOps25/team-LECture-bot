@@ -85,6 +85,86 @@ To also remove volumes (like the database data), use docker-compose down -v.
 * PostgreSQL Version Incompatibility / Schema Issues: If the database or server fails to start due to database file incompatibility or schema validation errors, it often means the Docker volume (lecturebot_db_data) contains data from a previous or different database state.
 * Solution: Stop services (docker-compose down), remove the conflicting Docker volume (e.g., docker volume rm <projectname>_lecturebot_db_data or docker volume rm lecturebot_db_data - use docker volume ls to find the exact name used by your setup), and then run docker-compose up --build -d again. This allows PostgreSQL to initialize a fresh database and run the init-users.sql script.
 
+
+## Q&A Feature: Testing Instructions
+
+This section explains how to test the Q&A (Ask Question About Course) feature via both the UI and API (using curl), including JWT authentication and expected responses.
+
+### 1. Testing via the UI
+
+1. Log in as an authenticated user.
+2. Navigate to a course space.
+3. Use the Q&A chat interface:
+   - Type a natural language question in the input field.
+   - Submit the question.
+   - Observe the answer and any citations displayed in the chat bubbles.
+   - If the answer cannot be generated, a fallback message will be shown.
+   - Loading indicators and error messages are displayed as appropriate.
+
+### 2. Testing via curl (API)
+
+You can test the backend Q&A endpoint directly using curl. You must provide a valid JWT token in the Authorization header.
+
+#### Example curl command
+
+```bash
+curl -X POST http://localhost:8080/api/v1/coursespaces/<COURSE_SPACE_ID>/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+  -d '{"queryText": "What is the course about?", "courseId": "<COURSE_SPACE_ID>"}'
+```
+
+- Replace `<COURSE_SPACE_ID>` with your actual courseSpaceId (e.g., `efa22df0-37ea-45e8-8f97-7c6eb7f1f555`).
+- Replace `<YOUR_JWT_TOKEN>` with a valid JWT (obtainable from your app's login/session).
+
+#### Expected Request Body
+
+```json
+{
+  "queryText": "What is the course about?",
+  "courseId": "efa22df0-37ea-45e8-8f97-7c6eb7f1f555"
+}
+```
+
+#### Expected Response Structure
+
+```json
+{
+  "answerText": "...answer string...",
+  "citations": [
+    {
+      "document_id": "...",
+      "document_name": "...",
+      "page_number": 1,
+      "context_snippet": "..."
+    }
+  ],
+  "error": null
+}
+```
+
+- If no answer can be generated, `answerText` will contain a fallback message and `citations` may be empty or contain nulls.
+- If authentication fails, you will receive a 401 or 403 error.
+
+### 3. Troubleshooting
+
+- Ensure your JWT is valid and not expired.
+- If you receive a static resource error, check your backend and gateway routing.
+- If you receive a fallback answer, ensure your course space has documents/content indexed.
+
+### 4. Additional Notes
+docs(readme): add Q&A feature testing instructions with curl and UI examples
+
+- Document how to test the Q&A endpoint via both the UI and curl
+- Include JWT usage, example request/response, and troubleshooting tips
+- Clarify expected request/response structure for Q&A API
+- Satisfies documentation requirements for Q&A feature
+- All Q&A endpoints require authentication (JWT).
+- The UI and API both use the same backend endpoint for Q&A.
+- For more details, see the main project README and the Q&A feature documentation.
+
+---
+
 ## Testing API Endpoints
 
 ### 1. Health Check
