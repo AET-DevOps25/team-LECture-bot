@@ -12,7 +12,7 @@ interface CourseSpaceContextType {
     loading: boolean;
     error: string | null;
     fetchCourseSpaces: () => Promise<void>;
-    createCourseSpace: (name: string) => Promise<CourseSpace | null>;
+    createCourseSpace: (name: string, description: string) => Promise<CourseSpace | null>;
 }
 
 // Create the context with a default undefined value
@@ -40,10 +40,10 @@ export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Function to create a new course space
-    const createCourseSpace = async (name: string): Promise<CourseSpace | null> => {
+    const createCourseSpace = async (name: string, description: string): Promise<CourseSpace | null> => {
         try {
             const { data, error: createError } = await apiClient.POST('/coursespaces', {
-                body: { name },
+                body: { name, description },
             });
 
             if (createError || !data) {

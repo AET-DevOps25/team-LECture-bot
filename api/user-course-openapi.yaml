@@ -191,6 +191,40 @@ paths:
         '401':
           description: Unauthorized.
   /coursespaces/{courseSpaceId}:
+    put:
+      summary: Update a course space
+      description: Updates the name and/or description of a course space owned by the authenticated user.
+      operationId: updateCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the course space to update.
+      requestBody:
+        description: The new details for the course space.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseSpaceRequest'
+      responses:
+        '200':
+          description: Course space updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSpaceDto'
+        '400':
+          description: Bad Request (e.g., validation error).
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Course space not found.
     get:
       summary: Get a specific CourseSpace 
       description: Gets the information for a chose CourseSpace
@@ -346,6 +380,9 @@ components:
         name:
           type: string
           example: "Introduction to AI"
+        description:
+          type: string
+          example: "This is a course about AI."
         created_at:
           type: string
           format: date-time
@@ -365,6 +402,22 @@ components:
           type: string
           description: The name of the course space to create.
           example: "Introduction to AI"
+        description:
+          type: string
+          description: The description of the course space.
+          example: "This is a course about AI."
+    UpdateCourseSpaceRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The new name of the course space.
+        description:
+          type: string
+          description: The new description of the course space.  
+
   securitySchemes:
     bearerAuth:
       type: http
