@@ -1,0 +1,46 @@
+# server {
+#   listen 3000;
+#   server_name localhost;
+#   root /usr/share/nginx/html;
+#   index index.html;
+# 
+#   location / {
+#     try_files $uri $uri/ /index.html;
+#   }
+# }
+server {
+    listen 3000;
+    server_name localhost;
+
+    # This location block handles serving your React application's static files.
+    # It serves files from the root directory and uses index.html as the fallback
+    # for client-side routing (Single-Page Application).
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # This location block handles all API requests.
+    # It catches any URL starting with /api/ and proxies it to the backend.
+    # This is where the magic happens.
+    location /api/ {
+        # The PUBLIC_API_URL is set by your entrypoint.sh script.
+        # This makes the configuration dynamic and portable.
+        # For example, it might resolve to 'http://my-backend-service:8080/api/'.
+        proxy_pass ${PUBLIC_API_URL};
+
+        # These headers are essential for passing client information to the backend,
+        # ensuring your API knows who the original client is.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # You can add error pages for a better user experience if needed.
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}

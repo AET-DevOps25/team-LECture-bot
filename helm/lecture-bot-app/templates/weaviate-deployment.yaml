@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weaviate
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.weaviate.replicaCount }}
+  selector:
+    matchLabels:
+      app: weaviate
+  template:
+    metadata:
+      labels:
+        app: weaviate
+    spec:
+      containers:
+        - name: weaviate
+          image: "{{ .Values.weaviate.image.repository }}:{{ .Values.weaviate.image.tag }}"
+          imagePullPolicy: {{ .Values.weaviate.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.weaviate.service.targetPort }}
+          env:
+            {{- range .Values.weaviate.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          volumeMounts:
+            - name: weaviate-data
+              mountPath: /var/lib/weaviate
+      volumes:
+        - name: weaviate-data
+          persistentVolumeClaim:
+            claimName: weaviate-pvc

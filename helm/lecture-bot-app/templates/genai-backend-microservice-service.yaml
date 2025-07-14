@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: genai-backend-microservice
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  selector:
+    app: genai-backend-microservice
+  ports:
+    - port: {{ .Values.genaiBackendMicroservice.service.port }}
+      targetPort: {{ .Values.genaiBackendMicroservice.service.targetPort }}
+      protocol: TCP
+  type: {{ .Values.genaiBackendMicroservice.service.type }}

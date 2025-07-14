@@ -1,4 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useParams } from 'react-router-dom';
+import { apiClient } from '../api/apiClient';
 
 interface FileStatus {
   file: File;
@@ -8,6 +11,7 @@ interface FileStatus {
 }
 
 const PdfUpload: React.FC = () => {
+  const { courseSpaceId } = useParams<{ courseSpaceId: string }>(); // <-- Get from URL
   const [files, setFiles] = useState<FileStatus[]>([]);
 
   // Handle file selection and filter for PDFs
@@ -37,51 +41,32 @@ const PdfUpload: React.FC = () => {
     formData.append('files', fileStatus.file);
 
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/documents'); // Change to your backend endpoint if needed
+      const response = await apiClient.POST("/documents/{courseSpaceId}" as any, {
+        params: {
+          path: {
+            courseSpaceId: courseSpaceId!
+          }
+        },
+        body: formData,
+      });
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          setFiles(prev =>
-            prev.map((f, i) =>
-              i === idx ? { ...f, progress: percent } : f
-            )
-          );
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          setFiles(prev =>
-            prev.map((f, i) =>
-              i === idx
-                ? { ...f, status: 'success', progress: 100, message: 'Upload successful!' }
-                : f
-            )
-          );
-        } else {
-          setFiles(prev =>
-            prev.map((f, i) =>
-              i === idx
-                ? { ...f, status: 'error', message: `Error: ${xhr.statusText}` }
-                : f
-            )
-          );
-        }
-      };
-
-      xhr.onerror = () => {
+      if (response.error) {
         setFiles(prev =>
           prev.map((f, i) =>
             i === idx
-              ? { ...f, status: 'error', message: 'Network error' }
+              ? { ...f, status: 'error', message: 'Upload failed' }
               : f
           )
         );
-      };
-
-      xhr.send(formData);
+      } else {
+        setFiles(prev =>
+          prev.map((f, i) =>
+            i === idx
+              ? { ...f, status: 'success', progress: 100, message: 'Upload successful!' }
+              : f
+          )
+        );
+      }
     } catch (err: any) {
       setFiles(prev =>
         prev.map((f, i) =>

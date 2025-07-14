@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     WEAVIATE_CLASS_NAME: str = "LectureBotChunk"
 
     # LLM Configuration (for Sub-Issue 7)
-    LLM_PROVIDER: str = "ollama" # Default provider
+    LLM_PROVIDER: str = "tum_aet"#ollama" # Default provider
+    print("LLM_PROVIDER:", LLM_PROVIDER)
 
     # -- OpenAI Settings --
     OPENAI_API_KEY: Optional[str] = None # Make it optional
@@ -22,8 +23,10 @@ class Settings(BaseSettings):
     OLLAMA_MODEL_NAME: str = "llama3:8b-instruct-q4_K_M" # Example of a quantized model
 
     # -- TUM AET GPU LLM Settings --
-    TUM_AET_LLM_API_BASE: Optional[str] = None
-    TUM_AET_LLM_API_KEY: Optional[str] = None
+    TUM_AET_LLM_API_BASE: Optional[str] = "https://gpu.aet.cit.tum.de/api"
+    TUM_AET_LLM_API_KEY: Optional[str] = "sk-fa5ce8c262e84135bc97f3b35d5795c0"
+    print("TUM_AET_LLM_API_BASE:", TUM_AET_LLM_API_BASE)
+    print("TUM_AET_LLM_API_KEY:", TUM_AET_LLM_API_KEY)
     TUM_AET_LLM_MODEL_NAME: str = "llama3.3:latest" # Default model for TUM AET LLM
 
     
@@ -54,6 +57,16 @@ class Settings(BaseSettings):
     {question}
 
     ANSWER:
+    """
+    FLASHCARD_PROMPT_TEMPLATE: str = """
+    You are an expert in creating study materials. Based on the following context from a document, generate a list of concise question-and-answer flashcards that cover the key concepts.
+    Your response MUST be a valid JSON list of objects. Each object in the list MUST contain two string keys: "question" and "answer".
+    Do not include any other text or explanations outside of the JSON list itself.
+
+    CONTEXT:
+    {context}
+
+    JSON_FLASHCARDS:
     """
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding='utf-8')

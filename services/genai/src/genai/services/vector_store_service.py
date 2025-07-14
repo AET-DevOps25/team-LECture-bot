@@ -191,11 +191,60 @@ class VectorStoreService:
             print(f"Error during similarity search: {e}")
             return []
 
+    def fetch_objects(self, filter_expression: any, limit: int = 1000) -> List[Dict[str, Any]]:
+        """
+        Fetches objects from Weaviate based on a filter expression.
+        """
+        
+        try:
+            collection = self.client.collections.get(self.class_name)
+            response = collection.query.fetch_objects( limit=limit,
+                    filters=filter_expression
+            )
+
+            results = []
+
+            for item in response.objects:
+                result = { "properties": item.properties }
+                results.append(result)
+            
+            return results
+        except Exception as e:
+            print(f"Error fetching objects: {e}")
+            return []
+
     def close(self):
         """Closes the Weaviate client connection."""
         if hasattr(self, 'client') and self.client.is_connected():
             print("Closing Weaviate client connection.")
             self.client.close()
+
+    
+
+    def get_unique_document_ids(self, course_space_id: str) -> List[str]:
+        """
+        Uses Weaviate aggregation to find all unique document_ids for a given course_space_id.
+        """
+        print(f"Aggregating to find unique document IDs for course_space_id: '{course_space_id}'")
+        try:
+            collection = self.client.collections.get(self.class_name)
+            
+            # Create a filter to scope the aggregation
+            id_filter = wvc.query.Filter.by_property("course_space_id").equal(course_space_id)
+            
+            response = collection.aggregate.over_all(
+                filters=id_filter,
+                group_by="document_id" # The property we want to get unique values from
+            )
+            
+            # The response contains a list of groups, each with the unique value
+            unique_ids = [group.grouped_by.value for group in response.groups]
+            print(f"Found {len(unique_ids)} unique documents.")
+            return unique_ids
+            
+        except Exception as e:
+            print(f"An error occurred during document ID aggregation: {e}")
+            return []
 
 # Example Usage (can be removed or moved to a test file later):
 if __name__ == "__main__":

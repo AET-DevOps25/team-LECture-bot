@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-course-microservice
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.userCourseMicroservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: user-course-microservice
+  template:
+    metadata:
+      labels:
+        app: user-course-microservice
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup lecturebot-db; do echo waiting for db; sleep 2; done;']
+      containers:
+        - name: user-course-microservice
+          image: "{{ .Values.userCourseMicroservice.image.repository }}:{{ .Values.userCourseMicroservice.image.tag | default .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.userCourseMicroservice.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.userCourseMicroservice.service.targetPort }}
+          env:
+            {{- range .Values.userCourseMicroservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.userCourseMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: 
+              path: /actuator/health
+              port: {{ .Values.userCourseMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10

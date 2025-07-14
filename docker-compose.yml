@@ -13,36 +13,156 @@ services:
       - lecturebot-net
     restart: unless-stopped
     depends_on:
-      - server # Client can start independently of the server for static assets, but requests will fail until the server is up.
+      api-gateway:
+        condition: service_healthy
+      user-course-microservice:
+        condition: service_healthy
+    environment:
+      - PUBLIC_API_URL=http://api-gateway:8080/api/v1/
 
   #--------------------------------------------------------------------------
   # Backend Service (Spring Boot Server)
   #--------------------------------------------------------------------------
-  server:
+  # ---- OLD VERSION---------
+  api-gateway:
     build:
-      context: ./services/server # Path to the server directory from the project root
+      context: ./services/backend/api-gateway
       dockerfile: Dockerfile
-    container_name: lecturebot-app-server
+    container_name: lecturebot-api-gateway
     ports:
       - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
-      - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none} # or validate for prod
-      - GENAI_SERVICE_BASE_URL=http://genai-service:8001 # URL for GenAI service
-      - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
-
-    depends_on:
-      lecturebot-db: { condition: service_healthy }
-      # ollama-setup: { condition: service_completed_successfully } # Ollama is now run externally
-      genai-service: # Server depends on GenAI service
-        condition: service_started # Or service_healthy if you add a healthcheck
     networks:
       - lecturebot-net
     restart: unless-stopped
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
+      - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=api-gateway
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      user-course-microservice:
+        condition: service_healthy
+      document-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s # Wait for the backend to be ready before checking
 
+
+  
+
+  user-course-microservice:
+    build:
+      context: ./services/backend/user-course-microservice
+      dockerfile: Dockerfile
+    container_name: lecturebot-user-course-microservice
+    init: true
+    ports:
+      - "8081:8081"
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8081
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/${DB_NAME:-lecturebot_db}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011 
+      - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=user-course-microservice
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
+    depends_on:
+      lecturebot-db:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"] #"http://localhost:8081/api/v1/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  genai-backend-microservice:
+    build:
+      context: ./services/backend/genai-backend-microservice
+      dockerfile: Dockerfile
+    container_name: lecturebot-genai-backend-microservice
+    init: true
+    ports:
+      - "8082:8082"
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8082
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://genai-backend-db:5432/${GENAI_DB_NAME:-genai_db}
+      - SPRING_DATASOURCE_USERNAME=${GENAI_DB_USER:-genai_user}
+      - SPRING_DATASOURCE_PASSWORD=${GENAI_DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      - EUREKA_INSTANCE_HOSTNAME=genai-backend-microservice
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+
+      - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      genai-backend-db:
+        condition: service_healthy
+      genai-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"] #"http://localhost:8082/api/v1/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  discovery-service:
+    build:
+      context: ./services/backend/discovery-service
+      dockerfile: Dockerfile
+    container_name: lecturebot-discovery-service
+    networks:
+      lecturebot-net:
+        aliases:
+          - discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+      #- app.jwtSecret=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      #- app.jwtExpirationInMs=${APP_JWT_EXPIRATION_IN_MS:-86400000}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-u", "${EUREKA_USER:-eureka-user}:${EUREKA_PASSWORD:-eureka-password}", "http://discovery-service:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  
+      
   #--------------------------------------------------------------------------
   # GenAI Service
   #--------------------------------------------------------------------------
@@ -52,21 +172,27 @@ services:
       dockerfile: Dockerfile
     container_name: lecturebot-genai-service
     ports:
-      - "8001:8001"
+      - "8011:8011"
     environment:
-      - LLM_PROVIDER=${LLM_PROVIDER:-openai} # Default to openai
+      - LLM_PROVIDER=${LLM_PROVIDER:-tum_aet} # Default to openai
       - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3:8b-instruct-q4_K_M} # Ensure this matches the model pulled by ollama-setup
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434} # For externally run Ollama
       - OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_key_if_using_openai}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4o-mini}
       - TUM_AET_LLM_API_BASE=${TUM_AET_LLM_API_BASE:-https://gpu.aet.cit.tum.de/api}
-      - TUM_AET_LLM_API_KEY=${TUM_AET_LLM_API_KEY:-your_tum_aet_key_here}
+      - TUM_AET_LLM_API_KEY=${TUM_AET_LLM_API_KEY:-sk-fa5ce8c262e84135bc97f3b35d5795c0}
       - TUM_AET_LLM_MODEL_NAME=${TUM_AET_LLM_MODEL_NAME:-llama3.3:latest}
       - WEAVIATE_URL=http://weaviate:8080 # Connect to weaviate service
       - TOKENIZERS_PARALLELISM=false # Recommended for some environments
     networks:
       - lecturebot-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5 
+      start_period: 90s # Give the service time to load models before checking
     depends_on:
       weaviate: { condition: service_started } # Weaviate doesn't have a simple built-in healthcheck for compose v1 style
 
@@ -77,7 +203,7 @@ services:
     image: semitechnologies/weaviate:latest
     container_name: lecturebot-weaviate-db
     ports:
-      - "8081:8080" # Changed host port for Weaviate REST to 8081 to avoid conflict with server
+      - "8089:8080" # Changed host port for Weaviate REST to 8089 to avoid conflict with server
       - "50051:50051" # gRPC
     volumes:
       - weaviate_data:/var/lib/weaviate
@@ -103,14 +229,14 @@ services:
     image: postgres:16
     container_name: lecturebot-postgres-db
     environment:
-      POSTGRES_DB: lecturebot_db
-      POSTGRES_USER: lecturebot_user
-      POSTGRES_PASSWORD: mysecretpassword # Ensure this matches SPRING_DATASOURCE_PASSWORD above
+      POSTGRES_DB: ${DB_NAME:-lecturebot_db}
+      POSTGRES_USER: ${DB_USER:-lecturebot_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mysecretpassword} # This now consistently uses the same variable as the server
     ports:
       - "5432:5432" 
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
-      - ./services/server/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+      - ./services/backend/user-course-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
     networks:
       - lecturebot-net
     restart: unless-stopped
@@ -120,31 +246,65 @@ services:
       timeout: 5s
       retries: 5
 
+  genai-backend-db:
+    image: postgres:16
+    container_name: lecturebot-genai-postgres-db
+    environment:
+      POSTGRES_DB: ${GENAI_DB_NAME:-genai_db}
+      POSTGRES_USER: ${GENAI_DB_USER:-genai_user}
+      POSTGRES_PASSWORD: ${GENAI_DB_PASSWORD:-mysecretpassword} # This now consistently uses the same variable as the server
+    ports:
+      - "5433:5432" 
+    volumes:
+      - genai_db_data:/var/lib/postgresql/data
+      - ./services/backend/genai-backend-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+    networks:
+      - lecturebot-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U genai_user -d genai_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   #--------------------------------------------------------------------------
   # Document Service (Spring Boot)
   #--------------------------------------------------------------------------
   document-service:
     build:
-      context: ./services/document-service
+      context: ./services/backend/document-microservice
       dockerfile: Dockerfile
     container_name: lecturebot-document-service
     ports:
-      - "8082:8080" # Expose on a different host port to avoid conflict
+      - "8083:8083" # Expose on a different host port to avoid conflict
     environment:
-      - SERVER_PORT=8080
+      - SERVER_PORT=8083
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lecturebot-db:5432/lecturebot_db
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
-      # Add any other environment variables your document-service needs
+      - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka   # <-- ADD THIS LINE
+      - EUREKA_INSTANCE_HOSTNAME=document-service
     depends_on:
-      lecturebot-db: { condition: service_healthy }
+      lecturebot-db:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      genai-backend-microservice:
+        condition: service_healthy
     networks:
       - lecturebot-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
 volumes:
   lecturebot_db_data: {}
+  genai_db_data: {} #For genai backend microservices
   weaviate_data: {}      # Named volume for Weaviate data
   # ollama_data: {}      # Ollama data managed externally
 

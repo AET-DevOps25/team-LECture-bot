@@ -9,7 +9,7 @@ qa_pipeline = QAPipeline()
 
 
 @router.post(
-    "/query", # Full path will be /api/v1/query/query
+    "", # Changed from "/query" to "" to match /api/v1/query
     response_model=schemas.QueryResponse,
     summary="Submit a query for Retrieval-Augmented Generation (RAG)",
     description="Receives a user query and context (like course_space_id), retrieves relevant document chunks from the vector database, and generates an answer using an LLM."

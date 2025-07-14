@@ -6,6 +6,9 @@ jobs:
   test:
     name: Run Java Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, discovery-service]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,8 +21,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        working-directory: services/server
+      - name: Build with Gradle in ${{ matrix.service }}
+        working-directory: services/backend/${{ matrix.service }}
         run: ./gradlew build
 
   build:
@@ -28,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [client, server]
+        service: [client, api-gateway, user-course-microservice, genai-backend-microservice, discovery-service, genai]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,6 +44,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set Docker context path
+        id: set_path
+        run: |
+          if [[ "${{ matrix.service }}" == "client" || "${{ matrix.service }}" == "genai" ]]; then
+            echo "context=./services/${{ matrix.service }}" >> $GITHUB_OUTPUT
+          else
+            echo "context=./services/backend/${{ matrix.service }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -65,8 +77,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm64
-          context: ./services/${{ matrix.service }}
-          file: ./services/${{ matrix.service }}/Dockerfile
+          context: ${{ steps.set_path.outputs.context }}
+          file: ${{ steps.set_path.outputs.context }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

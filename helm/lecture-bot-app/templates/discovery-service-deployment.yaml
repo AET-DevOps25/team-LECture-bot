@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.discoveryService.replicaCount }}
+  selector:
+    matchLabels:
+      app: discovery-service
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+        - name: discovery-service
+          image: "{{ .Values.discoveryService.image.repository }}:{{ .Values.discoveryService.image.tag | default .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.discoveryService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.discoveryService.service.targetPort }}
+          env:
+            {{- range .Values.discoveryService.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.discoveryService.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.discoveryService.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+ 
