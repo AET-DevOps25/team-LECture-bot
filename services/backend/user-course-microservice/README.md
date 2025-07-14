@@ -367,64 +367,49 @@ curl -X GET http://localhost:8080/api/v1/coursespaces \
 
 ---
 
-## 6. Manage Course Spaces: Frontend UI & Logic (Sub-Issue 6 & 7)
+## 6. Manage Course Spaces: Frontend UI & Logic
 
-### Sub-Issue 6: UI for Creating/Editing Course Spaces
+The LECture-bot frontend provides a user-friendly interface for managing course spaces, allowing authenticated users to create, view, edit, and delete their course spaces. This functionality is accessible from the dashboard and is designed for efficient organization of lecture materials.
 
-**Implementation:**
-- A React modal form is used for both creating and editing course spaces.
-- The form includes fields for "Title" (required) and "Description" (optional).
-- When editing, the modal is pre-filled with the current course space data.
-- The UI is styled with TailwindCSS for a modern, clean look.
-- The modal is accessible from the dashboard (list view) for both new and existing course spaces.
+### Features
 
-**How it Works:**
-- To create: Click the "Create New Course Space" button. Fill in the form and submit.
-- To edit: Click the edit icon/button on a course space. The modal opens with current data. Update fields and submit.
-- Validation ensures the title is not empty before submission.
-- Cancel closes the modal without changes.
+- **Create Course Space:** Users can create a new course space using a modal form with fields for title (required) and description (optional). Validation ensures the title is not empty.
+- **Edit Course Space:** Existing course spaces can be edited via the same modal, pre-filled with current data. Changes are saved and reflected in the list.
+- **Delete Course Space:** Users can delete a course space after confirming the action. The course space is removed from the list upon success.
+- **List Course Spaces:** All course spaces for the authenticated user are displayed in a dashboard view, showing key details for each space.
+- **Feedback & Validation:** The UI provides clear feedback for all actions, including success and error messages, and prevents invalid submissions.
 
-**Testing:**
+### How to Use
+
+1. **Access the Dashboard:** Log in and navigate to the dashboard to see your course spaces.
+2. **Create:** Click "Create New Course Space", fill in the form, and submit. The new course space will appear in your list.
+3. **Edit:** Click the edit button on a course space, update the details, and submit. Changes are saved and shown immediately.
+4. **Delete:** Click the delete button, confirm the action, and the course space will be removed.
+5. **Validation:** Attempting to submit an empty title will show an error. Backend errors (e.g., unauthorized, duplicate) are also displayed.
+
+### Technical Details
+
+- The frontend uses React context to manage course space state and API interactions.
+- All API requests are authenticated using JWT (handled automatically if logged in).
+- The UI is styled with TailwindCSS for a modern look.
+- API endpoints used:
+  - `GET /api/v1/coursespaces` — fetch all course spaces
+  - `POST /api/v1/coursespaces` — create new course space
+  - `PUT /api/v1/coursespaces/{id}` — update course space
+  - `DELETE /api/v1/coursespaces/{id}` — delete course space
+
+### Testing
+
+To test course space management:
+
 1. Log in via the frontend.
-2. Click "Create New Course Space" and submit a new course space. It should appear in the list.
-3. Click the edit button on an existing course space, change the title/description, and submit. The list updates.
-4. Try submitting with an empty title; an error should appear.
-5. Cancel closes the modal with no changes.
+2. Create, edit, and delete course spaces using the dashboard UI.
+3. Verify that the list updates immediately after each action.
+4. Try submitting invalid data (e.g., empty title) to see validation in action.
+5. Simulate backend errors (e.g., by using an expired JWT) to verify error handling.
+6. Refresh the page to confirm the list persists (fetched from backend).
 
----
-
-### Sub-Issue 7: Frontend Logic for CRUD Operations
-
-**Implementation:**
-- All CRUD operations (Create, Read, Update, Delete) are handled via a React context (`CourseSpaceContext`).
-- The context manages the list of course spaces, loading state, and error/success messages.
-- API calls use the OpenAPI-generated TypeScript client, ensuring type safety and alignment with backend contracts.
-- On create/edit/delete, the context updates the UI optimistically or after a successful API response.
-- Error messages from the backend are propagated to the UI and shown in the modal or as toast notifications.
-
-**How it Works:**
-- **Create:** Calls `POST /api/v1/coursespaces` with form data. On success, adds the new course space to the list.
-- **Read:** Calls `GET /api/v1/coursespaces` on load and after any change. Updates the dashboard list.
-- **Update:** Calls `PUT /api/v1/coursespaces/{id}` with updated data. On success, updates the item in the list.
-- **Delete:** Calls `DELETE /api/v1/coursespaces/{id}` after confirmation. Removes the item from the list.
-- All requests include the JWT for authentication.
-
-**Testing:**
-1. Create, edit, and delete course spaces via the UI. The list should update immediately.
-2. Try editing with invalid data (e.g., empty title) to see validation in action.
-3. Simulate backend errors (e.g., duplicate name, unauthorized) and verify error messages are shown.
-4. Refresh the page; the list should persist (fetched from backend).
-
-**API Endpoints Used:**
-- `GET /api/v1/coursespaces` — fetch all course spaces
-- `POST /api/v1/coursespaces` — create new course space
-- `PUT /api/v1/coursespaces/{id}` — update course space
-- `DELETE /api/v1/coursespaces/{id}` — delete course space
-
-**Notes:**
-- All endpoints require a valid JWT (handled automatically by the frontend if logged in).
-- The UI provides clear feedback for all actions (success, error, loading).
-- The implementation matches the acceptance criteria in the sub-issues and epic.
+All actions require a valid JWT and are only available to authenticated users.
 
 
 2. Create a new CourseSpace
