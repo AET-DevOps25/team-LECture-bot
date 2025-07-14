@@ -9,7 +9,7 @@ import type { components } from '../shared/api/generated/user-course-api';
 
 
 const DashboardPage: React.FC = () => {
-    const { courseSpaces, loading, error, createCourseSpace, fetchCourseSpaces } = useCourseSpaces();
+    const { courseSpaces, loading, error, createCourseSpace, fetchCourseSpaces, updateCourseSpace } = useCourseSpaces();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -25,12 +25,8 @@ const DashboardPage: React.FC = () => {
     const handleEditSave = async (title: string, description: string) => {
         if (!editingCourse?.id) return;
         try {
-            // @ts-ignore: openapi-fetch type limitation, endpoint is valid
-            const { error } = await apiClient.PUT('/coursespaces/{courseSpaceId}', {
-                params: { path: { courseSpaceId: editingCourse.id } },
-                body: { name: title, description },
-            });
-            if (error) throw new Error('Failed to update course space.');
+            const updated = await updateCourseSpace(editingCourse.id, title, description);
+            if (!updated) throw new Error('Failed to update course space.');
             await fetchCourseSpaces();
         } catch (err) {
             throw err;
