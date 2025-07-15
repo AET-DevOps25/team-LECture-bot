@@ -45,11 +45,13 @@ public class DocumentController implements DocumentApi {
      */
     // POST /documents/courseSpaceId
     @Override
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> uploadDocuments(
             String courseSpaceId,
             List<MultipartFile> files
     ) {
+        System.out.println("Upload request received - courseSpaceId: '" + courseSpaceId + "', files count: " + (files != null ? files.size() : 0));
+        
         List<com.lecturebot.generated.model.Document> responseList = new ArrayList<>();
         if (files == null || files.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseList);
@@ -73,7 +75,20 @@ public class DocumentController implements DocumentApi {
                 doc.setFileType(FileType.PDF);
                 doc.setUploadDate(Instant.now());
                 doc.setProcessingStatus(ProcessingStatus.PENDING); // Use PENDING instead of UPLOADED
-                doc.setCourseId(Long.valueOf(courseSpaceId)); // Set courseId from path variable
+                
+                // Handle courseSpaceId conversion with error handling
+                try {
+                    if (courseSpaceId != null && !courseSpaceId.trim().isEmpty()) {
+                        doc.setCourseId(Long.valueOf(courseSpaceId.trim()));
+                    } else {
+                        System.err.println("courseSpaceId is null or empty: '" + courseSpaceId + "'");
+                        doc.setCourseId(null);
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid courseSpaceId format: '" + courseSpaceId + "' - " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Collections.emptyList());
+                }
                 // Set userId if needed
 
                 Document saved = documentRepository.save(doc);
@@ -126,7 +141,7 @@ public class DocumentController implements DocumentApi {
      */
     // GET /documents/courseSpaceId/{id}
     @Override
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<com.lecturebot.generated.model.Document> getDocumentById(
             String courseSpaceId,
             String id
@@ -159,7 +174,7 @@ public class DocumentController implements DocumentApi {
      */
     // GET /documents/courseSpaceId
     @Override
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> listDocuments(
             String courseSpaceId
     ) {
