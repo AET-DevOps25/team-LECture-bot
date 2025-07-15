@@ -15,27 +15,38 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * UpdateUserProfileRequest
+ * UpdateCourseSpaceRequest
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-14T23:17:00.952256+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
-public class UpdateUserProfileRequest {
+public class UpdateCourseSpaceRequest {
 
-  private @Nullable String name;
+  private String name;
 
-  private @Nullable String email;
+  private @Nullable String description;
 
-  public UpdateUserProfileRequest name(String name) {
+  public UpdateCourseSpaceRequest() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public UpdateCourseSpaceRequest(String name) {
+    this.name = name;
+  }
+
+  public UpdateCourseSpaceRequest name(String name) {
     this.name = name;
     return this;
   }
 
   /**
-   * Get name
+   * The new name of the course space.
    * @return name
    */
-  
-  @Schema(name = "name", example = "Ada L.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "name", description = "The new name of the course space.", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -45,24 +56,24 @@ public class UpdateUserProfileRequest {
     this.name = name;
   }
 
-  public UpdateUserProfileRequest email(String email) {
-    this.email = email;
+  public UpdateCourseSpaceRequest description(String description) {
+    this.description = description;
     return this;
   }
 
   /**
-   * Get email
-   * @return email
+   * The new description of the course space.
+   * @return description
    */
-  @jakarta.validation.constraints.Email 
-  @Schema(name = "email", example = "ada.lovelace.new@example.com", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("email")
-  public String getEmail() {
-    return email;
+  
+  @Schema(name = "description", description = "The new description of the course space.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @Override
@@ -73,22 +84,22 @@ public class UpdateUserProfileRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateUserProfileRequest updateUserProfileRequest = (UpdateUserProfileRequest) o;
-    return Objects.equals(this.name, updateUserProfileRequest.name) &&
-        Objects.equals(this.email, updateUserProfileRequest.email);
+    UpdateCourseSpaceRequest updateCourseSpaceRequest = (UpdateCourseSpaceRequest) o;
+    return Objects.equals(this.name, updateCourseSpaceRequest.name) &&
+        Objects.equals(this.description, updateCourseSpaceRequest.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, email);
+    return Objects.hash(name, description);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateUserProfileRequest {\n");
+    sb.append("class UpdateCourseSpaceRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }

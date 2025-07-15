@@ -344,8 +344,6 @@ All endpoints in this section require authentication. You must include the Autho
 
 1. Get All Course Spaces
 
-- Endpoint: `GET /api/v1/coursespaces`
-- Description: Retrieves a list of all course spaces for the currently authenticated user.
 
 `curl` Example:
 ```bash
@@ -365,6 +363,53 @@ curl -X GET http://localhost:8080/api/v1/coursespaces \
     }
 ]
 ```
+
+
+---
+
+## 6. Manage Course Spaces: Frontend UI & Logic
+
+The LECture-bot frontend provides a user-friendly interface for managing course spaces, allowing authenticated users to create, view, edit, and delete their course spaces. This functionality is accessible from the dashboard and is designed for efficient organization of lecture materials.
+
+### Features
+
+- **Create Course Space:** Users can create a new course space using a modal form with fields for title (required) and description (optional). Validation ensures the title is not empty.
+- **Edit Course Space:** Existing course spaces can be edited via the same modal, pre-filled with current data. Changes are saved and reflected in the list.
+- **Delete Course Space:** Users can delete a course space after confirming the action. The course space is removed from the list upon success.
+- **List Course Spaces:** All course spaces for the authenticated user are displayed in a dashboard view, showing key details for each space.
+- **Feedback & Validation:** The UI provides clear feedback for all actions, including success and error messages, and prevents invalid submissions.
+
+### How to Use
+
+1. **Access the Dashboard:** Log in and navigate to the dashboard to see your course spaces.
+2. **Create:** Click "Create New Course Space", fill in the form, and submit. The new course space will appear in your list.
+3. **Edit:** Click the edit button on a course space, update the details, and submit. Changes are saved and shown immediately.
+4. **Delete:** Click the delete button, confirm the action, and the course space will be removed.
+5. **Validation:** Attempting to submit an empty title will show an error. Backend errors (e.g., unauthorized, duplicate) are also displayed.
+
+### Technical Details
+
+- The frontend uses React context to manage course space state and API interactions.
+- All API requests are authenticated using JWT (handled automatically if logged in).
+- The UI is styled with TailwindCSS for a modern look.
+- API endpoints used:
+  - `GET /api/v1/coursespaces` — fetch all course spaces
+  - `POST /api/v1/coursespaces` — create new course space
+  - `PUT /api/v1/coursespaces/{id}` — update course space
+  - `DELETE /api/v1/coursespaces/{id}` — delete course space
+
+### Testing
+
+To test course space management:
+
+1. Log in via the frontend.
+2. Create, edit, and delete course spaces using the dashboard UI.
+3. Verify that the list updates immediately after each action.
+4. Try submitting invalid data (e.g., empty title) to see validation in action.
+5. Simulate backend errors (e.g., by using an expired JWT) to verify error handling.
+6. Refresh the page to confirm the list persists (fetched from backend).
+
+All actions require a valid JWT and are only available to authenticated users.
 
 
 2. Create a new CourseSpace

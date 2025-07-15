@@ -20,6 +20,34 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @Service
 public class CourseSpaceService {
+    /**
+     * Updates a CourseSpace for the current user.
+     *
+     * @param courseSpaceId The ID of the CourseSpace to update.
+     * @param updateRequest The update request containing new name/description.
+     * @return Optional of updated CourseSpace, or empty if not found or not owned by user.
+     */
+    @Transactional
+    public Optional<CourseSpace> updateCourseSpace(UUID courseSpaceId, com.lecturebot.generated.model.UpdateCourseSpaceRequest updateRequest) {
+        User currentUser = userService.getCurrentAuthenticatedUser();
+        Optional<CourseSpace> courseSpaceOpt = courseSpaceRepository.findById(courseSpaceId);
+        if (courseSpaceOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        CourseSpace courseSpace = courseSpaceOpt.get();
+        if (!courseSpace.getOwner().getId().equals(currentUser.getId())) {
+            // Not owned by current user
+            return Optional.empty();
+        }
+        // Update fields
+        courseSpace.setName(updateRequest.getName());
+        if (updateRequest.getDescription() != null) {
+            courseSpace.setDescription(updateRequest.getDescription());
+        }
+        // updatedAt will be set automatically by @UpdateTimestamp
+        courseSpaceRepository.save(courseSpace);
+        return Optional.of(courseSpace);
+    }
 
     private final CourseSpaceRepository courseSpaceRepository;
     private final UserService userService;
@@ -47,7 +75,11 @@ public class CourseSpaceService {
             throw new IllegalArgumentException("A course space with this name already exists for you.");
         }
 
-        CourseSpace courseSpace = new CourseSpace(createCourseSpaceRequest.getName(), currentUser);
+        CourseSpace courseSpace = new CourseSpace(
+            createCourseSpaceRequest.getName(),
+            createCourseSpaceRequest.getDescription(),
+            currentUser
+        );
 
         return courseSpaceRepository.save(courseSpace);
     }

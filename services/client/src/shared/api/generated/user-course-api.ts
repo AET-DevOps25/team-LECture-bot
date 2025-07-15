@@ -144,7 +144,11 @@ export interface paths {
          * @description Gets the information for a chose CourseSpace
          */
         get: operations["getCourseSpace"];
-        put?: never;
+        /**
+         * Update a course space
+         * @description Updates the name and/or description of a course space owned by the authenticated user.
+         */
+        put: operations["updateCourseSpace"];
         post?: never;
         /**
          * Delete a course space
@@ -235,6 +239,8 @@ export interface components {
             id?: string;
             /** @example Introduction to AI */
             name?: string;
+            /** @example This is a course about AI. */
+            description?: string;
             /**
              * Format: date-time
              * @example 2023-10-01T12:00:00Z
@@ -253,6 +259,17 @@ export interface components {
              * @example Introduction to AI
              */
             name: string;
+            /**
+             * @description The description of the course space.
+             * @example This is a course about AI.
+             */
+            description?: string;
+        };
+        UpdateCourseSpaceRequest: {
+            /** @description The new name of the course space. */
+            name: string;
+            /** @description The new description of the course space. */
+            description?: string;
         };
     };
     responses: never;
@@ -540,6 +557,55 @@ export interface operations {
                 };
             };
             /** @description Bad Request (e.g., invalid ID). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course space not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the course space to update. */
+                courseSpaceId: string;
+            };
+            cookie?: never;
+        };
+        /** @description The new details for the course space. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCourseSpaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Course space updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseSpaceDto"];
+                };
+            };
+            /** @description Bad Request (e.g., validation error). */
             400: {
                 headers: {
                     [name: string]: unknown;

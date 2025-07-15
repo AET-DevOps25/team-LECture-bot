@@ -1,9 +1,16 @@
+
 package com.lecturebot.controller;
 
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.lecturebot.generated.model.UpdateCourseSpaceRequest;
 import com.lecturebot.generated.api.CourseSpacesApi;
 import com.lecturebot.generated.model.CourseSpaceDto;
 import com.lecturebot.generated.model.CreateCourseSpaceRequest;
-import com.lecturebot.generated.model.CourseSpaceDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +31,23 @@ import org.slf4j.Logger;
 
 @RestController
 public class CourseSpacesController implements CourseSpacesApi {
+    @Override
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/coursespaces/{courseSpaceId}",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    public ResponseEntity<CourseSpaceDto> updateCourseSpace(
+            @PathVariable("courseSpaceId") UUID courseSpaceId,
+            @RequestBody UpdateCourseSpaceRequest updateCourseSpaceRequest) {
+        var updated = courseSpaceService.updateCourseSpace(courseSpaceId, updateCourseSpaceRequest);
+        if (updated.isPresent()) {
+            return ResponseEntity.ok(courseSpaceMapper.toDto(updated.get()));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     private final CourseSpaceService courseSpaceService;
     private final CourseSpaceMapper courseSpaceMapper;

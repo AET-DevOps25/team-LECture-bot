@@ -24,6 +24,10 @@ public class CourseSpace {
     @Column(nullable = false)
     private String name;
 
+
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
@@ -36,8 +40,9 @@ public class CourseSpace {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public CourseSpace(String name, User owner) {
+    public CourseSpace(String name, String description, User owner) {
         this.name = name;
+        this.description = description;
         this.owner = owner;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();

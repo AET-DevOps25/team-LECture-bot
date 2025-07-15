@@ -19,6 +19,7 @@ ON CONFLICT (email) DO NOTHING; -- Optional: Prevents error if an email already 
 CREATE TABLE IF NOT EXISTS course_spaces (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
+    description TEXT,
     user_id BIGINT NOT NULL,
     created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITH TIME ZONE NOT NULL,

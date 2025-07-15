@@ -12,7 +12,8 @@ interface CourseSpaceContextType {
     loading: boolean;
     error: string | null;
     fetchCourseSpaces: () => Promise<void>;
-    createCourseSpace: (name: string) => Promise<CourseSpace | null>;
+    createCourseSpace: (name: string, description: string) => Promise<CourseSpace | null>;
+    updateCourseSpace: (id: string, name: string, description: string) => Promise<CourseSpace | null>;
 }
 
 // Create the context with a default undefined value
@@ -40,10 +41,10 @@ export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Function to create a new course space
-    const createCourseSpace = async (name: string): Promise<CourseSpace | null> => {
+    const createCourseSpace = async (name: string, description: string): Promise<CourseSpace | null> => {
         try {
             const { data, error: createError } = await apiClient.POST('/coursespaces', {
-                body: { name },
+                body: { name, description },
             });
 
             if (createError || !data) {
@@ -60,6 +61,30 @@ export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Function to update a course space
+    const updateCourseSpace = async (id: string, name: string, description: string): Promise<CourseSpace | null> => {
+        try {
+            // @ts-ignore: openapi-fetch type limitation, endpoint is valid
+            const { data, error: updateError } = await apiClient.PUT('/coursespaces/{courseSpaceId}', {
+                params: { path: { courseSpaceId: id } },
+                body: { name, description },
+            });
+            if (updateError || !data) {
+                throw new Error('Failed to update course space.');
+            }
+            // Type guard: ensure data is a valid CourseSpace
+            const isCourseSpace = (obj: any): obj is CourseSpace => obj && typeof obj === 'object' && 'id' in obj && 'name' in obj;
+            if (!isCourseSpace(data)) {
+                throw new Error('Invalid course space data received from server.');
+            }
+            setCourseSpaces((prev) => prev.map(cs => cs.id === id ? data : cs));
+            return data;
+        } catch (err) {
+            setError((err as Error).message);
+            return null;
+        }
+    };
+
     // Fetch courses on initial load
     useEffect(() => {
         if (isAuthenticated) {
@@ -69,7 +94,7 @@ export const CourseSpaceProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [isAuthenticated]);
 
-    const value = { courseSpaces, loading, error, fetchCourseSpaces, createCourseSpace };
+    const value = { courseSpaces, loading, error, fetchCourseSpaces, createCourseSpace, updateCourseSpace };
 
     return (
         <CourseSpaceContext.Provider value={value}>
