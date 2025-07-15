@@ -78,6 +78,9 @@ openapi-python-client generate --path ./${GENAI_API_SPEC} \
                   --output-path ./temp_client
 
 cp -r ./temp_client/gen_ai_service_api_client/models ./${GENAI_PYTHON_OUTPUT_DIR}/generated/
+cp ./temp_client/gen_ai_service_api_client/errors.py ./${GENAI_PYTHON_OUTPUT_DIR}/generated/
+cp ./temp_client/gen_ai_service_api_client/types.py ./${GENAI_PYTHON_OUTPUT_DIR}/generated/
+
 
 rm -rf ./temp_client 
 
