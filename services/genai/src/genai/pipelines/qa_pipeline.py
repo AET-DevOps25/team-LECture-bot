@@ -5,7 +5,7 @@ from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService
 from genai.services.llm_service import LLMService  # We will create this next
 from genai.core.config import settings
-from genai.generated.gen_ai_service_api_client import models
+from genai.generated import models
 
 class QAPipeline:
     """

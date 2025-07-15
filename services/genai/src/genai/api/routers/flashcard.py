@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Body
 from genai.pipelines.flashcard_pipeline import FlashcardPipeline
-from genai.generated.gen_ai_service_api_client import models
+from genai.generated import models
 
 router = APIRouter()
 flashcard_pipeline = FlashcardPipeline()

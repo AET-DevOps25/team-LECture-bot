@@ -1,10 +1,9 @@
 from typing import List, Dict, Any, Optional
-import uuid
 
 from genai.services.text_processing_service import TextProcessingService
 from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService, WeaviateInputDocument
-from genai.generated.gen_ai_service_api_client import models
+from genai.generated import models
 class IndexingPipeline:
     """
     Orchestrates the document indexing process:

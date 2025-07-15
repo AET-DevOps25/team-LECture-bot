@@ -3,7 +3,7 @@ from genai.services.vector_store_service import VectorStoreService
 from genai.services.llm_service import LLMService
 
 from weaviate.classes.query import Filter
-from genai.generated.gen_ai_service_api_client import models
+from genai.generated import models
 
 import json
 

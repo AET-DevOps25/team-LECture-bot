@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Body
 from genai.pipelines.indexing_pipeline import IndexingPipeline
-from genai.generated.gen_ai_service_api_client import models 
+from genai.generated import models 
 # Add a print statement for debugging to confirm the module is loaded
 print("✅ Indexing router module loaded.")
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Body
 from genai.pipelines.qa_pipeline import QAPipeline
-from genai.generated.gen_ai_service_api_client import models
+from genai.generated import models
 
 
 router = APIRouter()

@@ -75,9 +75,11 @@ echo "Ensure you have openapi-python-client installed before continuing..."
 
 GENAI_PYTHON_OUTPUT_DIR="./services/genai/src/genai"
 openapi-python-client generate --path ./${GENAI_API_SPEC} \
-                  --output-path ${GENAI_PYTHON_OUTPUT_DIR}/generated \
-                  #--output-model-type pydantic_v2.BaseModel
+                  --output-path ./temp_client
 
+cp -r ./temp_client/gen_ai_service_api_client/models ./${GENAI_PYTHON_OUTPUT_DIR}/generated/
+
+rm -rf ./temp_client 
 
 
 echo "Python GenAi schemas and definitions generated at ${GENAI_PYTHON_OUTPUT_DIR}/generated"
