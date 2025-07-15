@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiClient } from '../api/apiClient';
+import createClient from "openapi-fetch";
+import type { paths } from '../shared/api/generated/document-api';
+import storage from '../utils/storage';
 
 interface FileStatus {
   file: File;
@@ -13,6 +15,22 @@ interface FileStatus {
 const PdfUpload: React.FC = () => {
   const { courseSpaceId } = useParams<{ courseSpaceId: string }>(); // <-- Get from URL
   const [files, setFiles] = useState<FileStatus[]>([]);
+
+  // Create document API client
+  const documentApiClient = createClient<paths>({
+    baseUrl: 'http://localhost:8080/api/v1',
+  });
+
+  // Add auth interceptor
+  documentApiClient.use({
+    async onRequest({ request }) {
+      const token = storage.getItem<string>('jwtToken');
+      if (token) {
+        request.headers.set("Authorization", `Bearer ${token}`);
+      }
+      return request;
+    },
+  });
 
   // Handle file selection and filter for PDFs
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,13 +59,13 @@ const PdfUpload: React.FC = () => {
     formData.append('files', fileStatus.file);
 
     try {
-      const response = await apiClient.POST("/documents/{courseSpaceId}" as any, {
+      const response = await documentApiClient.POST("/documents/{courseSpaceId}", {
         params: {
           path: {
             courseSpaceId: courseSpaceId!
           }
         },
-        body: formData,
+        body: formData as any, // FormData bypass for file upload
       });
 
       if (response.error) {

@@ -48,7 +48,7 @@ services:
         condition: service_healthy
       user-course-microservice:
         condition: service_healthy
-      document-service:
+      document-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -270,11 +270,11 @@ services:
   #--------------------------------------------------------------------------
   # Document Service (Spring Boot)
   #--------------------------------------------------------------------------
-  document-service:
+  document-microservice:
     build:
       context: ./services/backend/document-microservice
       dockerfile: Dockerfile
-    container_name: lecturebot-document-service
+    container_name: lecturebot-document-microservice
     ports:
       - "8083:8083" # Expose on a different host port to avoid conflict
     environment:
@@ -284,7 +284,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka   # <-- ADD THIS LINE
-      - EUREKA_INSTANCE_HOSTNAME=document-service
+      - EUREKA_INSTANCE_HOSTNAME=document-microservice
     depends_on:
       lecturebot-db:
         condition: service_healthy
@@ -296,7 +296,7 @@ services:
       - lecturebot-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8083/api/v1/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
