@@ -4,8 +4,8 @@ from weaviate.classes.query import Filter
 from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService
 from genai.services.llm_service import LLMService  # We will create this next
-from genai.api import schemas
 from genai.core.config import settings
+from genai.generated.gen_ai_service_api_client import models
 
 class QAPipeline:
     """
@@ -68,7 +68,7 @@ class QAPipeline:
                 
         return list(unique_results_map.values())
 
-    def process_query(self, request: schemas.QueryRequest) -> schemas.QueryResponse:
+    def process_query(self, request: models.QueryRequest) -> models.QueryResponse:
         """
         Processes a single Q&A query using the RAG pipeline.
         This is a regular synchronous method.
@@ -97,14 +97,15 @@ class QAPipeline:
         
         # 5. Format citations from the valid (unique and with text) search results
         citations = [
-            schemas.Citation(
+            models.Citation(
                 document_id=result.get('properties', {}).get('document_id'),
                 # Ensure chunk_id is string, matching the key used in _get_unique_and_valid_search_results
                 chunk_id=str(result.get('properties', {}).get('chunk_index')),
-                source_details=f"Document ID: {result.get('properties', {}).get('document_id')}",
+
+                #source_details=f"Document ID: {result.get('properties', {}).get('document_id')}",
                 # text_content should be present due to the filter in _get_unique_and_valid_search_results
                 retrieved_text_preview=(result.get('properties', {}).get('text_content') or "")[:150] + "..."
             ) for result in valid_search_results
         ]
 
-        return schemas.QueryResponse(answer=answer, citations=citations)
+        return models.QueryResponse(answer=answer, citations=citations)

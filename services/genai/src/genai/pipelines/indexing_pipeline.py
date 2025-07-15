@@ -4,8 +4,7 @@ import uuid
 from genai.services.text_processing_service import TextProcessingService
 from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService, WeaviateInputDocument
-from genai.api.schemas import IndexDocumentRequest # For type hinting the input payload
-
+from genai.generated.gen_ai_service_api_client import models
 class IndexingPipeline:
     """
     Orchestrates the document indexing process:
@@ -21,7 +20,7 @@ class IndexingPipeline:
         self.vector_store = VectorStoreService()
         print("IndexingPipeline initialized with TextProcessing, Embedding, and VectorStore services.")
 
-    def process_document(self, payload: IndexDocumentRequest) -> Dict[str, Any]:
+    def process_document(self, payload: models.IndexRequest) -> Dict[str, Any]:
         """
         Processes a single document for indexing.
 

@@ -1,28 +1,26 @@
 from fastapi import APIRouter, HTTPException, status, Body
-from genai.api import schemas_v1 as schemas
 from genai.pipelines.flashcard_pipeline import FlashcardPipeline
-
+from genai.generated.gen_ai_service_api_client import models
 
 router = APIRouter()
 flashcard_pipeline = FlashcardPipeline()
 
 @router.post(
     "/generate",
-    response_model=schemas.FlashcardResponse,
+    response_model=models.FlashcardResponse,
     summary="Generate flashcards from a document",
     description="Generates flashcards based on the provided document ID and course space ID. It retrieves all chunks of the document, processes them, and generates flashcards using an LLM.",
 )
 async def generate_flashcards_endpoint(
-    payload: schemas.FlashcardRequest = Body(...)
+    payload: models.FlashcardRequest = Body(...)
 ):
     print(f"Flashcard generation request received for document: {payload.document_id}")
     try:
         response = flashcard_pipeline.process_request(payload)
         return response
     except ValueError as ve:
-        response = schemas.FlashcardResponse(
+        response = models.FlashcardResponse(
             course_space_id=payload.course_space_id,
-            document_id=payload.document_id,
             flashcards=[],
             error=str(ve)
         )

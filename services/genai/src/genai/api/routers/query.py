@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Body
-from genai.api import schemas
 from genai.pipelines.qa_pipeline import QAPipeline
+from genai.generated.gen_ai_service_api_client import models
 
 
 router = APIRouter()
@@ -10,13 +10,13 @@ qa_pipeline = QAPipeline()
 
 @router.post(
     "", # Changed from "/query" to "" to match /api/v1/query
-    response_model=schemas.QueryResponse,
+    response_model=models.QueryResponse,
     summary="Submit a query for Retrieval-Augmented Generation (RAG)",
     description="Receives a user query and context (like course_space_id), retrieves relevant document chunks from the vector database, and generates an answer using an LLM."
 )
 
 def submit_query_for_rag(
-    payload: schemas.QueryRequest = Body(...)
+    payload: models.QueryRequest = Body(...)
 ):
     print(f"RAG query received: '{payload.query_text}' for course space: {payload.course_space_id}")
     try:

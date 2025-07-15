@@ -71,12 +71,14 @@ echo "TypeScript client for genai-backend-microservice generated at ${CLIENT_OUT
 
 
 echo "Generating Python GenAi schemas and definitions..."
-echo "Ensure you have pip and datamodel-code-generator installed before continuing...(install pip and run pip install datamodel-code-generator[http] if not installed)"
-#pip install "datamodel-code-generator[http]"
-GENAI_PYTHON_OUTPUT_DIR="./services/genai/src/genai"
-datamodel-codegen --input ./${GENAI_API_SPEC} \
-                  --output ${GENAI_PYTHON_OUTPUT_DIR}/api/schemas_v1.py \
-                  --output-model-type pydantic_v2.BaseModel
+echo "Ensure you have openapi-python-client installed before continuing..."
 
-echo "Python GenAi schemas and definitions generated at ${GENAI_PYTHON_OUTPUT_DIR}/api/schemas_v1.py"
+GENAI_PYTHON_OUTPUT_DIR="./services/genai/src/genai"
+openapi-python-client generate --path ./${GENAI_API_SPEC} \
+                  --output-path ${GENAI_PYTHON_OUTPUT_DIR}/generated \
+                  #--output-model-type pydantic_v2.BaseModel
+
+
+
+echo "Python GenAi schemas and definitions generated at ${GENAI_PYTHON_OUTPUT_DIR}/generated"
 echo "--- Code generation complete. ---"
