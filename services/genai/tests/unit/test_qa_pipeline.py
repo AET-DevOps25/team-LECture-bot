@@ -3,7 +3,7 @@ os.environ["WEAVIATE_URL"] = "http://localhost:8081"
 
 import pytest
 from genai.pipelines.qa_pipeline import QAPipeline
-from genai.api.schemas import QueryRequest
+from genai.generated.models import QueryRequest
 
 class DummyEmbedder:
     def embed_text(self, text):
