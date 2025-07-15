@@ -23,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,18 +77,30 @@ public class DocumentController implements DocumentApi {
                 doc.setUploadDate(Instant.now());
                 doc.setProcessingStatus(ProcessingStatus.PENDING); // Use PENDING instead of UPLOADED
                 
-                // Handle courseSpaceId conversion with error handling
-                try {
-                    if (courseSpaceId != null && !courseSpaceId.trim().isEmpty()) {
-                        doc.setCourseId(Long.valueOf(courseSpaceId.trim()));
-                    } else {
-                        System.err.println("courseSpaceId is null or empty: '" + courseSpaceId + "'");
-                        doc.setCourseId(null);
+                // Handle courseSpaceId - store as string (UUID format)
+                if (courseSpaceId != null && !courseSpaceId.trim().isEmpty()) {
+                    // For now, we'll store the UUID as a string in a Long field
+                    // This is a temporary solution - ideally the database should store UUIDs
+                    try {
+                        // Try to parse as UUID to validate format
+                        java.util.UUID.fromString(courseSpaceId.trim());
+                        // If valid UUID, we need to hash it to a Long or find another approach
+                        // For now, let's use the hashCode as a temporary solution
+                        doc.setCourseId((long) courseSpaceId.trim().hashCode());
+                        System.out.println("Stored courseSpaceId UUID: " + courseSpaceId + " as hash: " + courseSpaceId.trim().hashCode());
+                    } catch (IllegalArgumentException e) {
+                        // If not a valid UUID, try as Long
+                        try {
+                            doc.setCourseId(Long.valueOf(courseSpaceId.trim()));
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Invalid courseSpaceId format - not UUID or Long: '" + courseSpaceId + "'");
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body(Collections.emptyList());
+                        }
                     }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid courseSpaceId format: '" + courseSpaceId + "' - " + e.getMessage());
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(Collections.emptyList());
+                } else {
+                    System.err.println("courseSpaceId is null or empty: '" + courseSpaceId + "'");
+                    doc.setCourseId(null);
                 }
                 // Set userId if needed
 
@@ -111,13 +124,14 @@ public class DocumentController implements DocumentApi {
                 responseList.add(apiDoc);
 
                 // Send document ID and extracted text to GenAI service for indexing
+                Map<String, Object> indexRequest = new HashMap<>();
+                indexRequest.put("document_id", saved.getId().toString());
+                indexRequest.put("course_space_id", saved.getCourseId() != null ? saved.getCourseId().toString() : "");
+                indexRequest.put("text_content", saved.getExtractedText() != null ? saved.getExtractedText() : "");
+                
                 webClient.post()
                         .uri("/genai/index")
-                        .bodyValue(Map.of(
-                                "document_id", saved.getId().toString(),
-                                "course_space_id", saved.getCourseId() != null ? saved.getCourseId().toString() : null,
-                                "text_content", saved.getExtractedText() != null ? saved.getExtractedText() : null
-                        ))
+                        .bodyValue(indexRequest)
                         .retrieve()
                         .bodyToMono(Void.class)
                         .doOnError(error -> {

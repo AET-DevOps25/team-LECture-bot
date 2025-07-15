@@ -69,4 +69,23 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
+    /**
+     * Generate a service-to-service JWT token for microservice authentication
+     * @param serviceName the name of the calling service
+     * @return JWT token for service authentication
+     */
+    public String generateServiceToken(String serviceName) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+
+        return Jwts.builder()
+                .setSubject("service:" + serviceName)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .claim("type", "service")
+                .claim("service", serviceName)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
 }
