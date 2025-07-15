@@ -68,11 +68,13 @@ const PdfUpload: React.FC = () => {
         body: formData as any, // FormData bypass for file upload
       });
 
-      if (response.error) {
+      // Check for both error field and HTTP status
+      if (response.error || !response.response?.ok) {
+        const errorMessage = `HTTP ${response.response?.status || 'Unknown'}: Upload failed`;
         setFiles(prev =>
           prev.map((f, i) =>
             i === idx
-              ? { ...f, status: 'error', message: 'Upload failed' }
+              ? { ...f, status: 'error', message: errorMessage }
               : f
           )
         );

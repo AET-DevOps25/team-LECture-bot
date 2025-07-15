@@ -283,6 +283,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
+      - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
       - EUREKA_URI=http://eureka-user:eureka-password@discovery-service:8761/eureka   # <-- ADD THIS LINE
       - EUREKA_INSTANCE_HOSTNAME=document-microservice
     depends_on:
@@ -296,7 +298,7 @@ services:
       - lecturebot-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8083/api/v1/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
