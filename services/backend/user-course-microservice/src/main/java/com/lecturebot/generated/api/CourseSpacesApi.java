@@ -8,7 +8,6 @@ package com.lecturebot.generated.api;
 import com.lecturebot.generated.model.CourseSpaceDto;
 import com.lecturebot.generated.model.CreateCourseSpaceRequest;
 import java.util.UUID;
-import com.lecturebot.generated.model.UpdateCourseSpaceRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-14T23:17:00.952256+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T15:38:10.102679+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "CourseSpaces", description = "the CourseSpaces API")
 public interface CourseSpacesApi {
@@ -83,7 +82,7 @@ public interface CourseSpacesApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
+                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -171,7 +170,7 @@ public interface CourseSpacesApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
+                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -216,60 +215,7 @@ public interface CourseSpacesApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    /**
-     * PUT /coursespaces/{courseSpaceId} : Update a course space
-     * Updates the name and/or description of a course space owned by the authenticated user.
-     *
-     * @param courseSpaceId The ID of the course space to update. (required)
-     * @param updateCourseSpaceRequest The new details for the course space. (required)
-     * @return Course space updated successfully. (status code 200)
-     *         or Bad Request (e.g., validation error). (status code 400)
-     *         or Unauthorized. (status code 401)
-     *         or Course space not found. (status code 404)
-     */
-    @Operation(
-        operationId = "updateCourseSpace",
-        summary = "Update a course space",
-        description = "Updates the name and/or description of a course space owned by the authenticated user.",
-        tags = { "CourseSpaces" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Course space updated successfully.", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = CourseSpaceDto.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request (e.g., validation error)."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized."),
-            @ApiResponse(responseCode = "404", description = "Course space not found.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.PUT,
-        value = "/coursespaces/{courseSpaceId}",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    
-    default ResponseEntity<CourseSpaceDto> updateCourseSpace(
-        @Parameter(name = "courseSpaceId", description = "The ID of the course space to update.", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") UUID courseSpaceId,
-        @Parameter(name = "UpdateCourseSpaceRequest", description = "The new details for the course space.", required = true) @Valid @RequestBody UpdateCourseSpaceRequest updateCourseSpaceRequest
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }";
+                    String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

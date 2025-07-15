@@ -8,7 +8,7 @@ global:
     tag: latest #43-feature-44-task-flashcard-generation-backend-refactoring
 
 client:
-  publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api
+  publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api/v1
   image:
     repository: ghcr.io/aet-devops25/team-lecture-bot/client
     #tag: {{ .Values.global.image.tag }}

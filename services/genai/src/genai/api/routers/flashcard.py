@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Body
-from genai.api import schemas
+from genai.api import schemas_v1 as schemas
 from genai.pipelines.flashcard_pipeline import FlashcardPipeline
 
 
@@ -20,7 +20,13 @@ async def generate_flashcards_endpoint(
         response = flashcard_pipeline.process_request(payload)
         return response
     except ValueError as ve:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+        response = schemas.FlashcardResponse(
+            course_space_id=payload.course_space_id,
+            document_id=payload.document_id,
+            flashcards=[],
+            error=str(ve)
+        )
+        return response
     except Exception as e:
         print(f"Error during flashcard generation: {e}")
         raise HTTPException(
