@@ -107,6 +107,10 @@ const PdfUpload: React.FC = () => {
   return (
     <div className="pdf-upload">
       <h2>Upload PDF Files</h2>
+      <div style={{ color: '#555', fontSize: '0.95rem', marginBottom: 12 }}>
+        <strong>Note:</strong> Only PDF files smaller than <strong>50MB</strong> each can be uploaded.<br />
+        The total size of all files in one upload must not exceed <strong>50MB</strong>.
+      </div>
       <input
         type="file"
         accept="application/pdf"
