@@ -236,7 +236,8 @@ services:
       - "5432:5432" 
     volumes:
       - lecturebot_db_data:/var/lib/postgresql/data
-      - ./services/backend/user-course-microservice/db-init:/docker-entrypoint-initdb.d # Mount init scripts from server/db-init
+      - ./services/backend/user-course-microservice/db-init:/docker-entrypoint-initdb.d/01-users # Mount user/course init scripts
+      - ./services/backend/document-microservice/db-init:/docker-entrypoint-initdb.d/02-documents # Mount document init scripts
     networks:
       - lecturebot-net
     restart: unless-stopped

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
 public class DocumentProcessingService {
@@ -17,12 +18,12 @@ public class DocumentProcessingService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public void processUpload(Long documentId, File pdfFile) {
+    public void processUpload(UUID documentId, File pdfFile) {
         Document doc = documentRepository.findById(documentId).orElse(null);
         if (doc == null) return;
 
         try {
-            doc.setProcessingStatus(ProcessingStatus.PROCESSING);
+            doc.setUploadStatus(ProcessingStatus.PROCESSING);
             documentRepository.save(doc);
 
             // Extract text from PDF
@@ -30,11 +31,11 @@ public class DocumentProcessingService {
 
             doc.setExtractedText(extractedText);
             // Set status to COMPLETED after extraction
-            doc.setProcessingStatus(ProcessingStatus.COMPLETED);
+            doc.setUploadStatus(ProcessingStatus.COMPLETED);
             documentRepository.save(doc);
 
         } catch (Exception e) {
-            doc.setProcessingStatus(ProcessingStatus.FAILED);
+            doc.setUploadStatus(ProcessingStatus.FAILED);
             documentRepository.save(doc);
             // Optionally log error
         }

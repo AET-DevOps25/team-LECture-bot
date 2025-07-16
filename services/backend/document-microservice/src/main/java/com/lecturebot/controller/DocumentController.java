@@ -3,6 +3,7 @@ package com.lecturebot.controller;
 import com.lecturebot.entity.FileType;
 import com.lecturebot.entity.ProcessingStatus;
 import com.lecturebot.repository.DocumentRepository;
+import com.lecturebot.service.DocumentProcessingService;
 import com.lecturebot.generated.api.DocumentApi;
 import com.lecturebot.entity.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class DocumentController implements DocumentApi {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private DocumentProcessingService documentProcessingService;
 
     @Autowired
     @Qualifier("genaiWebClient")
@@ -73,42 +78,43 @@ public class DocumentController implements DocumentApi {
                 // Create and save Document entity
                 Document doc = new Document();
                 doc.setFilename(originalFilename);
+                doc.setFilePath(tempFile.getAbsolutePath()); // Store the file path
                 doc.setFileType(FileType.PDF);
                 doc.setUploadDate(Instant.now());
-                doc.setProcessingStatus(ProcessingStatus.PENDING); // Use PENDING instead of UPLOADED
+                doc.setUploadStatus(ProcessingStatus.PENDING);
                 
-                // Handle courseSpaceId - store as string (UUID format)
+                // Handle courseSpaceId - now properly store as UUID
                 if (courseSpaceId != null && !courseSpaceId.trim().isEmpty()) {
-                    // For now, we'll store the UUID as a string in a Long field
-                    // This is a temporary solution - ideally the database should store UUIDs
                     try {
-                        // Try to parse as UUID to validate format
-                        java.util.UUID.fromString(courseSpaceId.trim());
-                        // If valid UUID, we need to hash it to a Long or find another approach
-                        // For now, let's use the hashCode as a temporary solution
-                        doc.setCourseId((long) courseSpaceId.trim().hashCode());
-                        System.out.println("Stored courseSpaceId UUID: " + courseSpaceId + " as hash: " + courseSpaceId.trim().hashCode());
+                        // Parse and store the UUID directly
+                        UUID courseUuid = java.util.UUID.fromString(courseSpaceId.trim());
+                        doc.setCourseId(courseUuid);
+                        System.out.println("Stored courseSpaceId UUID: " + courseSpaceId);
                     } catch (IllegalArgumentException e) {
-                        // If not a valid UUID, try as Long
-                        try {
-                            doc.setCourseId(Long.valueOf(courseSpaceId.trim()));
-                        } catch (NumberFormatException nfe) {
-                            System.err.println("Invalid courseSpaceId format - not UUID or Long: '" + courseSpaceId + "'");
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body(Collections.emptyList());
-                        }
+                        System.err.println("Invalid courseSpaceId format - not a valid UUID: '" + courseSpaceId + "'");
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(Collections.emptyList());
                     }
                 } else {
                     System.err.println("courseSpaceId is null or empty: '" + courseSpaceId + "'");
-                    doc.setCourseId(null);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Collections.emptyList());
                 }
                 // Set userId if needed
 
                 Document saved = documentRepository.save(doc);
 
+                // Trigger PDF processing asynchronously
+                try {
+                    documentProcessingService.processUpload(saved.getId(), tempFile);
+                } catch (Exception e) {
+                    System.err.println("Error during PDF processing: " + e.getMessage());
+                    // Continue with response even if processing fails
+                }
+
                 // Map entity to generated model
                 com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
-                apiDoc.setId(String.valueOf(saved.getId()));
+                apiDoc.setId(saved.getId().toString()); // UUID to String
                 apiDoc.setFilename(saved.getFilename());
                 apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
                 if (saved.getUploadDate() != null) {
@@ -116,8 +122,8 @@ public class DocumentController implements DocumentApi {
                 } else {
                     apiDoc.setUploadDate(null);
                 }
-                apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.PENDING); // Use PENDING here too
-                apiDoc.setCourseId(saved.getCourseId() != null ? saved.getCourseId().toString() : null);
+                apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.PENDING);
+                apiDoc.setCourseId(saved.getCourseId().toString()); // UUID to String
                 apiDoc.setUserId(saved.getUserId() != null ? saved.getUserId().toString() : null);
                 apiDoc.setExtractedText(saved.getExtractedText());
 
@@ -126,7 +132,7 @@ public class DocumentController implements DocumentApi {
                 // Send document ID and extracted text to GenAI service for indexing
                 Map<String, Object> indexRequest = new HashMap<>();
                 indexRequest.put("document_id", saved.getId().toString());
-                indexRequest.put("course_space_id", saved.getCourseId() != null ? saved.getCourseId().toString() : "");
+                indexRequest.put("course_space_id", saved.getCourseId().toString());
                 indexRequest.put("text_content", saved.getExtractedText() != null ? saved.getExtractedText() : "");
                 
                 webClient.post()
@@ -160,24 +166,32 @@ public class DocumentController implements DocumentApi {
             String courseSpaceId,
             String id
     ) {
-        Document doc = documentRepository.findById(Long.valueOf(id)).orElse(null);
-        if (doc == null || !doc.getCourseId().toString().equals(courseSpaceId)) {
-            return ResponseEntity.notFound().build();
+        try {
+            UUID documentId = UUID.fromString(id);
+            UUID courseId = UUID.fromString(courseSpaceId);
+            
+            Document doc = documentRepository.findById(documentId).orElse(null);
+            if (doc == null || !doc.getCourseId().equals(courseId)) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
+            apiDoc.setId(doc.getId().toString());
+            apiDoc.setFilename(doc.getFilename());
+            apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
+            if (doc.getUploadDate() != null) {
+                apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
+            } else {
+                apiDoc.setUploadDate(null);
+            }
+            apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
+            apiDoc.setCourseId(doc.getCourseId().toString());
+            apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
+            apiDoc.setExtractedText(doc.getExtractedText());
+            return ResponseEntity.ok(apiDoc);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
-        com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
-        apiDoc.setId(String.valueOf(doc.getId()));
-        apiDoc.setFilename(doc.getFilename());
-        apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
-        if (doc.getUploadDate() != null) {
-            apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
-        } else {
-            apiDoc.setUploadDate(null);
-        }
-        apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getProcessingStatus().name()));
-        apiDoc.setCourseId(doc.getCourseId() != null ? doc.getCourseId().toString() : null);
-        apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
-        apiDoc.setExtractedText(doc.getExtractedText());
-        return ResponseEntity.ok(apiDoc);
     }
 
     /**
@@ -192,24 +206,30 @@ public class DocumentController implements DocumentApi {
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> listDocuments(
             String courseSpaceId
     ) {
-        List<Document> docs = documentRepository.findByCourseId(Long.valueOf(courseSpaceId));
-        List<com.lecturebot.generated.model.Document> responseList = new ArrayList<>();
-        for (Document doc : docs) {
-            com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
-            apiDoc.setId(String.valueOf(doc.getId()));
-            apiDoc.setFilename(doc.getFilename());
-            apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
-            if (doc.getUploadDate() != null) {
-                apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
-            } else {
-                apiDoc.setUploadDate(null);
+        try {
+            UUID courseId = UUID.fromString(courseSpaceId);
+            List<Document> docs = documentRepository.findByCourseId(courseId);
+            List<com.lecturebot.generated.model.Document> responseList = new ArrayList<>();
+            
+            for (Document doc : docs) {
+                com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
+                apiDoc.setId(doc.getId().toString());
+                apiDoc.setFilename(doc.getFilename());
+                apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
+                if (doc.getUploadDate() != null) {
+                    apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
+                } else {
+                    apiDoc.setUploadDate(null);
+                }
+                apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
+                apiDoc.setCourseId(doc.getCourseId().toString());
+                apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
+                apiDoc.setExtractedText(doc.getExtractedText());
+                responseList.add(apiDoc);
             }
-            apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getProcessingStatus().name()));
-            apiDoc.setCourseId(doc.getCourseId() != null ? doc.getCourseId().toString() : null);
-            apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
-            apiDoc.setExtractedText(doc.getExtractedText());
-            responseList.add(apiDoc);
+            return ResponseEntity.ok(responseList);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(responseList);
     }
 }
