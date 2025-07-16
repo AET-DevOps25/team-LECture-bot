@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  * Document
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T17:35:30.334104200+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T22:20:53.181088400+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class Document {
 
   private @Nullable String id;

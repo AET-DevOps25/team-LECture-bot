@@ -43,5 +43,17 @@ This is the Document Microservice for the LectureBot platform. It is responsible
 - JWT authentication is required for most endpoints.
 - For development, CORS is enabled for localhost and configured origins.
 
+### Error Types
+
+The API returns standard HTTP status codes for error handling:
+
+- **400 Bad Request:** Invalid input (e.g., missing or malformed parameters, wrong file type).
+- **401 Unauthorized:** Authentication is required or the JWT is missing/invalid.
+- **409 Conflict:** The document was already uploaded in this course space (duplicate upload).
+- **422 Unprocessable Entity:** PDF cannot be processed (may be empty, unreadable, or use unsupported encoding).
+- **500 Internal Server Error:** General server error (unexpected failure). This status is also returned if the GenAI service returns an error (such as a 500 or other non-successful response).
+
+Clients should handle these status codes and display appropriate messages to users.
+
 ---
 For more details, see the source code and OpenAPI spec in the `api/` folder.
