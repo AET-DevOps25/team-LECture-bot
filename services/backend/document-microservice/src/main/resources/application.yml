@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: document-microservice
+  
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   datasource:
     url: jdbc:postgresql://lecturebot-db:5432/lecturebot_db

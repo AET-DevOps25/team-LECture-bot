@@ -11,6 +11,9 @@
 server {
     listen 3000;
     server_name localhost;
+    
+    # Allow larger file uploads (50MB)
+    client_max_body_size 50M;
 
     # This location block handles serving your React application's static files.
     # It serves files from the root directory and uses index.html as the fallback

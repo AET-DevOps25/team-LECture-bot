@@ -16,7 +16,7 @@ public class WebClientConfig {
     @Bean(name = "genaiWebClient")
     public WebClient genaiWebClient() {
         return WebClient.builder()
-                .baseUrl("http://genai-backend-microservice:8082") // Use the Docker Compose service name and port
+                .baseUrl("http://api-gateway:8080") // Route through API Gateway
                 .filter((request, next) -> {
                     // Add service-to-service JWT authentication
                     String serviceToken = jwtTokenProvider.generateServiceToken("document-microservice");
