@@ -68,9 +68,25 @@ const PdfUpload: React.FC = () => {
         body: formData as any, // FormData bypass for file upload
       });
 
-      // Check for both error field and HTTP status
+      let errorMessage = '';
+      const status = response.response?.status;
       if (response.error || !response.response?.ok) {
-        const errorMessage = `HTTP ${response.response?.status || 'Unknown'}: Upload failed`;
+        switch (status) {
+          case 400:
+            errorMessage = 'Invalid input. Please check your file(s) and try again.';
+            break;
+          case 409:
+            errorMessage = 'This document was already uploaded in this course space.';
+            break;
+          case 422:
+            errorMessage = 'PDF cannot be processed. It may be empty, unreadable (scanned), or use an unsupported encoding.';
+            break;
+          case 500:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = `Unexpected error (HTTP ${status || 'Unknown'}). Please contact support.`;
+        }
         setFiles(prev =>
           prev.map((f, i) =>
             i === idx
