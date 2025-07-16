@@ -8,6 +8,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import com.lecturebot.security.JwtAuthenticationFilter;
 
@@ -25,11 +27,13 @@ public class SecurityConfig {
                 authorizeRequests
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/eureka/**").permitAll()
-                        .requestMatchers("/documents/**").permitAll()
-                        .anyRequest().permitAll());
+                        .anyRequest().authenticated()) // Secure all other endpoints
+                .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                );
 
         // Add our simplified JWT filter
-        // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

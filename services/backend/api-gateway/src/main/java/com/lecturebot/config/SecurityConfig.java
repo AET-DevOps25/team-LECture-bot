@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .pathMatchers("/api/v1/auth/**", "/api/v1/health", "/api/v1/genai/**", "/api/v1/documents/**",
+                        .pathMatchers("/api/v1/auth/**", "/api/v1/health", "/api/v1/genai/**",
                                 "/eureka/**", "/api/v1/eureka/**")
                         .permitAll()
                         .anyExchange().authenticated() // Use authorizeExchange and pathMatchers
