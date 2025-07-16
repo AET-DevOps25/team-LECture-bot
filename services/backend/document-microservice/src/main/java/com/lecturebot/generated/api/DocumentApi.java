@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-15T08:50:23.501186300+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:58:08.520290100+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Document", description = "the Document API")
 public interface DocumentApi {
@@ -81,7 +81,7 @@ public interface DocumentApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"extractedText\" : \"extractedText\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"userId\" : \"userId\", \"fileType\" : \"PDF\" }";
+                    String exampleString = "{ \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -129,7 +129,7 @@ public interface DocumentApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"extractedText\" : \"extractedText\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"userId\" : \"userId\", \"fileType\" : \"PDF\" }, { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"extractedText\" : \"extractedText\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"userId\" : \"userId\", \"fileType\" : \"PDF\" } ]";
+                    String exampleString = "[ { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" }, { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -159,7 +159,7 @@ public interface DocumentApi {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Document.class)), examples = {
                     @ExampleObject(
                         name = "",
-                        value = "[{\"id\":\"abc123\",\"filename\":\"file1.pdf\",\"fileType\":\"PDF\",\"uploadDate\":\"2025-07-14T12:00:00Z\",\"extractedText\":\"...\",\"courseId\":\"course1\",\"userId\":\"user1\",\"processingStatus\":\"COMPLETED\"}]"
+                        value = "[{\"id\":\"abc123\",\"filename\":\"file1.pdf\",\"fileType\":\"PDF\",\"uploadDate\":\"2025-07-14T12:00:00Z\",\"courseId\":\"course1\",\"processingStatus\":\"COMPLETED\"}]"
                     )
                 })
 
@@ -186,7 +186,7 @@ public interface DocumentApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"extractedText\" : \"extractedText\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"userId\" : \"userId\", \"fileType\" : \"PDF\" }, { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"extractedText\" : \"extractedText\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"userId\" : \"userId\", \"fileType\" : \"PDF\" } ]";
+                    String exampleString = "[ { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" }, { \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

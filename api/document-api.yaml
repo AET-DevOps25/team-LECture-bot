@@ -52,9 +52,7 @@ paths:
                       filename: "file1.pdf"
                       fileType: "PDF"
                       uploadDate: "2025-07-14T12:00:00Z"
-                      extractedText: "..."
                       courseId: "course1"
-                      userId: "user1"
                       processingStatus: "COMPLETED"
         '400':
           description: Invalid input
@@ -154,11 +152,7 @@ components:
         uploadDate:
           type: string
           format: date-time
-        extractedText:
-          type: string
         courseId:
-          type: string
-        userId:
           type: string
         processingStatus:
           type: string

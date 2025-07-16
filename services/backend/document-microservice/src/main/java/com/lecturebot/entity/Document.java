@@ -35,9 +35,6 @@ public class Document {
     @Column(name = "course_id", nullable = false)
     private UUID courseId;
 
-    @Column(name = "user_id")
-    private Integer userId;
-
     @Column(name = "upload_status")
     @Enumerated(EnumType.STRING)
     private ProcessingStatus uploadStatus;

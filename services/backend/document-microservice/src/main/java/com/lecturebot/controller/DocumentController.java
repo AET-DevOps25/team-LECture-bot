@@ -79,7 +79,6 @@ public class DocumentController implements DocumentApi {
                 apiDoc.setUploadDate(OffsetDateTime.ofInstant(processedDoc.getUploadDate(), ZoneOffset.UTC));
                 apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(processedDoc.getUploadStatus().name()));
                 apiDoc.setCourseId(processedDoc.getCourseId().toString());
-                apiDoc.setExtractedText(processedDoc.getExtractedText());
                 
                 responseList.add(apiDoc);
                 
@@ -129,8 +128,6 @@ public class DocumentController implements DocumentApi {
             }
             apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
             apiDoc.setCourseId(doc.getCourseId().toString());
-            apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
-            apiDoc.setExtractedText(doc.getExtractedText());
             return ResponseEntity.ok(apiDoc);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -166,8 +163,6 @@ public class DocumentController implements DocumentApi {
                 }
                 apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
                 apiDoc.setCourseId(doc.getCourseId().toString());
-                apiDoc.setUserId(doc.getUserId() != null ? doc.getUserId().toString() : null);
-                apiDoc.setExtractedText(doc.getExtractedText());
                 responseList.add(apiDoc);
             }
             return ResponseEntity.ok(responseList);

@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  * Document
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-15T08:50:23.501186300+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:58:08.520290100+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class Document {
 
   private @Nullable String id;
@@ -66,11 +66,7 @@ public class Document {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime uploadDate;
 
-  private @Nullable String extractedText;
-
   private @Nullable String courseId;
-
-  private @Nullable String userId;
 
   /**
    * Gets or Sets processingStatus
@@ -193,26 +189,6 @@ public class Document {
     this.uploadDate = uploadDate;
   }
 
-  public Document extractedText(String extractedText) {
-    this.extractedText = extractedText;
-    return this;
-  }
-
-  /**
-   * Get extractedText
-   * @return extractedText
-   */
-  
-  @Schema(name = "extractedText", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("extractedText")
-  public String getExtractedText() {
-    return extractedText;
-  }
-
-  public void setExtractedText(String extractedText) {
-    this.extractedText = extractedText;
-  }
-
   public Document courseId(String courseId) {
     this.courseId = courseId;
     return this;
@@ -231,26 +207,6 @@ public class Document {
 
   public void setCourseId(String courseId) {
     this.courseId = courseId;
-  }
-
-  public Document userId(String userId) {
-    this.userId = userId;
-    return this;
-  }
-
-  /**
-   * Get userId
-   * @return userId
-   */
-  
-  @Schema(name = "userId", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("userId")
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
   }
 
   public Document processingStatus(ProcessingStatusEnum processingStatus) {
@@ -286,15 +242,13 @@ public class Document {
         Objects.equals(this.filename, document.filename) &&
         Objects.equals(this.fileType, document.fileType) &&
         Objects.equals(this.uploadDate, document.uploadDate) &&
-        Objects.equals(this.extractedText, document.extractedText) &&
         Objects.equals(this.courseId, document.courseId) &&
-        Objects.equals(this.userId, document.userId) &&
         Objects.equals(this.processingStatus, document.processingStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, filename, fileType, uploadDate, extractedText, courseId, userId, processingStatus);
+    return Objects.hash(id, filename, fileType, uploadDate, courseId, processingStatus);
   }
 
   @Override
@@ -305,9 +259,7 @@ public class Document {
     sb.append("    filename: ").append(toIndentedString(filename)).append("\n");
     sb.append("    fileType: ").append(toIndentedString(fileType)).append("\n");
     sb.append("    uploadDate: ").append(toIndentedString(uploadDate)).append("\n");
-    sb.append("    extractedText: ").append(toIndentedString(extractedText)).append("\n");
     sb.append("    courseId: ").append(toIndentedString(courseId)).append("\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    processingStatus: ").append(toIndentedString(processingStatus)).append("\n");
     sb.append("}");
     return sb.toString();

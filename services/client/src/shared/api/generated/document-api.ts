@@ -54,9 +54,7 @@ export interface components {
             fileType?: "PDF";
             /** Format: date-time */
             uploadDate?: string;
-            extractedText?: string;
             courseId?: string;
-            userId?: string;
             /** @enum {string} */
             processingStatus?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
         };

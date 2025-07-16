@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * HealthStatus
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-15T08:49:28.297031800+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:57:38.557548700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class HealthStatus {
 
   private @Nullable String status;
