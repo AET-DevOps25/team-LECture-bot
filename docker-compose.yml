@@ -76,7 +76,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1/query 
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
@@ -113,7 +113,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://genai-backend-db:5432/${GENAI_DB_NAME:-genai_db}
       - SPRING_DATASOURCE_USERNAME=${GENAI_DB_USER:-genai_user}
       - SPRING_DATASOURCE_PASSWORD=${GENAI_DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1/query
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
       - EUREKA_INSTANCE_HOSTNAME=genai-backend-microservice

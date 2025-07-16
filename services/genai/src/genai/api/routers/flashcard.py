@@ -22,7 +22,6 @@ async def generate_flashcards_endpoint(
     except ValueError as ve:
         response = schemas.FlashcardResponse(
             course_space_id=payload.course_space_id,
-            document_id=payload.document_id,
             flashcards=[],
             error=str(ve)
         )

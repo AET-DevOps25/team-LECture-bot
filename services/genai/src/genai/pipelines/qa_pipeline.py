@@ -4,7 +4,7 @@ from weaviate.classes.query import Filter
 from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService
 from genai.services.llm_service import LLMService  # We will create this next
-from genai.api import schemas
+from genai.api import schemas_v1 as schemas
 from genai.core.config import settings
 
 class QAPipeline:
@@ -99,9 +99,10 @@ class QAPipeline:
         citations = [
             schemas.Citation(
                 document_id=result.get('properties', {}).get('document_id'),
+                document_name=result.get('properties', {}).get('document_name', 'Unknown Document'),
                 # Ensure chunk_id is string, matching the key used in _get_unique_and_valid_search_results
                 chunk_id=str(result.get('properties', {}).get('chunk_index')),
-                source_details=f"Document ID: {result.get('properties', {}).get('document_id')}",
+                #source_details=f"Document ID: {result.get('properties', {}).get('document_id')}",
                 # text_content should be present due to the filter in _get_unique_and_valid_search_results
                 retrieved_text_preview=(result.get('properties', {}).get('text_content') or "")[:150] + "..."
             ) for result in valid_search_results

@@ -6,7 +6,7 @@ from genai.services.vector_store_service import VectorStoreService
 from genai.services.llm_service import LLMService
 
 from weaviate.classes.query import Filter
-from genai.api import schemas
+from genai.api import schemas_v1
 
 
 import json
@@ -22,7 +22,7 @@ class FlashcardPipeline:
         print("FlashcardPipeline initialized.")
 
 
-    def _retrieve_context(self, request: schemas.FlashcardRequest) -> str:
+    def _retrieve_context(self, request: schemas_v1.FlashcardRequest) -> str:
         """
         Retrieves and concatenates all text chunks based on the request scope.
         If document_id is provided, it scopes to that document within the course.
@@ -83,7 +83,7 @@ class FlashcardPipeline:
 
 
 
-    def _generate_flashcards_for_context(self, context: str) -> list[schemas.Flashcard]:
+    def _generate_flashcards_for_context(self, context: str) -> list[schemas_v1.Flashcard]:
         """Generates a list of flashcard objects from a given text context."""
         if not context:
             return []
@@ -99,14 +99,14 @@ class FlashcardPipeline:
             if isinstance(flashcard_data, list):
                 for item in flashcard_data:
                     if isinstance(item, dict) and "question" in item and "answer" in item:
-                        validated_flashcards.append(schemas.Flashcard(**item))
+                        validated_flashcards.append(schemas_v1.Flashcard(**item))
             return validated_flashcards
         except (json.JSONDecodeError, TypeError):
             print(f"Warning: Failed to parse LLM response for a document. Response: {llm_response_str}")
             return []
 
 
-    def process_request(self, request: schemas.FlashcardRequest) -> schemas.FlashcardResponse:
+    def process_request(self, request: schemas_v1.FlashcardRequest) -> schemas_v1.FlashcardResponse:
         """
         Orchestrates flashcard generation.
         - If a document_id is provided, it processes only that document.
@@ -124,7 +124,7 @@ class FlashcardPipeline:
             raise ValueError(f"No documents found for course space: {request.course_space_id}")
 
         # This will hold the results for each document
-        all_results: list[schemas.FlashcardsForDocument] = []
+        all_results: list[schemas_v1.FlashcardsForDocument] = []
 
         # Loop through each document and generate flashcards
         for doc_id in document_ids_to_process:
@@ -139,12 +139,12 @@ class FlashcardPipeline:
             
             if flashcards:
                 all_results.append(
-                    schemas.FlashcardsForDocument(document_id=doc_id, flashcards=flashcards)
+                    schemas_v1.FlashcardsForDocument(document_id=doc_id, flashcards=flashcards)
                 )
             else:
                 print(f"No valid flashcards generated for document {doc_id}.")
 
-        return schemas.FlashcardResponse(course_space_id=request.course_space_id, flashcards=all_results)
+        return schemas_v1.FlashcardResponse(course_space_id=request.course_space_id, flashcards=all_results, error=None)
 
 
     

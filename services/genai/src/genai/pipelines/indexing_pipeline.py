@@ -4,7 +4,7 @@ import uuid
 from genai.services.text_processing_service import TextProcessingService
 from genai.services.embedding_service import EmbeddingService
 from genai.services.vector_store_service import VectorStoreService, WeaviateInputDocument
-from genai.api.schemas import IndexDocumentRequest # For type hinting the input payload
+from genai.api.schemas_v1 import IndexRequest # For type hinting the input payload
 
 class IndexingPipeline:
     """
@@ -21,7 +21,7 @@ class IndexingPipeline:
         self.vector_store = VectorStoreService()
         print("IndexingPipeline initialized with TextProcessing, Embedding, and VectorStore services.")
 
-    def process_document(self, payload: IndexDocumentRequest) -> Dict[str, Any]:
+    def process_document(self, payload: IndexRequest) -> Dict[str, Any]:
         """
         Processes a single document for indexing.
 
@@ -44,7 +44,7 @@ class IndexingPipeline:
 
         # 1. Chunk the text
         # Prepare initial metadata for chunks
-        # We can get original_filename if it's part of IndexDocumentRequest schema or passed differently
+        # We can get original_filename if it's part of IndexRequest schema or passed differently
         initial_chunk_metadata = {
             "document_id": payload.document_id,
             "course_space_id": payload.course_space_id,
@@ -174,7 +174,7 @@ class IndexingPipeline:
 # Example (for standalone testing if needed, but typically tested via API endpoint)
 # async def main_test():
 #     pipeline = IndexingPipeline()
-#     sample_payload = IndexDocumentRequest(
+#     sample_payload = IndexRequest(
 #         document_id="test_doc_001",
 #         text_content="This is a sample document. It has multiple sentences for testing. Weaviate is a vector database. Langchain helps build LLM apps.",
 #         course_space_id="cs_test_101"
