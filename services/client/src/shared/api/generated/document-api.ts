@@ -148,6 +148,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Conflict - Duplicate document */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Unprocessable Entity - Document processing failed */
             422: {
                 headers: {

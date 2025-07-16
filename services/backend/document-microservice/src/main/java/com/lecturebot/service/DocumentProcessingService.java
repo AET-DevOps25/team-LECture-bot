@@ -57,8 +57,14 @@ public class DocumentProcessingService {
             doc.setCourseId(courseId);
             doc.setUploadStatus(ProcessingStatus.PENDING);
 
-            saved = documentRepository.save(doc);
-            logger.info("Saved document to DB with PENDING status: {}", saved.getId());
+            // try {
+                saved = documentRepository.save(doc);
+                logger.info("Saved document to DB with PENDING status: {}", saved.getId());
+            // } catch (Exception e) {
+            //     logger.error("Failed to save document metadata: {}", e.getMessage(), e);
+            //     throw new RuntimeException(e.getMessage(), e);
+            // }
+
 
             // 3. Update status to PROCESSING_EXTRACTION
             saved.setUploadStatus(ProcessingStatus.PROCESSING_EXTRACTION);
@@ -71,6 +77,7 @@ public class DocumentProcessingService {
 
             // Validate we have actual text content
             if (extractedText == null || extractedText.trim().isEmpty()) {
+                // logger.error(extractedText == null ? "Extracted text is null" : "Extracted text is empty");
                 throw new RuntimeException("No text could be extracted from PDF");
             }
 
@@ -117,7 +124,7 @@ public class DocumentProcessingService {
 
             logger.error("Error processing PDF: {}", e.getMessage(), e);
 
-            if(saved.getUploadStatus() == ProcessingStatus.FAILED) {
+            if(saved != null && saved.getUploadStatus() == ProcessingStatus.FAILED) {
                 documentRepository.delete(saved);
                 logger.info("Document {} deleted after unsuccessful processing", saved.getId());
             }

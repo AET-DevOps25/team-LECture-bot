@@ -58,6 +58,8 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
+        '409':
+          description: Conflict - Duplicate document
         '422':
           description: Unprocessable Entity - Document processing failed
         '500':

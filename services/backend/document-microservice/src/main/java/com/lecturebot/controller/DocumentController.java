@@ -87,9 +87,15 @@ public class DocumentController implements DocumentApi {
                 return ResponseEntity.badRequest().build();
             } catch (Exception e) {
                 System.err.println("PDF processing failed: " + e.getMessage());
-                if(e.getMessage() != null && (e.getMessage().contains("No text could be cleaned") || e.getMessage().contains("No text could be extracted from PDF"))) {
-                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .build();
+                if (e.getMessage() != null) {
+                    if (e.getMessage().contains("No text could be cleaned") || e.getMessage().contains("No text could be extracted from PDF")) {
+                        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                            .build();
+                    }
+                    if (e.getMessage().contains("duplicate key value violates unique constraint") || e.getMessage().toLowerCase().contains("duplicate")) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .build();
+                    }
                 }
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
