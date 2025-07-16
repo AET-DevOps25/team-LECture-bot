@@ -86,7 +86,7 @@ echo "--- Generating code for document microservice from ${DOC_API_SPEC_FILE} --
 rm -rf "${TEMP_DOC_OUTPUT_DIR}"
 mkdir -p "${TEMP_DOC_OUTPUT_DIR}"
 
-openapi-generator-cli generate \
+npx @openapitools/openapi-generator-cli generate \
     -i "${DOC_API_SPEC_FILE}" \
     -g spring \
     -o "${TEMP_DOC_OUTPUT_DIR}" \
