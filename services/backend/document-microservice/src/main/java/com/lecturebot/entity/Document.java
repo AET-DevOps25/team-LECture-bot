@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "document", 
+@Table(name = "documents", 
        uniqueConstraints = @UniqueConstraint(columnNames = {"filename", "course_id"}))
 public class Document {
     @Id
@@ -27,10 +27,6 @@ public class Document {
 
     @Column(name = "upload_date")
     private Instant uploadDate;
-
-    @Column(name = "extracted_text")
-    @Lob
-    private String extractedText;
 
     @Column(name = "course_id", nullable = false)
     private UUID courseId;
