@@ -121,13 +121,14 @@ const PdfUpload: React.FC = () => {
         {files.map((fileStatus, idx) => (
           <div key={fileStatus.file.name + idx} style={{ margin: '10px 0' }}>
             <strong>{fileStatus.file.name}</strong>
-            <div style={{ width: 200, background: '#eee', margin: '5px 0' }}>
+            <div style={{ width: '100%', maxWidth: 500, background: '#eee', margin: '5px auto', borderRadius: 4 }}>
               <div
                 style={{
                   width: `${fileStatus.progress}%`,
                   background: fileStatus.status === 'error' ? 'red' : 'green',
                   height: 8,
                   transition: 'width 0.3s',
+                  borderRadius: 4,
                 }}
               />
             </div>
