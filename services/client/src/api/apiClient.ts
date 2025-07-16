@@ -71,30 +71,3 @@ const apiClientPromise = initializeApiClient();
 
 // Export the instance and the promise for flexibility
 export { apiClient, apiClientPromise };
-
-export async function rawPost(url: string, formData: FormData) {
-    // Always send uploads to the discovery service on port 8080, no matter what
-    const fullUrl = `http://localhost:8080/api/v1${url}`;
-    const token = storage.getItem<string>('jwtToken');
-    const headers = new Headers();
-    if (token) headers.set('Authorization', `Bearer ${token}`);
-    // Do NOT set Content-Type for FormData, browser will handle it
-
-    const response = await fetch(fullUrl, {
-        method: 'POST',
-        body: formData,
-        headers,
-    });
-
-    let data = null;
-    try {
-        data = await response.json();
-    } catch {
-        // ignore if not JSON
-    }
-
-    return {
-        data,
-        error: !response.ok ? data || { message: 'Upload failed' } : undefined,
-    };
-}

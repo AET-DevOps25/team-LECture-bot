@@ -23,11 +23,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests ->
-                // Permit all requests for testing document upload
                 authorizeRequests
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/eureka/**").permitAll()
-                        .anyRequest().authenticated()) // Secure all other endpoints
+                        .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );

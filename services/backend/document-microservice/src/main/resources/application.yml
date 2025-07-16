@@ -24,16 +24,6 @@ spring:
       hibernate:
         format_sql: true
 
-# Optional: Disable Eureka for now
-# eureka:
-#   client:
-#     enabled: false
-
-#spring:
-#  mvc:
-#    servlet:
-#      path: /api/v1
-#
 eureka:
   instance:
     # The hostname for the Eureka instance. This is used for service discovery.

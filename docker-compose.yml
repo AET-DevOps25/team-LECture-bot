@@ -78,7 +78,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-lecturebot_user}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1/query 
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011 
       - LECTUREBOT_CLIENT_ORIGIN=${LECTUREBOT_CLIENT_ORIGIN:-http://localhost:3000} # For CORS
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
@@ -115,7 +115,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://genai-backend-db:5432/${GENAI_DB_NAME:-genai_db}
       - SPRING_DATASOURCE_USERNAME=${GENAI_DB_USER:-genai_user}
       - SPRING_DATASOURCE_PASSWORD=${GENAI_DB_PASSWORD:-mysecretpassword} # Ensure this matches POSTGRES_PASSWORD below
-      - GENAI_SERVICE_BASE_URL=http://genai-service:8011/api/v1/query
+      - GENAI_SERVICE_BASE_URL=http://genai-service:8011
       - APP_JWT_SECRET=${APP_JWT_SECRET:-c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM=}
       - APP_JWT_EXPIRATION_IN_MS=${APP_JWT_EXPIRATION_IN_MS:-86400000}
       - EUREKA_INSTANCE_HOSTNAME=genai-backend-microservice
@@ -180,7 +180,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_key_if_using_openai}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4o-mini}
       - TUM_AET_LLM_API_BASE=${TUM_AET_LLM_API_BASE:-https://gpu.aet.cit.tum.de/api}
-      - TUM_AET_LLM_API_KEY=${TUM_AET_LLM_API_KEY:-sk-fa5ce8c262e84135bc97f3b35d5795c0}
+      - TUM_AET_LLM_API_KEY=${TUM_AET_LLM_API_KEY:-your_tum_aet_key_here}
       - TUM_AET_LLM_MODEL_NAME=${TUM_AET_LLM_MODEL_NAME:-llama3.3:latest}
       - WEAVIATE_URL=http://weaviate:8080 # Connect to weaviate service
       - TOKENIZERS_PARALLELISM=false # Recommended for some environments

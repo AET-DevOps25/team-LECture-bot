@@ -76,16 +76,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// Optional: If you need to exclude Lombok from the final JAR,
-// though Spring Boot's Gradle plugin often handles this well.
-// If you encounter issues, you might need specific configurations here.
-// For example, the bootJar task can be configured:
-// bootJar {
-//    launchScript() // Example of a common configuration
-//    // If lombok is still included and causing issues:
-//    // configurations.compileOnly.extendsFrom configurations.annotationProcessor
-// }
-
 // To ensure that the fat JAR (executable JAR) is built correctly
 tasks.withType(org.springframework.boot.gradle.tasks.bundling.BootJar) {
     mainClass = 'com.lecturebot.LectureBotApplication' // Set your main class
