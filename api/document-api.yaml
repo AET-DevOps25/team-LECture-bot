@@ -58,6 +58,8 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
+        '422':
+          description: Unprocessable Entity - Document processing failed
         '500':
           description: Server error
 
@@ -156,4 +158,9 @@ components:
           type: string
         processingStatus:
           type: string
-          enum: [PENDING, PROCESSING, COMPLETED, FAILED]
+          enum:
+            - PENDING
+            - PROCESSING_EXTRACTION
+            - PROCESSING_INDEXING
+            - COMPLETED
+            - FAILED

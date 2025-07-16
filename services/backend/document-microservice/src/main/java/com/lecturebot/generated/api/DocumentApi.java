@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:58:08.520290100+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T17:05:20.945188500+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Document", description = "the Document API")
 public interface DocumentApi {
@@ -148,6 +148,7 @@ public interface DocumentApi {
      * @return Upload result (status code 200)
      *         or Invalid input (status code 400)
      *         or Unauthorized (status code 401)
+     *         or Unprocessable Entity - Document processing failed (status code 422)
      *         or Server error (status code 500)
      */
     @Operation(
@@ -166,6 +167,7 @@ public interface DocumentApi {
             }),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity - Document processing failed"),
             @ApiResponse(responseCode = "500", description = "Server error")
         },
         security = {

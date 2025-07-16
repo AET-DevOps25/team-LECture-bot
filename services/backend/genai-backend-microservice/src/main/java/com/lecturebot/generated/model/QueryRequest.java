@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * QueryRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:57:48.898265600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T17:05:02.617957300+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class QueryRequest {
 
   private String queryText;

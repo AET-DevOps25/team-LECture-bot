@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  * Document
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T14:58:08.520290100+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T17:05:20.945188500+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class Document {
 
   private @Nullable String id;
@@ -74,7 +74,9 @@ public class Document {
   public enum ProcessingStatusEnum {
     PENDING("PENDING"),
     
-    PROCESSING("PROCESSING"),
+    PROCESSING_EXTRACTION("PROCESSING_EXTRACTION"),
+    
+    PROCESSING_INDEXING("PROCESSING_INDEXING"),
     
     COMPLETED("COMPLETED"),
     

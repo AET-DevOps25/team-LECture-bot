@@ -56,7 +56,7 @@ export interface components {
             uploadDate?: string;
             courseId?: string;
             /** @enum {string} */
-            processingStatus?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+            processingStatus?: "PENDING" | "PROCESSING_EXTRACTION" | "PROCESSING_INDEXING" | "COMPLETED" | "FAILED";
         };
     };
     responses: never;
@@ -143,6 +143,13 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable Entity - Document processing failed */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

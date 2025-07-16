@@ -42,46 +42,88 @@ public class DocumentProcessingService {
         logger.info("Processing PDF: {}, course: {}", file.getOriginalFilename(), courseId);
         
         File tempFile = null;
+        Document saved = null;
         try {
             // 1. Save file temporarily
             tempFile = File.createTempFile("pdf-", ".pdf");
             file.transferTo(tempFile);
-                  // 2. Extract text from PDF
-        String extractedText = extractTextFromPdf(tempFile);
-        logger.info("Extracted {} characters from PDF", extractedText != null ? extractedText.length() : 0);
-        
-        // 3. Clean and format text for GenAI
-        String cleanedText = cleanTextForGenAI(extractedText);
-        logger.info("Cleaned text length: {} characters", cleanedText != null ? cleanedText.length() : 0);
-        
-        // Debug: Output cleaned text content
-        if (cleanedText != null) {
-            logger.info("Cleaned text content: '{}'", cleanedText);
-        }
-        
-        // Validate we have actual text content
-        if (cleanedText == null || cleanedText.trim().isEmpty()) {
-            throw new RuntimeException("No text could be extracted from PDF");
-        }
-            
-            // 3. Save document metadata to database (no extracted text stored)
+
+            // 2. Save document metadata to database with PENDING status initially
             Document doc = new Document();
             doc.setFilename(StringUtils.cleanPath(file.getOriginalFilename()));
             doc.setFilePath(tempFile.getAbsolutePath());
             doc.setFileType(FileType.PDF);
             doc.setUploadDate(Instant.now());
             doc.setCourseId(courseId);
-            // Note: extracted_text is not stored in DB, only sent to GenAI
-            doc.setUploadStatus(ProcessingStatus.COMPLETED);
-            
-            Document saved = documentRepository.save(doc);
-            logger.info("Saved document to DB: {}", saved.getId());
-            
-            // 4. Send to GenAI service for indexing
+            doc.setUploadStatus(ProcessingStatus.PENDING);
+
+            saved = documentRepository.save(doc);
+            logger.info("Saved document to DB with PENDING status: {}", saved.getId());
+
+            // 3. Update status to PROCESSING_EXTRACTION
+            saved.setUploadStatus(ProcessingStatus.PROCESSING_EXTRACTION);
+            saved = documentRepository.save(saved);
+            logger.info("Updated document status to PROCESSING_EXTRACTION: {}", saved.getId());
+
+            // 4. Extract text from PDF
+            String extractedText = extractTextFromPdf(tempFile);
+            logger.info("Extracted {} characters from PDF", extractedText != null ? extractedText.length() : 0);
+
+            // Validate we have actual text content
+            if (extractedText == null || extractedText.trim().isEmpty()) {
+                throw new RuntimeException("No text could be extracted from PDF");
+            }
+
+            // 5. Clean and format text for GenAI
+            String cleanedText = cleanTextForGenAI(extractedText);
+            logger.info("Cleaned text length: {} characters", cleanedText != null ? cleanedText.length() : 0);
+
+            // Debug: Output cleaned text content
+            if (cleanedText != null) {
+                logger.info("Cleaned text content: '{}'", cleanedText);
+            }
+
+            // Validate we have actual text content
+            if (cleanedText == null || cleanedText.trim().isEmpty()) {
+                throw new RuntimeException("No text could be cleaned");
+            }
+
+            // 6. Update status to PROCESSING_INDEXING
+            saved.setUploadStatus(ProcessingStatus.PROCESSING_INDEXING);
+            saved = documentRepository.save(saved);
+            logger.info("Updated document status to PROCESSING_INDEXING: {}", saved.getId());
+
+            // 7. Send to GenAI service for indexing
             sendToGenAIService(saved, cleanedText);
-            
+
+            // 8. Update status to COMPLETED
+            saved.setUploadStatus(ProcessingStatus.COMPLETED);
+            saved = documentRepository.save(saved);
+            logger.info("Updated document status to COMPLETED: {}", saved.getId());
+
             return saved;
-            
+
+        } catch (Exception e) {
+            // If we have a saved document, update its status to FAILED
+            if (saved != null) {
+                try {
+                    saved.setUploadStatus(ProcessingStatus.FAILED);
+                    documentRepository.save(saved);
+                    logger.error("Updated document status to FAILED for document: {}", saved.getId());
+                } catch (Exception updateException) {
+                    logger.error("Failed to update document status to FAILED", updateException);
+                }
+            }
+
+            logger.error("Error processing PDF: {}", e.getMessage(), e);
+
+            if(saved.getUploadStatus() == ProcessingStatus.FAILED) {
+                documentRepository.delete(saved);
+                logger.info("Document {} deleted after unsuccessful processing", saved.getId());
+            }
+
+            throw e;
+
         } finally {
             // Clean up temp file
             if (tempFile != null && tempFile.exists()) {
