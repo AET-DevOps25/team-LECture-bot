@@ -1,0 +1,47 @@
+# Document Microservice
+
+This is the Document Microservice for the LectureBot platform. It is responsible for handling PDF document uploads, processing, and requesting indexing for each course space.
+
+## What it is
+- A Spring Boot microservice that manages PDF documents for courses.
+- Provides REST API endpoints for uploading, listing, and retrieving documents.
+- Integrates with a PostgreSQL database for document storage and status tracking.
+- Supports JWT-based authentication and CORS for secure access.
+
+## What it does
+- Accepts PDF uploads (single or multiple) for a given course space.
+- Extracts and cleans text from PDFs for further processing for indexing by the GenAI microservice.
+- Tracks document processing status (pending, processing, completed, failed).
+- Prevents duplicate uploads and enforces file size limits (max 50MB per file and per request).
+- Provides endpoints to list all documents for a course or fetch a document by ID.
+
+## How to use it
+
+### Prerequisites
+- Java 17+
+- Docker (for running PostgreSQL and other services)
+- Node.js (for frontend, if needed)
+
+### Setup
+1. **Configure Environment:**
+   - Set environment variables as needed (e.g., `LECTUREBOT_CLIENT_ORIGIN`, JWT secret).
+   - Edit `application.yml` for database and service configuration.
+2. **Start Database:**
+   - Run `docker-compose up -d lecturebot-postgres-db` from the project root.
+3. **Build and Run the Service:**
+   - From this folder, run: `./mvnw spring-boot:run` (or use your IDE)
+   - The service will start on port 8083 by default.
+4. **API Usage:**
+   - Upload documents: `POST /api/v1/documents/{courseSpaceId}` (multipart/form-data)
+   - List documents: `GET /api/v1/documents/{courseSpaceId}`
+   - Get document by ID: `GET /api/v1/documents/{courseSpaceId}/{id}`
+   - See `api/document-api.yaml` for full OpenAPI contract.
+
+### Notes
+- Only PDF files are accepted.
+- Each file and the total upload must not exceed 50MB.
+- JWT authentication is required for most endpoints.
+- For development, CORS is enabled for localhost and configured origins.
+
+---
+For more details, see the source code and OpenAPI spec in the `api/` folder.
