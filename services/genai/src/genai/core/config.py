@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     OLLAMA_MODEL_NAME: str = "llama3:8b-instruct-q4_K_M" # Example of a quantized model
 
     # -- TUM AET GPU LLM Settings --
-    TUM_AET_LLM_API_BASE: Optional[str] = "https://gpu.aet.cit.tum.de/api"
-    TUM_AET_LLM_API_KEY: Optional[str] = "sk-fa5ce8c262e84135bc97f3b35d5795c0"
+    TUM_AET_LLM_API_BASE: Optional[str] = None
+    TUM_AET_LLM_API_KEY: Optional[str] = None
     print("TUM_AET_LLM_API_BASE:", TUM_AET_LLM_API_BASE)
     print("TUM_AET_LLM_API_KEY:", TUM_AET_LLM_API_KEY)
     TUM_AET_LLM_MODEL_NAME: str = "llama3.3:latest" # Default model for TUM AET LLM
