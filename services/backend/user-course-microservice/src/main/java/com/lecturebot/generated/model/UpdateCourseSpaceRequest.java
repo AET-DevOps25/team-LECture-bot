@@ -15,38 +15,38 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * CreateCourseSpaceRequest
+ * UpdateCourseSpaceRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T17:35:00.461912700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
-public class CreateCourseSpaceRequest {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-14T23:17:00.952256+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+public class UpdateCourseSpaceRequest {
 
   private String name;
 
   private @Nullable String description;
 
-  public CreateCourseSpaceRequest() {
+  public UpdateCourseSpaceRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public CreateCourseSpaceRequest(String name) {
+  public UpdateCourseSpaceRequest(String name) {
     this.name = name;
   }
 
-  public CreateCourseSpaceRequest name(String name) {
+  public UpdateCourseSpaceRequest name(String name) {
     this.name = name;
     return this;
   }
 
   /**
-   * The name of the course space to create.
+   * The new name of the course space.
    * @return name
    */
   @NotNull 
-  @Schema(name = "name", example = "Introduction to AI", description = "The name of the course space to create.", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Schema(name = "name", description = "The new name of the course space.", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -56,17 +56,17 @@ public class CreateCourseSpaceRequest {
     this.name = name;
   }
 
-  public CreateCourseSpaceRequest description(String description) {
+  public UpdateCourseSpaceRequest description(String description) {
     this.description = description;
     return this;
   }
 
   /**
-   * The description of the course space.
+   * The new description of the course space.
    * @return description
    */
   
-  @Schema(name = "description", example = "This is a course about AI.", description = "The description of the course space.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "description", description = "The new description of the course space.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("description")
   public String getDescription() {
     return description;
@@ -84,9 +84,9 @@ public class CreateCourseSpaceRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CreateCourseSpaceRequest createCourseSpaceRequest = (CreateCourseSpaceRequest) o;
-    return Objects.equals(this.name, createCourseSpaceRequest.name) &&
-        Objects.equals(this.description, createCourseSpaceRequest.description);
+    UpdateCourseSpaceRequest updateCourseSpaceRequest = (UpdateCourseSpaceRequest) o;
+    return Objects.equals(this.name, updateCourseSpaceRequest.name) &&
+        Objects.equals(this.description, updateCourseSpaceRequest.description);
   }
 
   @Override
@@ -97,7 +97,7 @@ public class CreateCourseSpaceRequest {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CreateCourseSpaceRequest {\n");
+    sb.append("class UpdateCourseSpaceRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");

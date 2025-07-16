@@ -85,6 +85,86 @@ To also remove volumes (like the database data), use docker-compose down -v.
 * PostgreSQL Version Incompatibility / Schema Issues: If the database or server fails to start due to database file incompatibility or schema validation errors, it often means the Docker volume (lecturebot_db_data) contains data from a previous or different database state.
 * Solution: Stop services (docker-compose down), remove the conflicting Docker volume (e.g., docker volume rm <projectname>_lecturebot_db_data or docker volume rm lecturebot_db_data - use docker volume ls to find the exact name used by your setup), and then run docker-compose up --build -d again. This allows PostgreSQL to initialize a fresh database and run the init-users.sql script.
 
+
+## Q&A Feature: Testing Instructions
+
+This section explains how to test the Q&A (Ask Question About Course) feature via both the UI and API (using curl), including JWT authentication and expected responses.
+
+### 1. Testing via the UI
+
+1. Log in as an authenticated user.
+2. Navigate to a course space.
+3. Use the Q&A chat interface:
+   - Type a natural language question in the input field.
+   - Submit the question.
+   - Observe the answer and any citations displayed in the chat bubbles.
+   - If the answer cannot be generated, a fallback message will be shown.
+   - Loading indicators and error messages are displayed as appropriate.
+
+### 2. Testing via curl (API)
+
+You can test the backend Q&A endpoint directly using curl. You must provide a valid JWT token in the Authorization header.
+
+#### Example curl command
+
+```bash
+curl -X POST http://localhost:8080/api/v1/coursespaces/<COURSE_SPACE_ID>/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_JWT_TOKEN>" \
+  -d '{"queryText": "What is the course about?", "courseId": "<COURSE_SPACE_ID>"}'
+```
+
+- Replace `<COURSE_SPACE_ID>` with your actual courseSpaceId (e.g., `efa22df0-37ea-45e8-8f97-7c6eb7f1f555`).
+- Replace `<YOUR_JWT_TOKEN>` with a valid JWT (obtainable from your app's login/session).
+
+#### Expected Request Body
+
+```json
+{
+  "queryText": "What is the course about?",
+  "courseId": "efa22df0-37ea-45e8-8f97-7c6eb7f1f555"
+}
+```
+
+#### Expected Response Structure
+
+```json
+{
+  "answerText": "...answer string...",
+  "citations": [
+    {
+      "document_id": "...",
+      "document_name": "...",
+      "page_number": 1,
+      "context_snippet": "..."
+    }
+  ],
+  "error": null
+}
+```
+
+- If no answer can be generated, `answerText` will contain a fallback message and `citations` may be empty or contain nulls.
+- If authentication fails, you will receive a 401 or 403 error.
+
+### 3. Troubleshooting
+
+- Ensure your JWT is valid and not expired.
+- If you receive a static resource error, check your backend and gateway routing.
+- If you receive a fallback answer, ensure your course space has documents/content indexed.
+
+### 4. Additional Notes
+docs(readme): add Q&A feature testing instructions with curl and UI examples
+
+- Document how to test the Q&A endpoint via both the UI and curl
+- Include JWT usage, example request/response, and troubleshooting tips
+- Clarify expected request/response structure for Q&A API
+- Satisfies documentation requirements for Q&A feature
+- All Q&A endpoints require authentication (JWT).
+- The UI and API both use the same backend endpoint for Q&A.
+- For more details, see the main project README and the Q&A feature documentation.
+
+---
+
 ## Testing API Endpoints
 
 ### 1. Health Check
@@ -264,8 +344,6 @@ All endpoints in this section require authentication. You must include the Autho
 
 1. Get All Course Spaces
 
-- Endpoint: `GET /api/v1/coursespaces`
-- Description: Retrieves a list of all course spaces for the currently authenticated user.
 
 `curl` Example:
 ```bash
@@ -285,6 +363,53 @@ curl -X GET http://localhost:8080/api/v1/coursespaces \
     }
 ]
 ```
+
+
+---
+
+## 6. Manage Course Spaces: Frontend UI & Logic
+
+The LECture-bot frontend provides a user-friendly interface for managing course spaces, allowing authenticated users to create, view, edit, and delete their course spaces. This functionality is accessible from the dashboard and is designed for efficient organization of lecture materials.
+
+### Features
+
+- **Create Course Space:** Users can create a new course space using a modal form with fields for title (required) and description (optional). Validation ensures the title is not empty.
+- **Edit Course Space:** Existing course spaces can be edited via the same modal, pre-filled with current data. Changes are saved and reflected in the list.
+- **Delete Course Space:** Users can delete a course space after confirming the action. The course space is removed from the list upon success.
+- **List Course Spaces:** All course spaces for the authenticated user are displayed in a dashboard view, showing key details for each space.
+- **Feedback & Validation:** The UI provides clear feedback for all actions, including success and error messages, and prevents invalid submissions.
+
+### How to Use
+
+1. **Access the Dashboard:** Log in and navigate to the dashboard to see your course spaces.
+2. **Create:** Click "Create New Course Space", fill in the form, and submit. The new course space will appear in your list.
+3. **Edit:** Click the edit button on a course space, update the details, and submit. Changes are saved and shown immediately.
+4. **Delete:** Click the delete button, confirm the action, and the course space will be removed.
+5. **Validation:** Attempting to submit an empty title will show an error. Backend errors (e.g., unauthorized, duplicate) are also displayed.
+
+### Technical Details
+
+- The frontend uses React context to manage course space state and API interactions.
+- All API requests are authenticated using JWT (handled automatically if logged in).
+- The UI is styled with TailwindCSS for a modern look.
+- API endpoints used:
+  - `GET /api/v1/coursespaces` — fetch all course spaces
+  - `POST /api/v1/coursespaces` — create new course space
+  - `PUT /api/v1/coursespaces/{id}` — update course space
+  - `DELETE /api/v1/coursespaces/{id}` — delete course space
+
+### Testing
+
+To test course space management:
+
+1. Log in via the frontend.
+2. Create, edit, and delete course spaces using the dashboard UI.
+3. Verify that the list updates immediately after each action.
+4. Try submitting invalid data (e.g., empty title) to see validation in action.
+5. Simulate backend errors (e.g., by using an expired JWT) to verify error handling.
+6. Refresh the page to confirm the list persists (fetched from backend).
+
+All actions require a valid JWT and are only available to authenticated users.
 
 
 2. Create a new CourseSpace

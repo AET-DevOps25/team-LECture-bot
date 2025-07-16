@@ -21,7 +21,7 @@ public class CourseSpaceMapper {
         if (request == null || owner == null) {
             throw new IllegalArgumentException("Request and owner must not be null");
         }
-        CourseSpace courseSpace = new CourseSpace(request.getName(), owner);
+        CourseSpace courseSpace = new CourseSpace(request.getName(), request.getDescription(), owner);
         return courseSpace;
     }
 
@@ -37,6 +37,7 @@ public class CourseSpaceMapper {
         return new CourseSpaceDto()
                 .id(entity.getId())
                 .name(entity.getName())
+                .description(entity.getDescription())
                 .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC))
                 .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC));
     }
