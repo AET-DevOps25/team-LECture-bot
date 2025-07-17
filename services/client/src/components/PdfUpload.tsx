@@ -75,19 +75,19 @@ const PdfUpload: React.FC = () => {
   // Delete document
   const handleDelete = async (docId: string) => {
     setDeleteStatus(prev => ({ ...prev, [docId]: 'deleting' }));
-    // try {
-    //   const response = await documentApiClient.DELETE("/documents/{courseSpaceId}/{documentId}", {
-    //     params: { path: { courseSpaceId: courseSpaceId!, documentId: docId } },
-    //   });
-    //   if (response.response?.ok) {
-    //     setUploadedDocs(prev => prev.filter(doc => doc.id !== docId));
-    //     setDeleteStatus(prev => ({ ...prev, [docId]: 'idle' }));
-    //   } else {
-    //     setDeleteStatus(prev => ({ ...prev, [docId]: 'error' }));
-    //   }
-    // } catch {
-    //   setDeleteStatus(prev => ({ ...prev, [docId]: 'error' }));
-    // }
+    try {
+      const response = await documentApiClient.DELETE("/documents/{courseSpaceId}/{id}", {
+        params: { path: { courseSpaceId: courseSpaceId!, id: docId } },
+      });
+      if (response.response?.ok || response.response?.status === 204) {
+        setUploadedDocs(prev => prev.filter(doc => doc.id !== docId));
+        setDeleteStatus(prev => ({ ...prev, [docId]: 'idle' }));
+      } else {
+        setDeleteStatus(prev => ({ ...prev, [docId]: 'error' }));
+      }
+    } catch {
+      setDeleteStatus(prev => ({ ...prev, [docId]: 'error' }));
+    }
   };
 
   // Handle file selection and filter for PDFs
@@ -163,6 +163,10 @@ const PdfUpload: React.FC = () => {
         );
         // Refresh uploaded docs after successful upload
         fetchUploadedDocs();
+        // Remove the file from the upload list after a longer delay (5 seconds)
+        setTimeout(() => {
+          setFiles(prev => prev.filter((_, i) => i !== idx));
+        }, 5000);
       }
     } catch (err: any) {
       setFiles(prev =>

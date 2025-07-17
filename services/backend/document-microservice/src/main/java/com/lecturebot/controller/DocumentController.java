@@ -104,16 +104,8 @@ public class DocumentController implements DocumentApi {
         return ResponseEntity.ok(responseList);
     }
 
-    /**
-     * Retrieves a document by its ID within a specific course space.
-     *
-     * @param courseSpaceId the ID of the course space
-     * @param id             the ID of the document to retrieve
-     * @return ResponseEntity containing the document if found, or 404 Not Found if not found
-     */
     // GET /documents/courseSpaceId/{id}
     @Override
-    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<com.lecturebot.generated.model.Document> getDocumentById(
             String courseSpaceId,
             String id
@@ -144,15 +136,8 @@ public class DocumentController implements DocumentApi {
         }
     }
 
-    /**
-     * Retrieves all documents for a specific course space.
-     *
-     * @param courseSpaceId the ID of the course space
-     * @return ResponseEntity containing a list of documents for the course space
-     */
     // GET /documents/courseSpaceId
     @Override
-    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> listDocuments(
             String courseSpaceId
     ) {
@@ -176,6 +161,24 @@ public class DocumentController implements DocumentApi {
                 responseList.add(apiDoc);
             }
             return ResponseEntity.ok(responseList);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteDocumentById(String courseSpaceId, String id) {
+        try {
+            UUID documentId = UUID.fromString(id);
+            UUID courseId = UUID.fromString(courseSpaceId);
+
+            Document doc = documentRepository.findById(documentId).orElse(null);
+            if (doc == null || !doc.getCourseId().equals(courseId)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            documentRepository.delete(doc);
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
