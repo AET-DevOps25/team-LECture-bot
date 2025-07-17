@@ -33,7 +33,8 @@ export interface paths {
         get: operations["getDocumentById"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete a document by ID for a Course Space */
+        delete: operations["deleteDocumentById"];
         options?: never;
         head?: never;
         patch?: never;
@@ -191,6 +192,48 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Document"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Document not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteDocumentById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                courseSpaceId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Document deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized */
             401: {

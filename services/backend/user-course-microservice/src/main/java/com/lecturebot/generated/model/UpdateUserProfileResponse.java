@@ -19,7 +19,7 @@ import jakarta.annotation.Generated;
  * UpdateUserProfileResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T22:20:16.364737800+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T20:00:22.783766600+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class UpdateUserProfileResponse {
 
   private @Nullable UserProfile userProfile;

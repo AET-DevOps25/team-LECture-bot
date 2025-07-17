@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T22:20:53.181088400+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T20:00:42.114378700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Document", description = "the Document API")
 public interface DocumentApi {
@@ -41,6 +41,44 @@ public interface DocumentApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * DELETE /documents/{courseSpaceId}/{id} : Delete a document by ID for a Course Space
+     *
+     * @param courseSpaceId  (required)
+     * @param id  (required)
+     * @return Document deleted successfully (status code 204)
+     *         or Unauthorized (status code 401)
+     *         or Document not found (status code 404)
+     *         or Server error (status code 500)
+     */
+    @Operation(
+        operationId = "deleteDocumentById",
+        summary = "Delete a document by ID for a Course Space",
+        tags = { "Document" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Document deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Document not found"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = "/documents/{courseSpaceId}/{id}"
+    )
+    
+    default ResponseEntity<Void> deleteDocumentById(
+        @Parameter(name = "courseSpaceId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") String courseSpaceId,
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * GET /documents/{courseSpaceId}/{id} : Get a document by ID for a Course Space
