@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T20:00:42.114378700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T20:20:51.064038+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Document", description = "the Document API")
 public interface DocumentApi {
@@ -135,8 +135,8 @@ public interface DocumentApi {
      *
      * @param courseSpaceId  (required)
      * @return List of documents (status code 200)
+     *         or Something went wrong with the request (status code 400)
      *         or Unauthorized (status code 401)
-     *         or Course space not found (status code 404)
      *         or Server error (status code 500)
      */
     @Operation(
@@ -147,8 +147,8 @@ public interface DocumentApi {
             @ApiResponse(responseCode = "200", description = "List of documents", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Document.class)))
             }),
+            @ApiResponse(responseCode = "400", description = "Something went wrong with the request"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Course space not found"),
             @ApiResponse(responseCode = "500", description = "Server error")
         },
         security = {

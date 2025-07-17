@@ -88,15 +88,15 @@ export interface operations {
                     "application/json": components["schemas"]["Document"][];
                 };
             };
-            /** @description Unauthorized */
-            401: {
+            /** @description Something went wrong with the request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Course space not found */
-            404: {
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

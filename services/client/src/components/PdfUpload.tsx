@@ -16,7 +16,6 @@ interface FileStatus {
 interface UploadedDocument {
   id: string;
   name: string;
-  size: number;
   uploadedAt: string;
 }
 
@@ -54,10 +53,9 @@ const PdfUpload: React.FC = () => {
       });
       if (response.data && Array.isArray(response.data)) {
         setUploadedDocs(response.data.map((doc: any) => ({
-          id: doc.id || doc.documentId || doc._id || doc.name, // fallback for id
-          name: doc.name,
-          size: doc.size,
-          uploadedAt: doc.uploadedAt || doc.createdAt || '',
+          id: doc.id || doc.documentId || doc._id || doc.filename,
+          name: doc.filename,
+          uploadedAt: doc.uploadDate || doc.createdAt || '',
         })));
       } else {
         setUploadedDocs([]);
@@ -70,28 +68,7 @@ const PdfUpload: React.FC = () => {
   };
 
   React.useEffect(() => {
-    // Inject sample documents for frontend preview
-    setUploadedDocs([
-      {
-        id: 'sample1',
-        name: 'Lecture1-Intro.pdf',
-        size: 1048576,
-        uploadedAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        id: 'sample2',
-        name: 'Assignment2.pdf',
-        size: 524288,
-        uploadedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
-      },
-      {
-        id: 'sample3',
-        name: 'Project-Report.pdf',
-        size: 3145728,
-        uploadedAt: new Date().toISOString(),
-      },
-    ]);
-    // fetchUploadedDocs();
+    fetchUploadedDocs();
     // eslint-disable-next-line
   }, [courseSpaceId]);
 
@@ -257,21 +234,24 @@ const PdfUpload: React.FC = () => {
         <div style={{ color: '#888' }}>No documents uploaded yet.</div>
       ) : (
         <table style={{ width: '100%', maxWidth: 600, borderCollapse: 'collapse', margin: '0 auto' }}>
+          <colgroup>
+            <col style={{ maxWidth: 220, width: '50%' }} />
+            <col style={{ maxWidth: 180, width: '35%' }} />
+            <col style={{ maxWidth: 80, width: '15%' }} />
+          </colgroup>
           <thead>
             <tr style={{ background: '#f5f5f5' }}>
-              <th style={{ textAlign: 'left', padding: 8 }}>Name</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Size</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Uploaded</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Action</th>
+              <th style={{ textAlign: 'center', padding: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Name</th>
+              <th style={{ textAlign: 'center', padding: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Uploaded</th>
+              <th style={{ textAlign: 'center', padding: 8, whiteSpace: 'nowrap' }}>Action</th>
             </tr>
           </thead>
           <tbody>
             {uploadedDocs.map(doc => (
               <tr key={doc.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: 8 }}>{doc.name}</td>
-                <td style={{ padding: 8, textAlign: 'left' }}>{(doc.size / 1024 / 1024).toFixed(2)} MB</td>
-                <td style={{ padding: 8 }}>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleString() : '-'}</td>
-                <td style={{ padding: 8 }}>
+                <td style={{ padding: 8, maxWidth: 220, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={doc.name}>{doc.name}</td>
+                <td style={{ padding: 8, maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleString() : '-'}</td>
+                <td style={{ padding: 8, maxWidth: 80 }}>
                   <button
                     onClick={() => handleDelete(doc.id)}
                     disabled={deleteStatus[doc.id] === 'deleting'}
