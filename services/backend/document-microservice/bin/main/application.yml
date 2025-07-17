@@ -1,20 +1,33 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
-    name: genai-backend-microservice
+    name: document-microservice
+  
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
+  datasource:
+    url: jdbc:postgresql://lecturebot-db:5432/lecturebot_db
+    username: lecturebot_user
+    password: mysecretpassword
+    driver-class-name: org.postgresql.Driver
 
-#spring:
-#  mvc:
-#    servlet:
-#      path: /api/v1
-#
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
 eureka:
   instance:
     # The hostname for the Eureka instance. This is used for service discovery.
-    hostname: genai-backend-microservice
+    hostname: document-microservice
     # Use IP address instead of hostname for registration
     prefer-ip-address: false
   client:
