@@ -93,36 +93,6 @@ paths:
           description: Server error
 
   /documents/{courseSpaceId}/{id}:
-    get:
-      tags: [Document]
-      summary: Get a document by ID for a Course Space
-      operationId: getDocumentById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: courseSpaceId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Document metadata
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
-        '401':
-          description: Unauthorized
-        '404':
-          description: Document not found
-        '500':
-          description: Server error
     delete:
       tags: [Document]
       summary: Delete a document by ID for a Course Space

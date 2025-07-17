@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T21:51:45.302272200+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T22:24:52.115059200+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "Document", description = "the Document API")
 public interface DocumentApi {
@@ -75,56 +75,6 @@ public interface DocumentApi {
         @Parameter(name = "courseSpaceId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") String courseSpaceId,
         @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    /**
-     * GET /documents/{courseSpaceId}/{id} : Get a document by ID for a Course Space
-     *
-     * @param courseSpaceId  (required)
-     * @param id  (required)
-     * @return Document metadata (status code 200)
-     *         or Unauthorized (status code 401)
-     *         or Document not found (status code 404)
-     *         or Server error (status code 500)
-     */
-    @Operation(
-        operationId = "getDocumentById",
-        summary = "Get a document by ID for a Course Space",
-        tags = { "Document" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Document metadata", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))
-            }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Document not found"),
-            @ApiResponse(responseCode = "500", description = "Server error")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/documents/{courseSpaceId}/{id}",
-        produces = { "application/json" }
-    )
-    
-    default ResponseEntity<Document> getDocumentById(
-        @Parameter(name = "courseSpaceId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") String courseSpaceId,
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"processingStatus\" : \"PENDING\", \"filename\" : \"filename\", \"uploadDate\" : \"2000-01-23T04:56:07.000+00:00\", \"id\" : \"id\", \"courseId\" : \"courseId\", \"fileType\" : \"PDF\" }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

@@ -104,38 +104,6 @@ public class DocumentController implements DocumentApi {
         return ResponseEntity.ok(responseList);
     }
 
-    // GET /documents/courseSpaceId/{id}
-    @Override
-    public ResponseEntity<com.lecturebot.generated.model.Document> getDocumentById(
-            String courseSpaceId,
-            String id
-    ) {
-        try {
-            UUID documentId = UUID.fromString(id);
-            UUID courseId = UUID.fromString(courseSpaceId);
-            
-            Document doc = documentRepository.findById(documentId).orElse(null);
-            if (doc == null || !doc.getCourseId().equals(courseId)) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
-            apiDoc.setId(doc.getId().toString());
-            apiDoc.setFilename(doc.getFilename());
-            apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
-            if (doc.getUploadDate() != null) {
-                apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
-            } else {
-                apiDoc.setUploadDate(null);
-            }
-            apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
-            apiDoc.setCourseId(doc.getCourseId().toString());
-            return ResponseEntity.ok(apiDoc);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     // GET /documents/courseSpaceId
     @Override
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> listDocuments(

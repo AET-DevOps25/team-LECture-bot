@@ -29,8 +29,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a document by ID for a Course Space */
-        get: operations["getDocumentById"];
+        get?: never;
         put?: never;
         post?: never;
         /** Delete a document by ID for a Course Space */
@@ -158,50 +157,6 @@ export interface operations {
             };
             /** @description Unprocessable Entity - Document processing failed */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getDocumentById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                courseSpaceId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Document metadata */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Document"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Document not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
