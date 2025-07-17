@@ -177,6 +177,19 @@ public class DocumentController implements DocumentApi {
                 return ResponseEntity.notFound().build();
             }
 
+            // Call GenAI deindex endpoint BEFORE deleting the document
+            try {
+                webClient.delete()
+                        .uri("/api/v1/genai/deindex/{courseSpaceId}/{documentId}", courseSpaceId, id)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block();
+            } catch (Exception ex) {
+                // If deindexing fails, do NOT delete and return error
+                System.err.println("Failed to deindex document in GenAI service: " + ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+
             documentRepository.delete(doc);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
