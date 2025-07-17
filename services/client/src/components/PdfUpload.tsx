@@ -199,7 +199,29 @@ const PdfUpload: React.FC = () => {
         onChange={handleFileChange}
         data-testid="pdf-input"
       />
-      <button onClick={handleUpload} disabled={files.length === 0}>
+      <button
+        onClick={handleUpload}
+        disabled={files.length === 0}
+        style={{
+          padding: '8px 20px',
+          background: files.length === 0 ? '#ccc' : '#2563eb',
+          color: '#fff',
+          border: 'none',
+          borderRadius: 6,
+          fontWeight: 500,
+          fontSize: '1rem',
+          cursor: files.length === 0 ? 'not-allowed' : 'pointer',
+          margin: '10px 0 20px 0',
+          transition: 'background 0.2s',
+          boxShadow: files.length === 0 ? 'none' : '0 1px 4px rgba(37,99,235,0.08)'
+        }}
+        onMouseOver={e => {
+          if (files.length !== 0) (e.currentTarget as HTMLButtonElement).style.background = '#1d4ed8';
+        }}
+        onMouseOut={e => {
+          if (files.length !== 0) (e.currentTarget as HTMLButtonElement).style.background = '#2563eb';
+        }}
+      >
         Upload
       </button>
       <div>
@@ -223,7 +245,40 @@ const PdfUpload: React.FC = () => {
                 <span style={{ color: 'green' }}>{fileStatus.message}</span>
               )}
               {fileStatus.status === 'error' && (
-                <span style={{ color: 'red' }}>{fileStatus.message}</span>
+                <span style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 0,
+                  minWidth: 0,
+                  width: '100%',
+                  maxWidth: 500
+                }}>
+                  <span style={{ color: 'red', flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{fileStatus.message}</span>
+                  <button
+                    aria-label="Dismiss error"
+                    title="Dismiss"
+                    style={{
+                      marginLeft: 16,
+                      padding: '4px 16px',
+                      background: '#ef4444',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 6,
+                      fontWeight: 500,
+                      fontSize: '1rem',
+                      cursor: 'pointer',
+                      lineHeight: 1.2,
+                      transition: 'background 0.2s',
+                      boxShadow: '0 1px 4px rgba(239,68,68,0.10)'
+                    }}
+                    onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))}
+                    onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.background = '#b91c1c'}
+                    onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.background = '#ef4444'}
+                  >
+                    ×
+                  </button>
+                </span>
               )}
             </span>
           </div>
@@ -259,7 +314,24 @@ const PdfUpload: React.FC = () => {
                   <button
                     onClick={() => handleDelete(doc.id)}
                     disabled={deleteStatus[doc.id] === 'deleting'}
-                    style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}
+                    style={{
+                      padding: '6px 16px',
+                      background: deleteStatus[doc.id] === 'deleting' ? '#fca5a5' : '#ef4444',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 6,
+                      fontWeight: 500,
+                      fontSize: '0.97rem',
+                      cursor: deleteStatus[doc.id] === 'deleting' ? 'not-allowed' : 'pointer',
+                      transition: 'background 0.2s',
+                      boxShadow: deleteStatus[doc.id] === 'deleting' ? 'none' : '0 1px 4px rgba(239,68,68,0.08)'
+                    }}
+                    onMouseOver={e => {
+                      if (deleteStatus[doc.id] !== 'deleting') (e.currentTarget as HTMLButtonElement).style.background = '#b91c1c';
+                    }}
+                    onMouseOut={e => {
+                      if (deleteStatus[doc.id] !== 'deleting') (e.currentTarget as HTMLButtonElement).style.background = '#ef4444';
+                    }}
                   >
                     {deleteStatus[doc.id] === 'deleting' ? 'Deleting...' : 'Delete'}
                   </button>
