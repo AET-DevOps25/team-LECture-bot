@@ -1,6 +1,10 @@
 -- Document microservice table initialization
 -- This script creates the documents table with proper UUID support
 
+-- Should be in documents microservice db-init folder
+-- Must be run after course_spaces table is created
+-- Hence must be placed in the same folder as the course_spaces table creation script to ensure order of execution
+
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     filename VARCHAR(255) NOT NULL,
