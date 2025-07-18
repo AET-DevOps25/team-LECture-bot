@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: "{{ .Values.namespacename }}"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "grafana.{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+  tls:
+  - hosts:
+    - "grafana.{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de"
+    secretName: grafana-tls

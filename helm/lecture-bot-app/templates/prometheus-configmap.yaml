@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: {{ .Values.namespacename }}
+data:
+  prometheus.yaml: |
+    {{ .Files.Get "monitoring/prometheus/prometheus.yaml" | indent 4 }}
+  alertmanager.yaml: |
+    {{ .Files.Get "monitoring/prometheus/alertmanager.yaml" | indent 4 }}
