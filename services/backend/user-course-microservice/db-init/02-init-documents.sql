@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS documents (
     CONSTRAINT fk_documents_course FOREIGN KEY (course_id) REFERENCES course_spaces(id),
     CONSTRAINT unique_documents_course UNIQUE (filename, course_id) -- Prevent duplicate documents in same course
 );
+
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_documents_course_id ON documents(course_id);
 CREATE INDEX IF NOT EXISTS idx_documents_upload_status ON documents(upload_status);
