@@ -245,21 +245,21 @@ const PdfUpload: React.FC = () => {
                 <span style={{ color: 'green' }}>{fileStatus.message}</span>
               )}
               {fileStatus.status === 'error' && (
-                <span style={{
+                <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 0,
-                  minWidth: 0,
+                  justifyContent: 'center',
                   width: '100%',
-                  maxWidth: 500
+                  maxWidth: 500,
+                  margin: '0 auto',
+                  gap: 16,
+                  textAlign: 'center',
                 }}>
-                  <span style={{ color: 'red', flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{fileStatus.message}</span>
+                  <span style={{ color: 'red', minWidth: 0, overflowWrap: 'anywhere', textAlign: 'center' }}>{fileStatus.message}</span>
                   <button
                     aria-label="Dismiss error"
                     title="Dismiss"
                     style={{
-                      marginLeft: 16,
                       padding: '4px 16px',
                       background: '#ef4444',
                       color: '#fff',
@@ -278,7 +278,7 @@ const PdfUpload: React.FC = () => {
                   >
                     ×
                   </button>
-                </span>
+                </div>
               )}
             </span>
           </div>
