@@ -69,5 +69,33 @@ echo "TypeScript client for user-course-microservice generated at ${CLIENT_OUTPU
 npx openapi-typescript "${GENAI_API_SPEC}" --output "${CLIENT_OUTPUT_DIR}/genai-api.ts"
 echo "TypeScript client for genai-backend-microservice generated at ${CLIENT_OUTPUT_DIR}/genai-api.ts"
 
+# Generate client for document-microservice
+npx openapi-typescript "api/document-api.yaml" --output "${CLIENT_OUTPUT_DIR}/document-api.ts"
+echo "TypeScript client for document-microservice generated at ${CLIENT_OUTPUT_DIR}/document-api.ts"
+
 
 echo "--- Code generation complete. ---"
+
+# --- Generate Document Microservice Code (Spring Boot) ---
+DOC_API_SPEC_FILE="api/document-api.yaml"
+TEMP_DOC_OUTPUT_DIR="services/backend/document-microservice/generated-src-temp"
+FINAL_DOC_JAVA_DIR="services/backend/document-microservice/src/main/java"
+
+echo "--- Generating code for document microservice from ${DOC_API_SPEC_FILE} ---"
+
+rm -rf "${TEMP_DOC_OUTPUT_DIR}"
+mkdir -p "${TEMP_DOC_OUTPUT_DIR}"
+
+npx @openapitools/openapi-generator-cli generate \
+    -i "${DOC_API_SPEC_FILE}" \
+    -g spring \
+    -o "${TEMP_DOC_OUTPUT_DIR}" \
+    --additional-properties=interfaceOnly=true,useSpringBoot3=true,useTags=true,apiPackage=com.lecturebot.generated.api,modelPackage=com.lecturebot.generated.model,openApiNullable=false
+
+echo "Moving generated Java code to final destination..."
+rm -rf "${FINAL_DOC_JAVA_DIR}/com/lecturebot/generated"
+mkdir -p "${FINAL_DOC_JAVA_DIR}/com/lecturebot"
+mv "${TEMP_DOC_OUTPUT_DIR}/src/main/java/com/lecturebot/generated" "${FINAL_DOC_JAVA_DIR}/com/lecturebot/"
+rm -rf "${TEMP_DOC_OUTPUT_DIR}"
+
+echo "Document microservice code generated in ${FINAL_DOC_JAVA_DIR}/com/lecturebot/generated"

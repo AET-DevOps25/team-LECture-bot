@@ -1,0 +1,168 @@
+
+openapi: 3.0.3
+info:
+  title: Document Service API
+  description: API for managing documents.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8083/api/v1
+    description: Local development server
+security:
+  - bearerAuth: []
+
+paths:
+  /documents/{courseSpaceId}:
+    post:
+      tags: [Document]
+      summary: Upload PDF(s) to a Course Space
+      operationId: uploadDocuments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentUploadRequest'
+            examples:
+              uploadExample:
+                summary: Example file upload
+                value:
+                  files: ["file1.pdf", "file2.pdf"]
+      responses:
+        '200':
+          description: Upload result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+              examples:
+                success:
+                  summary: Successful upload
+                  value:
+                    - id: "abc123"
+                      filename: "file1.pdf"
+                      fileType: "PDF"
+                      uploadDate: "2025-07-14T12:00:00Z"
+                      courseId: "course1"
+                      processingStatus: "COMPLETED"
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict - Duplicate document
+        '422':
+          description: Unprocessable Entity - Document processing failed
+        '500':
+          description: Server error
+
+    get:
+      tags: [Document]
+      summary: List all documents for a Course Space
+      operationId: listDocuments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Course space not found
+        '500':
+          description: Server error
+
+  /documents/{courseSpaceId}/{id}:
+    get:
+      tags: [Document]
+      summary: Get a document by ID for a Course Space
+      operationId: getDocumentById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Document not found
+        '500':
+          description: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    DocumentUploadRequest:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Array of PDF files to upload
+      required:
+        - files
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        fileType:
+          type: string
+          enum: [PDF]
+        uploadDate:
+          type: string
+          format: date-time
+        courseId:
+          type: string
+        processingStatus:
+          type: string
+          enum:
+            - PENDING
+            - PROCESSING_EXTRACTION
+            - PROCESSING_INDEXING
+            - COMPLETED
+            - FAILED

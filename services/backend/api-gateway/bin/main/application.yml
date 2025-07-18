@@ -26,6 +26,14 @@ spring:
           filters:
             - StripPrefix=2
 
+        # Route for the Document Microservice
+        - id: document_microservice_route
+          uri: lb://document-microservice
+          predicates:
+            - Path=/api/v1/documents/**
+          filters:
+            - StripPrefix=2
+
 # --- Actuator info ---
 management:
   endpoints:
