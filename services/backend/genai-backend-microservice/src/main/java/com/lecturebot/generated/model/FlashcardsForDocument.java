@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * FlashcardsForDocument
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T22:20:26.818293800+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T22:24:26.869613700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class FlashcardsForDocument {
 
   private @Nullable String documentId;

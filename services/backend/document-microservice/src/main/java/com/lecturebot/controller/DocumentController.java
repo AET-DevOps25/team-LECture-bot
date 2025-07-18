@@ -1,7 +1,6 @@
+
 package com.lecturebot.controller;
 
-import com.lecturebot.entity.FileType;
-import com.lecturebot.entity.ProcessingStatus;
 import com.lecturebot.repository.DocumentRepository;
 import com.lecturebot.service.DocumentProcessingService;
 import com.lecturebot.generated.api.DocumentApi;
@@ -10,23 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.io.File;
-import java.io.IOException;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -104,55 +94,8 @@ public class DocumentController implements DocumentApi {
         return ResponseEntity.ok(responseList);
     }
 
-    /**
-     * Retrieves a document by its ID within a specific course space.
-     *
-     * @param courseSpaceId the ID of the course space
-     * @param id             the ID of the document to retrieve
-     * @return ResponseEntity containing the document if found, or 404 Not Found if not found
-     */
-    // GET /documents/courseSpaceId/{id}
-    @Override
-    // @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<com.lecturebot.generated.model.Document> getDocumentById(
-            String courseSpaceId,
-            String id
-    ) {
-        try {
-            UUID documentId = UUID.fromString(id);
-            UUID courseId = UUID.fromString(courseSpaceId);
-            
-            Document doc = documentRepository.findById(documentId).orElse(null);
-            if (doc == null || !doc.getCourseId().equals(courseId)) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            com.lecturebot.generated.model.Document apiDoc = new com.lecturebot.generated.model.Document();
-            apiDoc.setId(doc.getId().toString());
-            apiDoc.setFilename(doc.getFilename());
-            apiDoc.setFileType(com.lecturebot.generated.model.Document.FileTypeEnum.PDF);
-            if (doc.getUploadDate() != null) {
-                apiDoc.setUploadDate(OffsetDateTime.ofInstant(doc.getUploadDate(), ZoneOffset.UTC));
-            } else {
-                apiDoc.setUploadDate(null);
-            }
-            apiDoc.setProcessingStatus(com.lecturebot.generated.model.Document.ProcessingStatusEnum.valueOf(doc.getUploadStatus().name()));
-            apiDoc.setCourseId(doc.getCourseId().toString());
-            return ResponseEntity.ok(apiDoc);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /**
-     * Retrieves all documents for a specific course space.
-     *
-     * @param courseSpaceId the ID of the course space
-     * @return ResponseEntity containing a list of documents for the course space
-     */
     // GET /documents/courseSpaceId
     @Override
-    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<com.lecturebot.generated.model.Document>> listDocuments(
             String courseSpaceId
     ) {
@@ -176,6 +119,37 @@ public class DocumentController implements DocumentApi {
                 responseList.add(apiDoc);
             }
             return ResponseEntity.ok(responseList);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteDocumentById(String courseSpaceId, String id) {
+        try {
+            UUID documentId = UUID.fromString(id);
+            UUID courseId = UUID.fromString(courseSpaceId);
+
+            Document doc = documentRepository.findById(documentId).orElse(null);
+            if (doc == null || !doc.getCourseId().equals(courseId)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Call GenAI deindex endpoint BEFORE deleting the document
+            try {
+                webClient.delete()
+                        .uri("/api/v1/genai/deindex/{courseSpaceId}/{documentId}", courseSpaceId, id)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block();
+            } catch (Exception ex) {
+                // If deindexing fails, do NOT delete and return error
+                System.err.println("Failed to deindex document in GenAI service: " + ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+
+            documentRepository.delete(doc);
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

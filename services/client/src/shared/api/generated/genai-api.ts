@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/genai/deindex/{courseSpaceId}/{documentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * De-index a document
+         * @description Removes all chunks for a document (optionally within a course space) from the vector DB.
+         */
+        delete: operations["deindexDocument"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/genai/query": {
         parameters: {
             query?: never;
@@ -188,6 +208,45 @@ export interface operations {
                 };
             };
             /** @description Internal Server Error - Failed to index document. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deindexDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The course space ID */
+                courseSpaceId: string;
+                /** @description The document ID */
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Document de-indexed successfully (all chunks removed). */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Document or chunks not found in the vector DB. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal Server Error - Failed to de-index document. */
             500: {
                 headers: {
                     [name: string]: unknown;

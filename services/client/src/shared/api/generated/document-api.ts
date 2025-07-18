@@ -29,11 +29,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a document by ID for a Course Space */
-        get: operations["getDocumentById"];
+        get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete a document by ID for a Course Space */
+        delete: operations["deleteDocumentById"];
         options?: never;
         head?: never;
         patch?: never;
@@ -87,15 +87,15 @@ export interface operations {
                     "application/json": components["schemas"]["Document"][];
                 };
             };
-            /** @description Unauthorized */
-            401: {
+            /** @description Something went wrong with the request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Course space not found */
-            404: {
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -171,7 +171,7 @@ export interface operations {
             };
         };
     };
-    getDocumentById: {
+    deleteDocumentById: {
         parameters: {
             query?: never;
             header?: never;
@@ -183,14 +183,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Document metadata */
-            200: {
+            /** @description Document deleted successfully */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Document"];
-                };
+                content?: never;
             };
             /** @description Unauthorized */
             401: {

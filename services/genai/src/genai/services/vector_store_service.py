@@ -153,6 +153,44 @@ class VectorStoreService:
             print(f"An error occurred during batch document insertion: {e}")
             return {"status": "failed", "added": 0, "errors": len(objects_to_insert), "error_messages": [str(e)]}
 
+    def delete_document(self, document_id: str, course_space_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Deletes all objects in Weaviate with the given document_id (and optionally course_space_id).
+        Returns a dict with status and number of deleted objects.
+        """
+        try:
+            collection = self.client.collections.get(self.class_name)
+            # Build filter: always filter by document_id, optionally by course_space_id
+            if course_space_id:
+                doc_filter = wvc.query.Filter.all_of([
+                    wvc.query.Filter.by_property("document_id").equal(document_id),
+                    wvc.query.Filter.by_property("course_space_id").equal(course_space_id)
+                ])
+            else:
+                doc_filter = wvc.query.Filter.by_property("document_id").equal(document_id)
+
+            # Fetch all objects matching the filter (get their UUIDs)
+            response = collection.query.fetch_objects(filters=doc_filter, limit=1000)
+            uuids_to_delete = [obj.uuid for obj in response.objects if obj.uuid]
+            if not uuids_to_delete:
+                print(f"No objects found to delete for document_id={document_id}, course_space_id={course_space_id}")
+                return {"status": "not_found", "deleted": 0}
+
+            # Delete all found objects
+            deleted_count = 0
+            errors = []
+            for uuid_val in uuids_to_delete:
+                try:
+                    collection.data.delete_by_id(uuid_val)
+                    deleted_count += 1
+                except Exception as e:
+                    print(f"Error deleting object {uuid_val}: {e}")
+                    errors.append(str(e))
+            print(f"Deleted {deleted_count} objects for document_id={document_id}, course_space_id={course_space_id}")
+            return {"status": "completed", "deleted": deleted_count, "errors": errors}
+        except Exception as e:
+            print(f"Error during delete_document: {e}")
+            return {"status": "failed", "deleted": 0, "error": str(e)}
 
     def similarity_search(self, 
                           query_vector: List[float], 
@@ -331,4 +369,4 @@ if __name__ == "__main__":
         traceback.print_exc()
     finally:
         if vector_store and vector_store.client.is_connected(): 
-            vector_store.close() 
+            vector_store.close()

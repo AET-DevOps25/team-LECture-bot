@@ -1,4 +1,3 @@
-
 openapi: 3.0.3
 info:
   title: Document Service API
@@ -86,18 +85,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Document'
+        '400':
+          description: Something went wrong with the request
         '401':
           description: Unauthorized
-        '404':
-          description: Course space not found
         '500':
           description: Server error
 
   /documents/{courseSpaceId}/{id}:
-    get:
+    delete:
       tags: [Document]
-      summary: Get a document by ID for a Course Space
-      operationId: getDocumentById
+      summary: Delete a document by ID for a Course Space
+      operationId: deleteDocumentById
       security:
         - bearerAuth: []
       parameters:
@@ -112,12 +111,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: Document metadata
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
+        '204':
+          description: Document deleted successfully
         '401':
           description: Unauthorized
         '404':

@@ -5,6 +5,10 @@ spring:
   application:
     # It's good practice to name your gateway application
     name: api-gateway
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   cloud:
     gateway:
       routes:

@@ -76,4 +76,18 @@ public class GenAiController implements GenAiApi {
             return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
+
+    @Override
+    public ResponseEntity<Void> deindexDocument(String courseSpaceId, String documentId) {
+        try {
+            boolean deleted = genAiClient.deindexDocument(courseSpaceId, documentId);
+            if (deleted) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

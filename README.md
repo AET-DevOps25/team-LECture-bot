@@ -119,9 +119,26 @@ curl -X POST http://localhost:8000/api/v1/user/change-password \
 ---
 
 ## Documentation
+
 - Backend API: [`services/genai/README.md`](services/genai/README.md)
 - Frontend: [`services/client/README.md`](services/client/README.md)
 - Architecture: [`docs/architecture-description.md`](docs/architecture-description.md)
+
+---
+
+## Document Deletion & De-Indexing Workflow
+
+When a document is deleted via the backend API, the following workflow is triggered:
+
+1. The backend first calls the GenAI service's de-index endpoint to remove all vector data for the document from the vector database (Weaviate).
+2. Only if de-indexing succeeds, the document is deleted from the main database.
+3. If de-indexing fails, the document is not deleted from the database, ensuring consistency between the main data store and the vector store.
+
+**Endpoints involved:**
+- Backend: `DELETE /api/v1/documents/{courseSpaceId}/{id}` (see [`services/backend/document-microservice/README.md`](services/backend/document-microservice/README.md))
+- GenAI: `DELETE /api/v1/index/{course_space_id}/{document_id}` (see [`services/genai/README.md`](services/genai/README.md))
+
+For more details and payload examples, see the linked service READMEs.
 
 ---
 
