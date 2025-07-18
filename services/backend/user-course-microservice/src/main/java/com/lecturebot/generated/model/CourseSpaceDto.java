@@ -22,12 +22,14 @@ import jakarta.annotation.Generated;
  * CourseSpaceDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T15:38:10.102679+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T11:23:50.711659+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class CourseSpaceDto {
 
   private @Nullable UUID id;
 
   private @Nullable String name;
+
+  private @Nullable String description;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime createdAt;
@@ -75,6 +77,26 @@ public class CourseSpaceDto {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public CourseSpaceDto description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Get description
+   * @return description
+   */
+  
+  @Schema(name = "description", example = "This is a course about AI.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public CourseSpaceDto createdAt(OffsetDateTime createdAt) {
@@ -148,6 +170,7 @@ public class CourseSpaceDto {
     CourseSpaceDto courseSpaceDto = (CourseSpaceDto) o;
     return Objects.equals(this.id, courseSpaceDto.id) &&
         Objects.equals(this.name, courseSpaceDto.name) &&
+        Objects.equals(this.description, courseSpaceDto.description) &&
         Objects.equals(this.createdAt, courseSpaceDto.createdAt) &&
         Objects.equals(this.updatedAt, courseSpaceDto.updatedAt) &&
         Objects.equals(this.owner, courseSpaceDto.owner);
@@ -155,7 +178,7 @@ public class CourseSpaceDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, createdAt, updatedAt, owner);
+    return Objects.hash(id, name, description, createdAt, updatedAt, owner);
   }
 
   @Override
@@ -164,6 +187,7 @@ public class CourseSpaceDto {
     sb.append("class CourseSpaceDto {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("    owner: ").append(toIndentedString(owner)).append("\n");

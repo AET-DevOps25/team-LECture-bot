@@ -26,6 +26,20 @@ management:
       # Configuration for readiness and liveness probes in k8s
       probes:
         enabled: true
+  metrics:
+    tags:
+      # This tag can be used to identify the version of the application
+      application_version: "@project.version@"
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+
+
+info:
+  app:
+    version: "@project.version@"
+
 eureka:
   client:
     service-url:

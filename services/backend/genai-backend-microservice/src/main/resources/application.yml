@@ -41,6 +41,19 @@ management:
       # Configuration for readiness and liveness probes in k8s
       probes:
         enabled: true
+  metrics:
+    tags:
+      # This tag can be used to identify the version of the application
+      application_version: "@project.version@"
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+
+info:
+  app:
+    version: "@project.version@"
+
 # JWT Configuration
 # IMPORTANT: The secret should be a long, random, base64-encoded string and kept secure.
 # You can generate a new one for production using: openssl rand -base64 32

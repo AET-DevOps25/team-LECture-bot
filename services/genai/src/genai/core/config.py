@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
 
     # Service Port for this GenAI module
-    GENAI_PORT: int = 8001
+    GENAI_PORT: int = 8011
 
     # Text Processing Settings
     CHUNK_SIZE: int = 1000

@@ -21,6 +21,19 @@ management:
     health:
       # This ensures the health check gets detailed status information
       show-details: always
+  metrics:
+    tags:
+      application_version: "@project.version@"
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+
+
+
+info:
+  app:
+    version: "@project.version@"
 
 # --- Eureka Server-Specific Settings ---
 eureka:

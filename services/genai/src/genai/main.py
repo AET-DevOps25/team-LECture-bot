@@ -3,13 +3,28 @@ from fastapi.responses import JSONResponse
 # Make sure to import the query router from genai.api.routers
 from genai.api.routers import indexing, query, flashcard # <-- Added 'query' here
 from genai.core.config import settings
+from prometheus_fastapi_instrumentator import Instrumentator
+import importlib.metadata
+
+# Dynamically get the version from pyproject.toml
+try:
+    # The package name is defined in your pyproject.toml under [tool.poetry].name
+    app_version = importlib.metadata.version("genai-service")
+except importlib.metadata.PackageNotFoundError:
+    app_version = "unknown" # Fallback if package is not installed
+
+
 
 app = FastAPI(
     title=settings.APP_NAME,
-    version="0.1.0",
+    version=app_version,
     description="GenAI module for LECture-bot, responsible for document indexing and Retrieval-Augmented Generation (RAG) Q&A.",
     openapi_url=f"{settings.API_V1_STR}/openapi.json" # Ensures API docs are under the v1 path
 )
+
+
+# Add Prometheus instrumentator
+Instrumentator().instrument(app).expose(app)
 
 # Include the API routers
 app.include_router(indexing.router, prefix="/api/v1/index", tags=["indexing"])
