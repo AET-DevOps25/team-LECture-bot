@@ -7,4 +7,4 @@ data:
   prometheus.yaml: |
     {{ .Files.Get "monitoring/prometheus/prometheus.yaml" | indent 4 }}
   alertmanager.yaml: |
-    {{ .Files.Get "monitoring/prometheus/alertmanager.yaml" | indent 4 }}
+    {{ .Files.Get "monitoring/prometheus/alert.rules.yaml" | indent 4 }}

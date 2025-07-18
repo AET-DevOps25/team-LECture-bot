@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: genai-backend-microservice
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.genaiBackendMicroservice.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/instance: "genai-backend-microservice"
     spec:
       containers:
         - name: genai-backend-microservice

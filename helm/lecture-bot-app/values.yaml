@@ -5,7 +5,7 @@ namespacename: team-lecture-bot
 
 global:
   image:
-    tag: latest #43-feature-44-task-flashcard-generation-backend-refactoring
+    tag: task-monitoring-and-observability 
 
 client:
   publicApiUrl: https://{{ .Values.namespacename }}.student.k8s.aet.cit.tum.de/api/v1

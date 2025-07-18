@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: api-gateway
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.apiGateway.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/instance: "api-gateway"
     spec:
       containers:
         - name: api-gateway

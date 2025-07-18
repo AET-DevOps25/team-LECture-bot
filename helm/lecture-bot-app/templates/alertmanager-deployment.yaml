@@ -18,7 +18,7 @@ spec:
           image: "prom/alertmanager:latest"
           ports:
             - containerPort: 9093
-          command:
+          args:
             - '--config.file=/config/config.yml'
           volumeMounts:
             - name: config-volume

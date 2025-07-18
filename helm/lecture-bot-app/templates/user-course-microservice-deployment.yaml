@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: user-course-microservice
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.userCourseMicroservice.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/instance: "user-course-microservice"
     spec:
       initContainers:
         - name: wait-for-db

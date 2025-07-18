@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: genai-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.genaiService.service.targetPort }}"
+        prometheus.io/path: "/metrics"
+        prometheus.io/instance: "genai-service"
     spec:
       containers:
         - name: genai-service

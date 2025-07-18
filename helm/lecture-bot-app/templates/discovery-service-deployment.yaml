@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: discovery-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.discoveryService.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/instance: "discovery-service"
     spec:
       containers:
         - name: discovery-service
