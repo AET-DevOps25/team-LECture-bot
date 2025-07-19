@@ -32,6 +32,11 @@ jobs:
       - name: Install openapi-typescript for generation script
         run: npm install openapi-typescript
 
+      - name: Set up Python and install datamodel-code-generator
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install "datamodel-code-generator[http]"
+
       - name: Verify Code Generation Script
         run: |
           echo "Verifying code generation script (gen-all-v2.sh)..."

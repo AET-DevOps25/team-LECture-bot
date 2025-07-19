@@ -35,7 +35,7 @@ public class GenAiClient {
      *         empty.
      */
     public Optional<IndexResponse> indexDocument(IndexRequest indexRequest) {
-        String indexUrl = genAiServiceBaseUrl + "/api/v1/index";
+        String indexUrl = genAiServiceBaseUrl + "/index";
         try {
             logger.info("Sending indexing request to GenAI service for documentId: {}", indexRequest.getDocumentId());
             IndexResponse indexResponse = restTemplate.postForObject(indexUrl, indexRequest, IndexResponse.class);
@@ -55,7 +55,7 @@ public class GenAiClient {
      *         empty.
      */
     public Optional<QueryResponse> submitQuery(QueryRequest queryRequest) {
-        String queryUrl = genAiServiceBaseUrl + "/api/v1/query";
+        String queryUrl = genAiServiceBaseUrl + "/query";
         try {
             logger.info("Sending query to GenAI service for course space: {}", queryRequest.getCourseSpaceId());
             QueryResponse queryResponse = restTemplate.postForObject(queryUrl, queryRequest, QueryResponse.class);
@@ -68,7 +68,7 @@ public class GenAiClient {
     }
 
     public Optional<FlashcardResponse> generateFlashcards(FlashcardRequest request) {
-        String url = genAiServiceBaseUrl + "/api/v1/flashcards/generate";
+        String url = genAiServiceBaseUrl + "/flashcards/generate";
         try {
             logger.info("Sending flashcard request to GenAI service for courseSpaceId: {}", request.getCourseSpaceId());
             FlashcardResponse response = restTemplate.postForObject(url, request, FlashcardResponse.class);

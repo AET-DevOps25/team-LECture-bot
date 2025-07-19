@@ -24,42 +24,6 @@ public class SecurityConfig {
     @Value("${LECTUREBOT_CLIENT_ORIGIN}")
     private String clientOrigin;
 
-    /**
-     * @param http
-     * @param jwtAuthenticationFilter
-     * @return
-     * @throws Exception
-     */
-    // @Bean
-    // public SecurityFilterChain securityFilterChain(HttpSecurity http,
-    // JwtAuthenticationFilter jwtAuthenticationFilter)
-    // throws Exception {
-    // http
-    // .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply
-    // CORS configuration
-    // .csrf(AbstractHttpConfigurer::disable)
-    // .sessionManagement(session ->
-    // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use
-    // // stateless
-    // // sessions
-    // // for JWT
-    // .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-    // .requestMatchers("/api/v1/v3/api-docs/**", "api/v1/swagger-ui/**",
-    // "/api/v1/swagger-ui.html")
-    // .permitAll() // Allow
-    // .requestMatchers("/api/v1/auth/**", "/api/v1/health",
-    // "/api/v1/genai/**").permitAll()
-    // .anyRequest().authenticated() // Secure all other endpoints
-    // );
-
-    // // Add the JWT filter before the standard username/password authentication
-    // // filter
-    // http.addFilterBefore(jwtAuthenticationFilter,
-    // UsernamePasswordAuthenticationFilter.class);
-
-    // return http.build();
-    // }
-
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
             JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -68,12 +32,22 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable) // Use reactive CSRF disabling
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/v1/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/swagger-ui.html")
+                        .pathMatchers(
+                                "/api/v1/v3/api-docs/**",
+                                "/api/v1/swagger-ui/**",
+                                "/api/v1/swagger-ui.html",
+                                "/api/v1/actuator/**",
+                                "/actuator/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**")
                         .permitAll()
-                        .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .pathMatchers("/api/v1/auth/**", "/api/v1/health", "/api/v1/genai/**",
-                                "/eureka/**", "/api/v1/eureka/**")
+                        .pathMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/health",
+                                "/api/v1/genai/**",
+                                "/eureka/**",
+                                "/api/v1/eureka/**")
                         .permitAll()
                         .anyExchange().authenticated() // Use authorizeExchange and pathMatchers
                 )
