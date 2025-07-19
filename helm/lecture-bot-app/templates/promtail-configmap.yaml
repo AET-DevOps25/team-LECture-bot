@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promtail-config
+  namespace: {{ .Values.namespacename }}
+data:
+  promtail.yaml: |
+{{ .Files.Get "monitoring/promtail/promtail.yaml" | nindent 4 }}

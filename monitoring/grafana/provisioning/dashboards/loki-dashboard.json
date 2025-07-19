@@ -1,0 +1,109 @@
+{
+  "id": null,
+  "uid": "loki-lecturebot",
+  "title": "Loki Logs Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Recent Logs",
+      "id": 1,
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{job=\"varlogs\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "dedupStrategy": "none"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Error Logs",
+      "id": 2,
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{job=\"varlogs\"} |= \"error\"",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "dedupStrategy": "none"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Log Volume Over Time",
+      "id": 3,
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "count_over_time({job=\"varlogs\"}[1m])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Logs Filtered by Job",
+      "id": 4,
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{job=~\".*\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": false,
+        "dedupStrategy": "exact"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      }
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  }
+}
+
