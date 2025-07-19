@@ -1,9 +1,6 @@
 global:
   scrape_interval: 15s
 
-rule_files:
-  - 'alert.rules.yaml'
-
 alerting:
   alertmanagers:
     - static_configs:
@@ -11,70 +8,22 @@ alerting:
         - 'alertmanager:9093'
 
 scrape_configs:
-  - job_name: 'user-course-microservice'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['user-course-microservice:8081']
-        labels:
-          application: 'user-course-microservice'
-
-  - job_name: 'genai-backend-microservice'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['genai-backend-microservice:8082']
-        labels:
-          application: 'genai-backend-microservice'
-
-  - job_name: 'api-gateway'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['api-gateway:8080']
-        labels:
-          application: 'api-gateway'
-
-  - job_name: 'discovery-service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['discovery-service:8761']
-        labels:
-          application: 'discovery-service'
-    basic_auth:
-      username: 'eureka-user'
-      password: 'eureka-password'
-
-  - job_name: 'genai-service'
-    metrics_path: '/metrics'
-    static_configs:
-      - targets: ['genai-service:8011']
-        labels:
-          application: 'genai-service'
-
-
-  # Kubernetes Pod Monitoring
   - job_name: 'kubernetes-pods'
     kubernetes_sd_configs:
       - role: pod
-        namespaces:
-          names:
-            - "team-lecture-bot"
     relabel_configs:
-        # This rule keeps only the pods that have the prometheus.io/scrape: "true" annotation.
+      # Keep only pods with the scrape annotation.
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
         action: keep
         regex: true
-        # This rule sets the scrape path from the prometheus.io/path annotation.
+      # Set the scrape path from the 'path' annotation.
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
         action: replace
         target_label: __metrics_path__
         regex: (.+)
-        # This rule sets the address to scrape from the pod's IP and the prometheus.io/port annotation.
+      # Set the scrape address from the pod's IP and the 'port' annotation.
       - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
         action: replace
         regex: ([^:]+)(?::\d+)?;(\d+)
         replacement: $1:$2
         target_label: __address__
-        # This rule sets the instance label from the prometheus.io/instance annotation.
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_instance]
-        action: replace
-        target_label: instance
-

@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Values.namespacename }}
 data:
   config.yml: |
-    {{ .Files.Get "monitoring/alertmanager/config.yml" | indent 4 }}
+{{ .Files.Get "monitoring/alertmanager/config.yml" | nindent 4 }}

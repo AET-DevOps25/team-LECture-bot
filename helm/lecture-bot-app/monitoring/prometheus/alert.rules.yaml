@@ -1,0 +1,51 @@
+groups:
+  - name: lecturebot-rules
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: 'critical'
+        annotations:
+          summary: 'Service {{ $labels.job }} is down.'
+          description: 'The service {{ $labels.job }} has been down for more than 1 minute.'
+
+      - alert: HighErrorRate
+        # This calculates the percentage of 5xx server errors over the last 5 minutes.
+        # It alerts if the error rate is greater than 5%.
+        expr: >
+          (
+            sum(rate(http_server_requests_seconds_count{status=~"5.*"}[5m])) by (job)
+            /
+            sum(rate(http_server_requests_seconds_count[5m])) by (job)
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: 'warning'
+        annotations:
+          summary: 'High error rate detected in {{ $labels.job }}.'
+          description: 'The service {{ $labels.job }} has an error rate of {{ $value | printf "%.2f" }}% over the last 5 minutes.'
+
+      # Slow Response Time
+      - alert: SlowResponseTime
+        # This expression finds the 95th percentile response time over the last 10 minutes.
+        # It alerts if the p95 response time is greater than 1 second.
+        expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[10m])) by (le, job)) > 1
+        for: 5m
+        labels:
+          severity: 'warning'
+        annotations:
+          summary: 'Slow response time detected in {{ $labels.job }}.'
+          description: 'The 95th percentile response time for {{ $labels.job }} is over 1s.'
+          
+      # NEW RULE: Service Flapping (Alternative to Pod Restarts)
+      - alert: ServiceFlapping
+        # This rule alerts if a service has been down and then back up more than 3 times in the last 15 minutes.
+        expr: changes(up[15m]) > 3
+        for: 5m
+        labels:
+          severity: 'warning'
+        annotations:
+          summary: 'Service {{ $labels.job }} is flapping.'
+          description: 'The service {{ $labels.job }} has changed its up/down status more than 3 times in the last 15 minutes, indicating instability.'
+
