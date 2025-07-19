@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5' // Or the latest stable version
+    id 'io.spring.dependency-management' version '1.1.4' // Or the latest stable version
+}
+
+group = 'com.lecturebot'
+version = '0.0.1-SNAPSHOT'
+archivesBaseName = 'document-microservice'
+sourceCompatibility = '21'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2023.0.1");
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+
+
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' 
+
+    // Database Driver
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1' // Added for JSR-305 annotations
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+
+    // Lombok for boilerplate code reduction
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot DevTools for easier development
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Test Dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.wiremock:wiremock:3.13.1"
+    testImplementation 'com.h2database:h2'
+
+    // PDFBox for PDF manipulation
+    implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// To ensure that the fat JAR (executable JAR) is built correctly
+tasks.withType(org.springframework.boot.gradle.tasks.bundling.BootJar) {
+    mainClass = 'com.lecturebot.LectureBotApplication' // Set your main class
+}

@@ -132,6 +132,35 @@ discoveryService:
       value: "86400000" # 24 hours
 
 
+documentMicroservice:
+  image:
+    repository: ghcr.io/aet-devops25/team-lecture-bot/document-microservice 
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8083
+    targetPort: 8083
+  replicaCount: 1
+  env:
+    - name: SERVER_PORT
+      value: "8083"
+    - name: SPRING_DATASOURCE_URL
+      value: "jdbc:postgresql://lecturebot-db:5432/lecturebot_db"
+    - name: SPRING_DATASOURCE_USERNAME
+      value: "lecturebot_user"
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: "mysecretpassword"
+    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+      value: "none"
+    - name: EUREKA_URI
+      value: "http://discovery-service:8761/eureka/"
+    - name: EUREKA_INSTANCE_HOSTNAME
+      value: "document-microservice"
+    - name: app.jwtSecret
+      value: "c29tZXRoaW5nLXNlY3JldC1mb3ItbGVjdHVyZS1ib3QtYXBwbGljYXRpb24tMjAyNC1kZXZvcHM="
+    - name: app.jwtExpirationInMs
+      value: "86400000"
+
 
 genaiService:
   image:

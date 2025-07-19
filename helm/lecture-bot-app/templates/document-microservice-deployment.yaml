@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-microservice
+  namespace: "{{ .Values.namespacename }}"
+spec:
+  replicas: {{ .Values.documentMicroservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: document-microservice
+  template:
+    metadata:
+      labels:
+        app: document-microservice
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.documentMicroservice.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/instance: "document-microservice"
+    spec:
+      containers:
+        - name: document-microservice
+          image: "{{ .Values.documentMicroservice.image.repository }}:{{ .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.documentMicroservice.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.documentMicroservice.service.targetPort }}
+          env:
+            {{- range .Values.documentMicroservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.documentMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.documentMicroservice.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10

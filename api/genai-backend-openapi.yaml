@@ -42,6 +42,39 @@ paths:
                 type: string
                 example: Failed to index document via GenAI service
 
+  /genai/deindex/{courseSpaceId}/{documentId}:
+    delete:
+      summary: De-index a document
+      description: Removes all chunks for a document (optionally within a course space) from the vector DB.
+      operationId: deindexDocument
+      tags:
+        - GenAI
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The course space ID
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The document ID
+      responses:
+        '204':
+          description: Document de-indexed successfully (all chunks removed).
+        '404':
+          description: Document or chunks not found in the vector DB.
+        '500':
+          description: Internal Server Error - Failed to de-index document.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to de-index document via GenAI service
+
   /genai/query:
     post:
       summary: Submit a query

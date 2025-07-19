@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * Citation
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-16T11:24:17.030254+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T00:42:32.342649+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class Citation {
 
   private String documentId;

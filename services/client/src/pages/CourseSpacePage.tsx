@@ -8,9 +8,15 @@ import FlashcardViewer from '../components/flashcards/FlashcardViewer';
 
 type CourseSpace = components['schemas']['CourseSpaceDto'];
 
-const Documents: React.FC = () => (
-    <div className="p-8 text-center text-gray-500">Document management coming soon!</div>
-);
+
+import PdfUpload from '../components/PdfUpload';
+const Documents: React.FC = () => {
+    return (
+        <div className="p-8 text-center">
+            <PdfUpload />
+        </div>
+    );
+};
 
 const TABS = [
     { key: 'qna', label: 'Q&A' },

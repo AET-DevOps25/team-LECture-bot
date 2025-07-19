@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 # Make sure to import the query router from genai.api.routers
-from genai.api.routers import indexing, query, flashcard # <-- Added 'query' here
+from genai.api.routers import indexing, query, flashcard, deindexing
 from genai.core.config import settings
 from prometheus_fastapi_instrumentator import Instrumentator
 import importlib.metadata
@@ -28,6 +28,7 @@ Instrumentator().instrument(app).expose(app)
 
 # Include the API routers
 app.include_router(indexing.router, prefix="/api/v1/index", tags=["indexing"])
+app.include_router(deindexing.router, prefix="/api/v1/index", tags=["deindexing"])
 app.include_router(query.router, prefix="/api/v1/query", tags=["query"])
 app.include_router(flashcard.router, prefix="/api/v1/flashcards", tags=["flashcard"])
 
