@@ -6,5 +6,5 @@ metadata:
 data:
   prometheus.yaml: |
 {{ .Files.Get "monitoring/prometheus/prometheus.yaml" | nindent 4 }}
-  alertmanager.yaml: |
+  alerts.yaml: |
 {{ .Files.Get "monitoring/prometheus/alert.rules.yaml" | nindent 4 }}
