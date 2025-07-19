@@ -18,10 +18,12 @@ import jakarta.annotation.Generated;
  * CreateCourseSpaceRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T15:38:10.102679+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-19T11:17:10.134159+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 public class CreateCourseSpaceRequest {
 
   private String name;
+
+  private @Nullable String description;
 
   public CreateCourseSpaceRequest() {
     super();
@@ -54,6 +56,26 @@ public class CreateCourseSpaceRequest {
     this.name = name;
   }
 
+  public CreateCourseSpaceRequest description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * The description of the course space.
+   * @return description
+   */
+  
+  @Schema(name = "description", example = "This is a course about AI.", description = "The description of the course space.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -63,12 +85,13 @@ public class CreateCourseSpaceRequest {
       return false;
     }
     CreateCourseSpaceRequest createCourseSpaceRequest = (CreateCourseSpaceRequest) o;
-    return Objects.equals(this.name, createCourseSpaceRequest.name);
+    return Objects.equals(this.name, createCourseSpaceRequest.name) &&
+        Objects.equals(this.description, createCourseSpaceRequest.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(name, description);
   }
 
   @Override
@@ -76,6 +99,7 @@ public class CreateCourseSpaceRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class CreateCourseSpaceRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }

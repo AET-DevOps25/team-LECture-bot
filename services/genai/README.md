@@ -145,6 +145,7 @@ If required environment variables are missing or misconfigured, the service will
 * Make sure your virtual environment is activated by Poetry (it does this automatically when using `poetry run`).
 * All test dependencies should be listed in `pyproject.toml` under `[tool.poetry.dev-dependencies]`.
 
+
 ## API Endpoints
 
 The API is versioned under `/api/v1`.
@@ -199,7 +200,25 @@ The API is versioned under `/api/v1`.
     }'
     ```
 
-### 3. Health Check
+### 3. De-index (Delete) Document
+
+* **Endpoint:** `DELETE /api/v1/index/{course_space_id}/{document_id}`
+* **Summary:** Removes all vector chunks for a document from the vector DB (Weaviate) for the given course space. Used before deleting a document from the main database.
+* **Path Parameters:**
+    - `course_space_id`: The course/context identifier
+    - `document_id`: The document's unique identifier
+
+* **Example curl:**
+
+    ```bash
+    curl -X DELETE "http://localhost:8001/api/v1/index/cs-test-101/test-doc-001"
+    ```
+
+* **Notes:**
+    - This endpoint is called by the backend before a document is deleted from the main database.
+    - If de-indexing fails, the document should not be deleted from the main database.
+
+### 4. Health Check
 
 * **Endpoint:** `GET /health`
 * **Summary:** Basic health check for the service.

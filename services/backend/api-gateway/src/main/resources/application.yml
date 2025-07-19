@@ -5,6 +5,10 @@ spring:
   application:
     # It's good practice to name your gateway application
     name: api-gateway
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   cloud:
     gateway:
       routes:
@@ -23,6 +27,14 @@ spring:
           uri: lb://genai-backend-microservice
           predicates:
             - Path=/api/v1/genai/**
+          filters:
+            - StripPrefix=2
+
+        # Route for the Document Microservice
+        - id: document_microservice_route
+          uri: lb://document-microservice
+          predicates:
+            - Path=/api/v1/documents/**
           filters:
             - StripPrefix=2
 

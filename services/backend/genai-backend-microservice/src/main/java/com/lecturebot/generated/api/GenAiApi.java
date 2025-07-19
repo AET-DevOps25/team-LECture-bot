@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-09T15:38:14.570597+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-19T11:17:14.473865+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {
@@ -46,6 +46,56 @@ public interface GenAiApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * DELETE /genai/deindex/{courseSpaceId}/{documentId} : De-index a document
+     * Removes all chunks for a document (optionally within a course space) from the vector DB.
+     *
+     * @param courseSpaceId The course space ID (required)
+     * @param documentId The document ID (required)
+     * @return Document de-indexed successfully (all chunks removed). (status code 204)
+     *         or Document or chunks not found in the vector DB. (status code 404)
+     *         or Internal Server Error - Failed to de-index document. (status code 500)
+     */
+    @Operation(
+        operationId = "deindexDocument",
+        summary = "De-index a document",
+        description = "Removes all chunks for a document (optionally within a course space) from the vector DB.",
+        tags = { "GenAI" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Document de-indexed successfully (all chunks removed)."),
+            @ApiResponse(responseCode = "404", description = "Document or chunks not found in the vector DB."),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Failed to de-index document.", content = {
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = "/genai/deindex/{courseSpaceId}/{documentId}",
+        produces = { "text/plain" }
+    )
+    
+    default ResponseEntity<Void> deindexDocument(
+        @Parameter(name = "courseSpaceId", description = "The course space ID", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") String courseSpaceId,
+        @Parameter(name = "documentId", description = "The document ID", required = true, in = ParameterIn.PATH) @PathVariable("documentId") String documentId
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf(""))) {
+                    String exampleString = "";
+                    ApiUtil.setExampleResponse(request, "", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * POST /genai/generate-flashcards : Generate flashcards

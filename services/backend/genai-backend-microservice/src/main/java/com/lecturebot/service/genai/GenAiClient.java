@@ -79,4 +79,24 @@ public class GenAiClient {
             return Optional.empty();
         }
     }
+
+    /**
+     * Requests de-indexing (removal) of a document from the GenAI service.
+     *
+     * @param courseSpaceId The course space ID.
+     * @param documentId The document ID.
+     * @return true if the de-indexing was successful, false otherwise.
+     */
+    public boolean deindexDocument(String courseSpaceId, String documentId) {
+        String deindexUrl = genAiServiceBaseUrl + "/api/v1/index/" + courseSpaceId + "/" + documentId;
+        try {
+            logger.info("Sending de-indexing request to GenAI service for documentId: {} in courseSpaceId: {}", documentId, courseSpaceId);
+            restTemplate.delete(deindexUrl);
+            logger.info("Successfully sent de-indexing request to GenAI service.");
+            return true;
+        } catch (RestClientException e) {
+            logger.error("Error calling GenAI de-indexing service. URL: {}, Error: {}", deindexUrl, e.getMessage());
+            return false;
+        }
+    }
 }
