@@ -23,7 +23,12 @@ class DummyLLMService:
 
 @pytest.fixture
 def qa_pipeline(monkeypatch):
+    # Patch QAPipeline to use dummies even if it tries to instantiate real services
+    monkeypatch.setattr("genai.pipelines.qa_pipeline.EmbeddingService", lambda *a, **kw: DummyEmbedder())
+    monkeypatch.setattr("genai.pipelines.qa_pipeline.VectorStoreService", lambda *a, **kw: DummyVectorStore())
+    monkeypatch.setattr("genai.pipelines.qa_pipeline.LLMService", lambda *a, **kw: DummyLLMService())
     pipeline = QAPipeline()
+    # Overwrite with dummies just in case
     pipeline.embedder = DummyEmbedder()
     pipeline.vector_store = DummyVectorStore()
     pipeline.llm_service = DummyLLMService()
