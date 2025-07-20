@@ -11,80 +11,79 @@ alerting:
         - 'alertmanager:9093'
 
 scrape_configs:
-  - job_name: 'user-course-microservice'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['user-course-microservice:8081']
-        labels:
-          application: 'user-course-microservice'
+  #- job_name: 'user-course-microservice'
+  #  metrics_path: '/actuator/prometheus'
+  #  static_configs:
+  #    - targets: ['user-course-microservice:8081']
+  #      labels:
+  #        application: 'user-course-microservice'
 
-  - job_name: 'genai-backend-microservice'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['genai-backend-microservice:8082']
-        labels:
-          application: 'genai-backend-microservice'
+  #- job_name: 'genai-backend-microservice'
+  #  metrics_path: '/actuator/prometheus'
+  #  static_configs:
+  #    - targets: ['genai-backend-microservice:8082']
+  #      labels:
+  #        application: 'genai-backend-microservice'
 
-  - job_name: 'api-gateway'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['api-gateway:8080']
-        labels:
-          application: 'api-gateway'
+  #- job_name: 'api-gateway'
+  #  metrics_path: '/actuator/prometheus'
+  #  static_configs:
+  #    - targets: ['api-gateway:8080']
+  #      labels:
+  #        application: 'api-gateway'
 
-  - job_name: 'discovery-service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['discovery-service:8761']
-        labels:
-          application: 'discovery-service'
-    basic_auth:
-      username: 'eureka-user'
-      password: 'eureka-password'
+  #- job_name: 'discovery-service'
+  #  metrics_path: '/actuator/prometheus'
+  #  static_configs:
+  #    - targets: ['discovery-service:8761']
+  #      labels:
+  #        application: 'discovery-service'
+  #  basic_auth:
+  #    username: 'eureka-user'
+  #    password: 'eureka-password'
 
-  - job_name: 'genai-service'
-    metrics_path: '/metrics'
-    static_configs:
-      - targets: ['genai-service:8011']
-        labels:
-          application: 'genai-service'
+  #- job_name: 'genai-service'
+  #  metrics_path: '/metrics'
+  #  static_configs:
+  #    - targets: ['genai-service:8011']
+  #      labels:
+  #        application: 'genai-service'
 
-
-  # Kubernetes Pod Monitoring - https://john-tucker.medium.com/prometheus-scraping-configurations-by-example-cc2ffea2cef6
-  #- job_name: 'kubernetes-pods'
-  #  kubernetes_sd_configs:
-  #    - role: pod
-  #      namespaces:
-  #        names:
-  #          - "team-lecture-bot"
-  #  relabel_configs:
-  #    - source_labels: [__meta_kubernetes_namespace]
-  #      action: keep
-  #      regex: team-lecture-bot
-  #    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-  #      action: keep
-  #      regex: true
-  #    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-  #      action: replace
-  #      target_label: __metrics_path__
-  #      regex: (.+)
-  #    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
-  #      action: replace
-  #      regex: (\d+);((([0-9]+?)(\.|$)){4})
-  #      replacement: $2:$1
-  #      target_label: __address__
-  #    - action: labelmap
-  #      regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
-  #      replacement: __param_$1
-  #    - source_labels: [__meta_kubernetes_namespace]
-  #      action: replace
-  #      target_label: namespace
-  #    - source_labels: [__meta_kubernetes_pod_name]
-  #      action: replace
-  #      target_label: pod
-  #    - source_labels: [__meta_kubernetes_pod_phase]
-  #      regex: Pending|Succeeded|Failed|Completed
-  #      action: drop
-  #    - source_labels: [__meta_kubernetes_pod_node_name]
-  #      action: replace
-  #      target_label: node
+  #Kubernetes Pod Monitoring - https://john-tucker.medium.com/prometheus-scraping-configurations-by-example-cc2ffea2cef6
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - "team-lecture-bot"
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_namespace]
+        action: keep
+        regex: team-lecture-bot
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+        action: replace
+        regex: (\d+);((([0-9]+?)(\.|$)){4})
+        replacement: $2:$1
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
+        replacement: __param_$1
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: pod
+      - source_labels: [__meta_kubernetes_pod_phase]
+        regex: Pending|Succeeded|Failed|Completed
+        action: drop
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        action: replace
+        target_label: node
