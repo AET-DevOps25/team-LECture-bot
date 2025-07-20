@@ -16,5 +16,7 @@ route:
 receivers:
   - name: 'email-notifications'
     email_configs:
-      - to: 'evtim.kostadinov@tum.de'
+      - to: 'ge52rel@mytum.de'
+        send_resolved: true
+      - to: 'carloslmescom@gmail.com'
         send_resolved: true
