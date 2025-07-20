@@ -21,6 +21,7 @@
   "type": "module",
   "scripts": {
     "test:e2e": "playwright test",
-    "test:e2e:ordered": "npx playwright test e2e/login-register.spec.ts && npx playwright test e2e/profile.spec.ts && npx playwright test e2e/coursespace.spec.ts && npx playwright test e2e/documents.spec.ts && npx playwright test e2e/flashcards.spec.ts && npx playwright test e2e/qna.spec.ts"
+    "test:e2e:ordered": "npx playwright test e2e/login-register.spec.ts && npx playwright test e2e/profile.spec.ts && npx playwright test e2e/coursespace.spec.ts && npx playwright test e2e/documents.spec.ts && npx playwright test e2e/flashcards.spec.ts && npx playwright test e2e/qna.spec.ts",
+    "test:e2e:ordered:ci": "npx playwright test e2e/login-register.spec.ts && npx playwright test e2e/profile.spec.ts && npx playwright test e2e/coursespace.spec.ts && npx playwright test e2e/documents.spec.ts"
   }
 }

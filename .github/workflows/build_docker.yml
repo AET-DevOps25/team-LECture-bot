@@ -29,60 +29,60 @@ jobs:
         working-directory: services/backend/${{ matrix.service }}
         run: ./gradlew build
 
-  # build:
-  #   name: Build Docker Images
-  #   needs: test
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       service: [client, api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service, genai]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+  build:
+    name: Build Docker Images
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [client, api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service, genai]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
-  #     - name: Set Docker context path
-  #       id: set_path
-  #       run: |
-  #         if [[ "${{ matrix.service }}" == "client" || "${{ matrix.service }}" == "genai" ]]; then
-  #           echo "context=./services/${{ matrix.service }}" >> $GITHUB_OUTPUT
-  #         else
-  #           echo "context=./services/backend/${{ matrix.service }}" >> $GITHUB_OUTPUT
-  #         fi
+      - name: Set Docker context path
+        id: set_path
+        run: |
+          if [[ "${{ matrix.service }}" == "client" || "${{ matrix.service }}" == "genai" ]]; then
+            echo "context=./services/${{ matrix.service }}" >> $GITHUB_OUTPUT
+          else
+            echo "context=./services/backend/${{ matrix.service }}" >> $GITHUB_OUTPUT
+          fi
 
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: all
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
 
-  #     - name: Install Docker Buildx
-  #       id: buildx
-  #       uses: docker/setup-buildx-action@v3
+      - name: Install Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
     
-  #     - name: Extract metadata (tags, labels) for Docker
-  #       id: meta
-  #       uses: docker/metadata-action@v5
-  #       with:
-  #         images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
-  #         tags: |
-  #           type=raw,value=latest,enable={{is_default_branch}}
-  #           type=ref,event=branch
-  #           type=ref,event=pr
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
 
-  #     - name: Build and push Docker Image
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         platforms: linux/amd64,linux/arm64
-  #         context: ${{ steps.set_path.outputs.context }}
-  #         file: ${{ steps.set_path.outputs.context }}/Dockerfile
-  #         push: true
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #         labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ${{ steps.set_path.outputs.context }}
+          file: ${{ steps.set_path.outputs.context }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
