@@ -69,3 +69,34 @@ jobs:
       - name: Build Server with Gradle
         run: ./gradlew build -x test
         working-directory: services/backend/${{ matrix.service }}
+
+  test-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      # Start your stack (adjust the compose file name if needed)
+      - name: Start services
+        run: docker compose -f docker-compose.yml up -d
+
+      # Wait for the frontend to be ready (adjust port if needed)
+      - name: Wait for frontend
+        run: npx wait-on http://localhost:3000
+
+      # Run your ordered Playwright tests
+      - run: npm run test:e2e:ordered
+
+      # Optionally, show logs if tests fail
+      - name: Show docker logs on failure
+        if: failure()
+        run: docker compose logs
+
+      # Tear down
+      - name: Stop services
+        if: always()
+        run: docker compose down
