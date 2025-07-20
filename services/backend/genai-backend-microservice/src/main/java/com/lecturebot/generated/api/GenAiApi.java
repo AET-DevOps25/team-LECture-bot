@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-17T22:24:26.869613700+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-19T11:17:14.473865+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "GenAI", description = "the GenAI API")
 public interface GenAiApi {

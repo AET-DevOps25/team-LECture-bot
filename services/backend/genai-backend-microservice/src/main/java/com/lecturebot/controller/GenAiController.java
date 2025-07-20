@@ -57,6 +57,7 @@ public class GenAiController implements GenAiApi {
                         // If the optional is empty, return an internal error
                         FlashcardResponse errorResponse = new FlashcardResponse();
                         errorResponse.setError("An unexpected internal error occurred.");
+                        errorResponse.setCourseSpaceId(flashcardRequest.getCourseSpaceId());
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
                     });
 
@@ -70,6 +71,7 @@ public class GenAiController implements GenAiApi {
 
             // For any other error, create a response body with the error message
             FlashcardResponse errorResponse = new FlashcardResponse();
+            errorResponse.setCourseSpaceId(flashcardRequest.getCourseSpaceId());
             errorResponse.setError("Failed to generate flashcards: " + e.getResponseBodyAsString());
 
             // Return the original status code from the exception with the error body

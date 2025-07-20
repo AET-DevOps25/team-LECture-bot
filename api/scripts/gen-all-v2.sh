@@ -74,6 +74,15 @@ npx openapi-typescript "api/document-api.yaml" --output "${CLIENT_OUTPUT_DIR}/do
 echo "TypeScript client for document-microservice generated at ${CLIENT_OUTPUT_DIR}/document-api.ts"
 
 
+echo "Generating Python GenAi schemas and definitions..."
+echo "Ensure you have pip and datamodel-code-generator installed before continuing...(install pip and run pip install datamodel-code-generator[http] if not installed)"
+#pip install "datamodel-code-generator[http]"
+GENAI_PYTHON_OUTPUT_DIR="./services/genai/src/genai"
+datamodel-codegen --input ./${GENAI_API_SPEC} \
+                  --output ${GENAI_PYTHON_OUTPUT_DIR}/api/schemas_v1.py \
+                  --output-model-type pydantic_v2.BaseModel
+
+echo "Python GenAi schemas and definitions generated at ${GENAI_PYTHON_OUTPUT_DIR}/api/schemas_v1.py"
 echo "--- Code generation complete. ---"
 
 # --- Generate Document Microservice Code (Spring Boot) ---
