@@ -20,9 +20,9 @@ The primary actor interacting with the system. Users access the application to u
 
 * **Technology:** Spring Boot (Java).
 * **Responsibility:** Acts as the central hub for business logic, data management, and orchestration of services. It is designed with a microservice architecture. The image highlights the following internal services:
-  * **User & Course Service:** Manages user authentication, profiles, and the creation/management of course spaces.
-  * **Document Processing Service:** Handles the reception of uploaded documents, initial parsing/text extraction, and triggers the indexing process by interacting with the GenAI Service.
-  * **Query Orchestration Service:** Receives user queries (for Q&A or flashcard generation) from the client, forwards them to the GenAI Service, and processes the results before sending them back to the client.
+  * **User & Course Service (User Course Microservice):** Manages user authentication, profiles, and the creation/management of course spaces.
+  * **Document Processing Service (Document Microservice):** Handles the reception of uploaded documents, initial parsing/text extraction, and triggers the indexing process by interacting with the GenAI Service.
+  * **Query Orchestration Service (GenAi Backend Microservice):** Receives user queries (for Q&A or flashcard generation) from the client, forwards them to the GenAI Service, and processes the results before sending them back to the client.
   * **API Gateway / Load Balancer:** While shown as implicit, this layer would typically manage incoming requests, route them to the appropriate microservice, and handle concerns like load balancing and potentially SSL termination.
 * **Interaction:**
   * Receives requests from the Client Frontend.

@@ -40,7 +40,10 @@ These operations allow students to organize documents and interactions by course
   - **Generate Answer with Citation:** The system generates a response using the course documents as references and provides source citations for transparency. This feature leverages the underlying GenAI Service.
 
 ### 5. Flashcard Generation
-- **Flashcard Generation:** Based on uploaded documents in a course space, the system creates question-answer flashcards and displayes the,. This feature leverages the underlying GenAI Service. 
+- **Flashcard Generation:** Based on uploaded documents in a course space, the system creates question-answer flashcards. This feature leverages the underlying GenAI Service. Optional additional actions based on this are:
+  - **Adapt Flashcards:** Modify generated flashcards.
+  - **Set Generation Options:** Configure parameters such as difficulty, number of cards, or specific topics.
+  - **Export Flashcards:** Allows users to download and save flashcards for use in other applications or offline studying.
 
 ---
 
