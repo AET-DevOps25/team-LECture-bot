@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.lecturebot.generated.model.Citation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,18 +20,19 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * QueryResponse
+ * QueryCourseSpace200Response
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:30:01.886583+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
-public class QueryResponse {
+@JsonTypeName("queryCourseSpace_200_response")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:29:55.417633+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+public class QueryCourseSpace200Response {
 
   private @Nullable String answer;
 
   @Valid
   private List<@Valid Citation> citations = new ArrayList<>();
 
-  public QueryResponse answer(String answer) {
+  public QueryCourseSpace200Response answer(String answer) {
     this.answer = answer;
     return this;
   }
@@ -40,7 +42,7 @@ public class QueryResponse {
    * @return answer
    */
   
-  @Schema(name = "answer", example = "This document is about...", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "answer", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("answer")
   public String getAnswer() {
     return answer;
@@ -50,12 +52,12 @@ public class QueryResponse {
     this.answer = answer;
   }
 
-  public QueryResponse citations(List<@Valid Citation> citations) {
+  public QueryCourseSpace200Response citations(List<@Valid Citation> citations) {
     this.citations = citations;
     return this;
   }
 
-  public QueryResponse addCitationsItem(Citation citationsItem) {
+  public QueryCourseSpace200Response addCitationsItem(Citation citationsItem) {
     if (this.citations == null) {
       this.citations = new ArrayList<>();
     }
@@ -86,9 +88,9 @@ public class QueryResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    QueryResponse queryResponse = (QueryResponse) o;
-    return Objects.equals(this.answer, queryResponse.answer) &&
-        Objects.equals(this.citations, queryResponse.citations);
+    QueryCourseSpace200Response queryCourseSpace200Response = (QueryCourseSpace200Response) o;
+    return Objects.equals(this.answer, queryCourseSpace200Response.answer) &&
+        Objects.equals(this.citations, queryCourseSpace200Response.citations);
   }
 
   @Override
@@ -99,7 +101,7 @@ public class QueryResponse {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class QueryResponse {\n");
+    sb.append("class QueryCourseSpace200Response {\n");
     sb.append("    answer: ").append(toIndentedString(answer)).append("\n");
     sb.append("    citations: ").append(toIndentedString(citations)).append("\n");
     sb.append("}");

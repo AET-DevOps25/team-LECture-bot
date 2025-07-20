@@ -40,8 +40,7 @@ const QnAChat: React.FC<QnAChatProps> = ({ courseSpaceId }) => {
         setError(null);
 
         const requestBody = {
-            queryText: question,
-            courseId: courseSpaceId,
+            question: question,
         };
 
         try {
@@ -69,7 +68,7 @@ const QnAChat: React.FC<QnAChatProps> = ({ courseSpaceId }) => {
                 ...prev,
                 {
                     question,
-                    answer: data.answerText || "No answer provided.",
+                    answer: data.answer || "No answer provided.",
                     citations: data.citations,
                 },
             ]);

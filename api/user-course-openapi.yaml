@@ -30,6 +30,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthStatus'
+
+  /coursespaces/{courseSpaceId}/query:
+    post:
+      summary: Query a course space (Q&A)
+      description: Submits a natural language question for a specific course space and returns the answer.
+      operationId: queryCourseSpace
+      tags:
+        - CourseSpaces
+      parameters:
+        - name: courseSpaceId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the course space to query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: The question to ask about the course space.
+              required:
+                - question
+      responses:
+        '200':
+          description: Query processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                  citations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Citation'
+        '400':
+          description: Bad request (missing or invalid question)
+        '404':
+          description: Course space not found
+        '500':
+          description: Internal server error
+      security:
+        - bearerAuth: []
   /auth/register:
     post:
       summary: Register a new user
@@ -418,8 +467,18 @@ components:
           type: string
           description: The new description of the course space.  
 
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    Citation:
+      type: object
+      properties:
+        document_id:
+          type: string
+          description: The ID of the document from which the citation was retrieved.
+        chunk_id:
+          type: string
+          description: A unique identifier for the specific chunk within the document.
+        document_name:
+          type: string
+          description: The name or title of the source document.
+        retrieved_text_preview:
+          type: string
+          description: A short snippet of the text that was retrieved and used as context.
