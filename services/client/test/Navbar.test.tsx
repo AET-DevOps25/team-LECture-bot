@@ -1,12 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Navbar from './Navbar';
+import Navbar from '../src/components/Navbar';
 
 // Mock useAuth and useNavigate
 const mockLogout = jest.fn();
 const mockNavigate = jest.fn();
 
-jest.mock('../context/AuthContext', () => ({
+jest.mock('../src/context/AuthContext', () => ({
   useAuth: () => ({
     logout: mockLogout,
   }),

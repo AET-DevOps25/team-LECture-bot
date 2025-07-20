@@ -1,11 +1,10 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { AuthProvider, useAuth } from "./AuthContext";
-import storage from "../utils/storage";
+import { AuthProvider, useAuth } from "../src/context/AuthContext";
+import storage from "../src/utils/storage";
 import { MemoryRouter } from "react-router-dom";
 
 // Mock storage and useNavigate
-jest.mock("../utils/storage", () => ({
+jest.mock("../src/utils/storage", () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),

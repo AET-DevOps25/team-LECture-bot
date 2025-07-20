@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import PdfUpload from './PdfUpload';
+import PdfUpload from '../src/components/PdfUpload';
 
 // --- Mock setup ---
 const mockGET = jest.fn().mockResolvedValue({ data: [] });
@@ -18,7 +18,7 @@ jest.mock('openapi-fetch', () => () => ({
   DELETE: mockDELETE,
 }));
 
-jest.mock('../utils/storage', () => ({
+jest.mock('../src/utils/storage', () => ({
   getItem: jest.fn(() => 'fake-jwt-token'),
 }));
 

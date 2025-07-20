@@ -1,29 +1,24 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ProfilePage from "./ProfilePage";
 
-// Mock apiClient and AuthContext
-let mockGet: jest.Mock, mockPut: jest.Mock, mockPatch: jest.Mock, mockLogout: jest.Mock;
-jest.mock("../api/apiClient", () => {
-  mockGet = jest.fn();
-  mockPut = jest.fn();
-  mockPatch = jest.fn();
-  return {
-    apiClient: {
-      GET: mockGet,
-      PUT: mockPut,
-      PATCH: mockPatch,
-    },
-    __esModule: true,
-  };
-});
-jest.mock("../context/AuthContext", () => {
-  mockLogout = jest.fn();
-  return {
-    useAuth: () => ({ logout: mockLogout }),
-    __esModule: true,
-  };
-});
+// Mock apiClient and AuthContext (must be before all imports)
+const mockGet = jest.fn();
+const mockPut = jest.fn();
+const mockPatch = jest.fn();
+jest.mock("../src/api/apiClient", () => ({
+  apiClient: {
+    GET: mockGet,
+    PUT: mockPut,
+    PATCH: mockPatch,
+  },
+  __esModule: true,
+}));
+const mockLogout = jest.fn();
+jest.mock("../src/context/AuthContext", () => ({
+  useAuth: () => ({ logout: mockLogout }),
+  __esModule: true,
+}));
+
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import ProfilePage from "../src/pages/ProfilePage";
 
 describe("ProfilePage", () => {
   beforeEach(() => {

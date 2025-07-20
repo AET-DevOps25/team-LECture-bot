@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from '../../src/components/ProtectedRoute';
 
 // Mock useAuth
-jest.mock('../../context/AuthContext', () => ({
+jest.mock('../../src/context/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
-const mockUseAuth = require('../../context/AuthContext').useAuth;
+const mockUseAuth = require('../../src/context/AuthContext').useAuth;
 
 describe('ProtectedRoute', () => {
   afterEach(() => {
@@ -20,7 +20,11 @@ describe('ProtectedRoute', () => {
     render(
       <MemoryRouter initialEntries={['/protected']}>
         <Routes>
-          <Route element={<ProtectedRoute />}>
+          <Route element={
+            <ProtectedRoute>
+              <div>Protected Content</div>
+            </ProtectedRoute>
+          }>
             <Route path="/protected" element={<div>Protected Content</div>} />
           </Route>
           <Route path="/login" element={<div>Login Page</div>} />
@@ -38,7 +42,11 @@ describe('ProtectedRoute', () => {
     render(
       <MemoryRouter initialEntries={['/protected']}>
         <Routes>
-          <Route element={<ProtectedRoute />}>
+          <Route element={
+            <ProtectedRoute>
+              <div>Protected Content</div>
+            </ProtectedRoute>
+          }>
             <Route path="/protected" element={<div>Protected Content</div>} />
           </Route>
           <Route path="/login" element={<div>Login Page</div>} />

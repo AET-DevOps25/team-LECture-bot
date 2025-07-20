@@ -1,27 +1,20 @@
-import React from 'react';
+
+// Mock useAuth and apiClient (must be before all imports)
+const mockLogin = jest.fn();
+jest.mock('../src/context/AuthContext', () => ({
+    useAuth: () => ({ login: mockLogin }),
+    __esModule: true,
+}));
+
+const mockPost = jest.fn();
+jest.mock('../src/api/apiClient', () => ({
+    apiClient: { POST: mockPost },
+    __esModule: true,
+}));
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import LoginPage from './LoginPage';
-
-// Mock useAuth
-let mockLogin: jest.Mock;
-jest.mock('../context/AuthContext', () => {
-    mockLogin = jest.fn();
-    return {
-        useAuth: () => ({ login: mockLogin }),
-        __esModule: true,
-    };
-});
-
-// Mock apiClient
-let mockPost: jest.Mock;
-jest.mock('../api/apiClient', () => {
-    mockPost = jest.fn();
-    return {
-        apiClient: { POST: mockPost },
-        __esModule: true,
-    };
-});
+import LoginPage from '../src/pages/LoginPage';
 
 // Mock Link to avoid react-router-dom dependency
 jest.mock('react-router-dom', () => ({

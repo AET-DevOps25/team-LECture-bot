@@ -1,17 +1,15 @@
-import React from "react";
+
+
+// Mock apiClient (must be before all imports)
+const mockPost = jest.fn();
+jest.mock("../src/api/apiClient", () => ({
+  apiClient: { POST: mockPost },
+  __esModule: true,
+}));
+
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import RegisterPage from "./RegisterPage";
-
-// Mock apiClient
-let mockPost: jest.Mock;
-jest.mock("../api/apiClient", () => {
-  mockPost = jest.fn();
-  return {
-    apiClient: { POST: mockPost },
-    __esModule: true,
-  };
-});
+import RegisterPage from "../src/pages/RegisterPage";
 
 // Mock useNavigate
 const mockNavigate = jest.fn();
@@ -23,7 +21,7 @@ jest.mock("react-router-dom", () => ({
 
 describe("RegisterPage", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockPost.mockReset();
   });
 
   it("renders registration form", () => {

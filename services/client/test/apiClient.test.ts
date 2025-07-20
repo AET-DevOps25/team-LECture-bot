@@ -1,4 +1,4 @@
-import { apiClient, apiClientPromise } from "./apiClient";
+
 
 jest.mock("openapi-fetch", () => {
   const use = jest.fn();
@@ -8,7 +8,7 @@ jest.mock("openapi-fetch", () => {
   return { __esModule: true, default: createClient };
 });
 
-jest.mock("../utils/storage", () => ({
+jest.mock("../src/utils/storage", () => ({
   getItem: jest.fn(),
 }));
 
@@ -25,7 +25,7 @@ describe("apiClient", () => {
     }) as any;
 
     // Import after mocks and resetModules
-    const { apiClientPromise } = await import("./apiClient");
+    const { apiClientPromise } = await import("../src/api/apiClient");
     const createClient = require("openapi-fetch").default;
 
     await apiClientPromise;
@@ -37,7 +37,7 @@ describe("apiClient", () => {
       ok: false,
     }) as any;
 
-    const { apiClientPromise } = await import("./apiClient");
+    const { apiClientPromise } = await import("../src/api/apiClient");
     const createClient = require("openapi-fetch").default;
 
     await apiClientPromise;
@@ -49,10 +49,10 @@ describe("apiClient", () => {
       ok: false,
     }) as any;
 
-    const storage = require("../utils/storage");
+    const storage = require("../src/utils/storage");
     storage.getItem.mockReturnValue("mytoken");
 
-    const { apiClientPromise } = await import("./apiClient");
+    const { apiClientPromise } = await import("../src/api/apiClient");
     const createClient = require("openapi-fetch").default;
 
     await apiClientPromise;
@@ -71,10 +71,10 @@ describe("apiClient", () => {
       ok: false,
     }) as any;
 
-    const storage = require("../utils/storage");
+    const storage = require("../src/utils/storage");
     storage.getItem.mockReturnValue(undefined);
 
-    const { apiClientPromise } = await import("./apiClient");
+    const { apiClientPromise } = await import("../src/api/apiClient");
     const createClient = require("openapi-fetch").default;
 
     await apiClientPromise;

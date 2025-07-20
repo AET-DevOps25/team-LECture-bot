@@ -1,8 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import QnAChat from './QnAChat';
+import { render, screen, fireEvent } from '@testing-library/react';
+import QnAChat from '../src/components/QnAChat';
 
 // Mock storage.getItem
-jest.mock('../utils/storage', () => ({
+jest.mock('../src/utils/storage', () => ({
   getItem: jest.fn(() => 'fake-jwt-token'),
 }));
 

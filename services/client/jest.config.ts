@@ -6,4 +6,10 @@ export default {
     "\\.(css|less|sass|scss)$": "identity-obj-proxy", // The mock for style related files
     "^@src/(.*)$": "<rootDir>/src/$1", // [optional] Are you using aliases?
   },
+  preset: "ts-jest",
+  globals: {
+    "ts-jest": {
+      tsconfig: "<rootDir>/tsconfig.test.json",
+    },
+  },
 };

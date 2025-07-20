@@ -1,19 +1,18 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import DashboardPage from "./DashboardPage";
+import DashboardPage from "../src/pages/DashboardPage";
 
 // Mock dependencies
-jest.mock("../context/CourseSpaceContext", () => ({
+jest.mock("../src/context/CourseSpaceContext", () => ({
   useCourseSpaces: jest.fn(),
 }));
-jest.mock("../components/CourseSpaceModal", () => (props: any) =>
+jest.mock("../src/components/CourseSpaceModal", () => (props: any) =>
   props.isOpen ? <div data-testid="create-modal">CreateModal</div> : null
 );
-jest.mock("../components/EditCourseSpaceModal", () => (props: any) =>
+jest.mock("../src/components/EditCourseSpaceModal", () => (props: any) =>
   props.isOpen ? <div data-testid="edit-modal">EditModal</div> : null
 );
-jest.mock("../api/apiClient", () => ({
+jest.mock("../src/api/apiClient", () => ({
   apiClient: {
     DELETE: jest.fn(),
   },
@@ -22,8 +21,8 @@ jest.mock("../api/apiClient", () => ({
 const mockCourse = { id: "1", name: "Test Course", description: "desc" };
 
 describe("DashboardPage", () => {
-  const useCourseSpaces = require("../context/CourseSpaceContext").useCourseSpaces;
-  const apiClient = require("../api/apiClient").apiClient;
+  const useCourseSpaces = require("../src/context/CourseSpaceContext").useCourseSpaces;
+  const apiClient = require("../src/api/apiClient").apiClient;
 
   beforeEach(() => {
     jest.clearAllMocks();

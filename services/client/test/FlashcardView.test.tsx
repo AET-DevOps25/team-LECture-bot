@@ -1,6 +1,5 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { FlashcardView } from "./FlashcardView";
+import { FlashcardView } from "../src/components/flashcards/FlashcardView";
 
 const mockFlashcardData = {
   flashcards: [

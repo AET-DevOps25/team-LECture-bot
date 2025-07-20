@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EditCourseSpaceModal from './EditCourseSpaceModal';
+import EditCourseSpaceModal from '../src/components/EditCourseSpaceModal';
 
 describe('EditCourseSpaceModal', () => {
   const onClose = jest.fn();

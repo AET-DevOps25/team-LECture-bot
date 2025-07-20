@@ -1,10 +1,9 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { apiClient } from "@src/api/apiClient";
-import FlashcardViewer from "./FlashcardViewer";
+import FlashcardViewer from "../src/components/flashcards/FlashcardViewer";
 
 // Mock FlashcardView to avoid rendering its internals
-jest.mock("./FlashcardView", () => ({
+jest.mock("../src/components/flashcards/FlashcardView", () => ({
   FlashcardView: ({ flashcardData }: any) => (
     <div data-testid="flashcard-view">{JSON.stringify(flashcardData)}</div>
   ),

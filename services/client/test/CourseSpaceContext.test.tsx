@@ -1,17 +1,16 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { CourseSpaceProvider, useCourseSpaces } from "./CourseSpaceContext";
+import { CourseSpaceProvider, useCourseSpaces } from "../src/context/CourseSpaceContext";
 import { act } from "react-dom/test-utils";
 
 // Mock dependencies
-jest.mock("../api/apiClient", () => ({
+jest.mock("../src/api/apiClient", () => ({
   apiClient: {
     GET: jest.fn(),
     POST: jest.fn(),
     PUT: jest.fn(),
   },
 }));
-jest.mock("./AuthContext", () => ({
+jest.mock("../src/context/AuthContext", () => ({
   useAuth: () => ({ isAuthenticated: true }),
 }));
 
@@ -37,7 +36,7 @@ describe("CourseSpaceContext", () => {
   });
 
   it("provides default values and fetches on mount", async () => {
-    const { apiClient } = require("../api/apiClient");
+    const { apiClient } = require("../src/api/apiClient");
     apiClient.GET.mockResolvedValue({ data: [mockCourseSpace], error: null });
     render(
       <CourseSpaceProvider>
@@ -48,7 +47,7 @@ describe("CourseSpaceContext", () => {
   });
 
   it("handles fetch error", async () => {
-    const { apiClient } = require("../api/apiClient");
+    const { apiClient } = require("../src/api/apiClient");
     apiClient.GET.mockResolvedValue({ data: null, error: "fail" });
     render(
       <CourseSpaceProvider>
@@ -59,7 +58,7 @@ describe("CourseSpaceContext", () => {
   });
 
   it("can create a course space", async () => {
-    const { apiClient } = require("../api/apiClient");
+    const { apiClient } = require("../src/api/apiClient");
     apiClient.POST.mockResolvedValue({ data: mockCourseSpace, error: null });
     render(
       <CourseSpaceProvider>
@@ -73,7 +72,7 @@ describe("CourseSpaceContext", () => {
   });
 
   it("can update a course space", async () => {
-    const { apiClient } = require("../api/apiClient");
+    const { apiClient } = require("../src/api/apiClient");
     apiClient.GET.mockResolvedValue({ data: [mockCourseSpace], error: null });
     apiClient.PUT.mockResolvedValue({ data: { ...mockCourseSpace, name: "Updated" }, error: null });
     render(
