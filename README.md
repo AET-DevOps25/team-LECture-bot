@@ -7,14 +7,10 @@ A full-stack, AI-powered Q&A platform for educational content. This project uses
 
 ## Table of Contents
 
-- [Architecture Overview](#-architecture-overview)
-- [Getting Started](#-getting-started)
-- [Usage Guide](#-usage-guide)
-- [API Documentation](#-api-documentation)
+- [Architecture Overview](docs/architecture-description.md)
+- [API Documentation](api/README.md)
 - [CI/CD Pipeline](#-cicd-pipeline)
 - [Monitoring](#-monitoring)
-- [Team Responsibilities](#-team-responsibilities)
-- [Service-Specific Development](#-service-specific-development)
 - [License](#-license)
 
 ---
