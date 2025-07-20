@@ -56,7 +56,10 @@ dependencies {
     // Spring Boot DevTools for easier development
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-core:5.2.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
 
 tasks.named('test') {

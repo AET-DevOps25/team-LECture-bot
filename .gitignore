@@ -82,3 +82,5 @@ server/bin
 *.class
 server/bin
 node_modules/
+
+test-results

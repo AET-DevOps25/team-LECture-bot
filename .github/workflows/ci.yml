@@ -51,12 +51,62 @@ jobs:
           ./api/scripts/gen-all-v2.sh
         working-directory: ${{ github.workspace }} # Ensure command runs from root
 
+  # Backend Java unit tests (for each service)
+  test-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
+        
+      - name: Run Unit Tests
+        run: ./gradlew test
+        working-directory: services/backend/${{ matrix.service }}
+
+  # Client (React) unit tests
+  test-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+        working-directory: services/client
+      - run: npm run test -- --ci
+        working-directory: services/client
+
+  # GenAI Python unit tests (pytest)
+  test-genai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r services/genai/requirements.txt
+      - name: Run Pytest
+        run: pytest tests/unit
+        working-directory: services/genai
+
   # This job builds the server to ensure it compiles correctly with the generated code.
   build-server:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-gateway, user-course-microservice, genai-backend-microservice, discovery-service]
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,6 +116,45 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
+
       - name: Build Server with Gradle
         run: ./gradlew build -x test
         working-directory: services/backend/${{ matrix.service }}
+
+  test-e2e:
+    runs-on: ubuntu-latest
+    env:
+      TUM_AET_LLM_API_KEY: ${{ secrets.TUM_AET_LLM_API_KEY }}
+      TUM_AET_LLM_API_BASE: ${{ secrets.TUM_AET_LLM_API_BASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      # Start your stack (adjust the compose file name if needed)
+      - name: Start services
+        run: docker compose -f docker-compose.yml up --build -d
+
+      # Wait for the frontend to be ready (adjust port if needed)
+      - name: Wait for frontend
+        run: npx wait-on http://localhost:3000
+
+      # Run your ordered Playwright tests
+      - run: npm run test:e2e:ordered:ci
+
+      # Optionally, show logs if tests fail
+      - name: Show docker logs on failure
+        if: failure()
+        run: docker compose logs
+
+      # Tear down
+      - name: Stop services
+        if: always()
+        run: docker compose down

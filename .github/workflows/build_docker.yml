@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-gateway, user-course-microservice, genai-backend-microservice, discovery-service]
+        service: [api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,6 +21,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
+
       - name: Build with Gradle in ${{ matrix.service }}
         working-directory: services/backend/${{ matrix.service }}
         run: ./gradlew build
@@ -31,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [client, api-gateway, user-course-microservice, genai-backend-microservice, discovery-service, genai]
+        service: [client, api-gateway, user-course-microservice, genai-backend-microservice, document-microservice, discovery-service, genai]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

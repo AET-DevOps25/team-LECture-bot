@@ -1,8 +1,15 @@
 {
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.6",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.0.4",
     "openapi-typescript": "^7.8.0",
+    "supertest": "^7.1.3",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
@@ -10,5 +17,11 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2"
+  },
+  "type": "module",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ordered": "npx playwright test e2e/login-register.spec.ts && npx playwright test e2e/profile.spec.ts && npx playwright test e2e/coursespace.spec.ts && npx playwright test e2e/documents.spec.ts && npx playwright test e2e/flashcards.spec.ts && npx playwright test e2e/qna.spec.ts",
+    "test:e2e:ordered:ci": "npx playwright test e2e/login-register.spec.ts && npx playwright test e2e/profile.spec.ts && npx playwright test e2e/coursespace.spec.ts && npx playwright test e2e/documents.spec.ts"
   }
 }
