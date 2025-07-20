@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * CourseSpaceDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-19T11:17:10.134159+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:29:55.417633+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class CourseSpaceDto {
 
   private @Nullable UUID id;

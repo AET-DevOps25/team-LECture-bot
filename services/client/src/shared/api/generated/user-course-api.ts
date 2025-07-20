@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/coursespaces/{courseSpaceId}/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Query a course space (Q&A)
+         * @description Submits a natural language question for a specific course space and returns the answer.
+         */
+        post: operations["queryCourseSpace"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/register": {
         parameters: {
             query?: never;
@@ -271,6 +291,16 @@ export interface components {
             /** @description The new description of the course space. */
             description?: string;
         };
+        Citation: {
+            /** @description The ID of the document from which the citation was retrieved. */
+            document_id?: string;
+            /** @description A unique identifier for the specific chunk within the document. */
+            chunk_id?: string;
+            /** @description The name or title of the source document. */
+            document_name?: string;
+            /** @description A short snippet of the text that was retrieved and used as context. */
+            retrieved_text_preview?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -297,6 +327,60 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HealthStatus"];
                 };
+            };
+        };
+    };
+    queryCourseSpace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the course space to query. */
+                courseSpaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The question to ask about the course space. */
+                    question: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Query processed successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        answer?: string;
+                        citations?: components["schemas"]["Citation"][];
+                    };
+                };
+            };
+            /** @description Bad request (missing or invalid question) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course space not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

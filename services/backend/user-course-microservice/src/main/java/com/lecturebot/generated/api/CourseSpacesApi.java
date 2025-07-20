@@ -7,6 +7,8 @@ package com.lecturebot.generated.api;
 
 import com.lecturebot.generated.model.CourseSpaceDto;
 import com.lecturebot.generated.model.CreateCourseSpaceRequest;
+import com.lecturebot.generated.model.QueryCourseSpace200Response;
+import com.lecturebot.generated.model.QueryCourseSpaceRequest;
 import java.util.UUID;
 import com.lecturebot.generated.model.UpdateCourseSpaceRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
@@ -36,9 +38,10 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-19T11:17:10.134159+03:00[Europe/Sofia]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:29:55.417633+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 @Validated
 @Tag(name = "CourseSpaces", description = "the CourseSpaces API")
+// @RequestMapping("/api/v1")
 public interface CourseSpacesApi {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -65,9 +68,6 @@ public interface CourseSpacesApi {
             }),
             @ApiResponse(responseCode = "400", description = "Bad Request (e.g., validation error)."),
             @ApiResponse(responseCode = "401", description = "Unauthorized.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
@@ -114,9 +114,6 @@ public interface CourseSpacesApi {
             @ApiResponse(responseCode = "400", description = "Bad Request (e.g., invalid ID)."),
             @ApiResponse(responseCode = "401", description = "Unauthorized."),
             @ApiResponse(responseCode = "404", description = "Course space not found.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
@@ -154,9 +151,6 @@ public interface CourseSpacesApi {
             @ApiResponse(responseCode = "400", description = "Bad Request (e.g., invalid ID)."),
             @ApiResponse(responseCode = "401", description = "Unauthorized."),
             @ApiResponse(responseCode = "404", description = "Course space not found.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
@@ -199,9 +193,6 @@ public interface CourseSpacesApi {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseSpaceDto.class)))
             }),
             @ApiResponse(responseCode = "401", description = "Unauthorized.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
@@ -217,6 +208,56 @@ public interface CourseSpacesApi {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "[ { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" }, { \"owner\" : { \"name\" : \"Ada Lovelace\", \"id\" : 0, \"email\" : \"ada.lovelace@example.com\" }, \"updated_at\" : \"2023-10-01T12:00:00Z\", \"name\" : \"Introduction to AI\", \"description\" : \"This is a course about AI.\", \"created_at\" : \"2023-10-01T12:00:00Z\", \"id\" : \"123e4567-e89b-12d3-a456-426614174000\" } ]";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    /**
+     * POST /coursespaces/{courseSpaceId}/query : Query a course space (Q&amp;A)
+     * Submits a natural language question for a specific course space and returns the answer.
+     *
+     * @param courseSpaceId The ID of the course space to query. (required)
+     * @param queryCourseSpaceRequest  (required)
+     * @return Query processed successfully. (status code 200)
+     *         or Bad request (missing or invalid question) (status code 400)
+     *         or Course space not found (status code 404)
+     *         or Internal server error (status code 500)
+     */
+    @Operation(
+        operationId = "queryCourseSpace",
+        summary = "Query a course space (Q&A)",
+        description = "Submits a natural language question for a specific course space and returns the answer.",
+        tags = { "CourseSpaces" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Query processed successfully.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = QueryCourseSpace200Response.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request (missing or invalid question)"),
+            @ApiResponse(responseCode = "404", description = "Course space not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/coursespaces/{courseSpaceId}/query",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    
+    default ResponseEntity<QueryCourseSpace200Response> queryCourseSpace(
+        @Parameter(name = "courseSpaceId", description = "The ID of the course space to query.", required = true, in = ParameterIn.PATH) @PathVariable("courseSpaceId") String courseSpaceId,
+        @Parameter(name = "QueryCourseSpaceRequest", description = "", required = true) @Valid @RequestBody QueryCourseSpaceRequest queryCourseSpaceRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"citations\" : [ { \"document_name\" : \"document_name\", \"retrieved_text_preview\" : \"retrieved_text_preview\", \"document_id\" : \"document_id\", \"chunk_id\" : \"chunk_id\" }, { \"document_name\" : \"document_name\", \"retrieved_text_preview\" : \"retrieved_text_preview\", \"document_id\" : \"document_id\", \"chunk_id\" : \"chunk_id\" } ], \"answer\" : \"answer\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -250,9 +291,6 @@ public interface CourseSpacesApi {
             @ApiResponse(responseCode = "400", description = "Bad Request (e.g., validation error)."),
             @ApiResponse(responseCode = "401", description = "Unauthorized."),
             @ApiResponse(responseCode = "404", description = "Course space not found.")
-        },
-        security = {
-            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(

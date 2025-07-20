@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 # Make sure to import the query router from genai.api.routers
 from genai.api.routers import indexing, query, flashcard, deindexing
@@ -9,6 +10,15 @@ app = FastAPI(
     version="0.1.0",
     description="GenAI module for LECture-bot, responsible for document indexing and Retrieval-Augmented Generation (RAG) Q&A.",
     openapi_url=f"{settings.API_V1_STR}/openapi.json" # Ensures API docs are under the v1 path
+)
+
+# Add CORS middleware to allow requests from React client
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include the API routers

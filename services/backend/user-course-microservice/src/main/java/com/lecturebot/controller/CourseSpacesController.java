@@ -21,6 +21,11 @@ import com.lecturebot.service.CourseSpaceService;
 import com.lecturebot.mapper.CourseSpaceMapper;
 import com.lecturebot.entity.CourseSpace;
 
+import com.lecturebot.generated.model.QueryCourseSpaceRequest;
+import com.lecturebot.generated.model.QueryCourseSpace200Response;
+import com.lecturebot.generated.model.Citation;
+import com.lecturebot.service.GenAiClient;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +36,7 @@ import org.slf4j.Logger;
 
 @RestController
 public class CourseSpacesController implements CourseSpacesApi {
+    private final GenAiClient genAiClient;
     @Override
     @RequestMapping(
         method = RequestMethod.PUT,
@@ -53,9 +59,48 @@ public class CourseSpacesController implements CourseSpacesApi {
     private final CourseSpaceMapper courseSpaceMapper;
     private static final Logger logger = LoggerFactory.getLogger(CourseSpacesController.class);
 
-    public CourseSpacesController(CourseSpaceService courseSpaceService, CourseSpaceMapper courseSpaceMapper) {
+    public CourseSpacesController(CourseSpaceService courseSpaceService, CourseSpaceMapper courseSpaceMapper, GenAiClient genAiClient) {
         this.courseSpaceService = courseSpaceService;
         this.courseSpaceMapper = courseSpaceMapper;
+        this.genAiClient = genAiClient;
+    }
+    @Override
+    public ResponseEntity<QueryCourseSpace200Response> queryCourseSpace(String courseSpaceId, QueryCourseSpaceRequest queryCourseSpaceRequest) {
+        // Validate question
+        if (queryCourseSpaceRequest == null || queryCourseSpaceRequest.getQuestion() == null || queryCourseSpaceRequest.getQuestion().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Validate courseSpaceId
+        UUID courseSpaceUuid;
+        try {
+            courseSpaceUuid = UUID.fromString(courseSpaceId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Fetch course space and check ownership
+        var courseSpaceOpt = courseSpaceService.getCourseSpaceById(courseSpaceUuid);
+        if (courseSpaceOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        var courseSpace = courseSpaceOpt.get();
+        var currentUser = courseSpace.getOwner();
+        // Optionally, check if current user matches authenticated user (if not handled by service)
+
+        // Prepare context for GenAI (could be courseSpace name/description)
+        String context = courseSpace.getName() + ": " + courseSpace.getDescription();
+
+        try {
+            GenAiClient.GenAiResponse aiResponse = genAiClient.queryCourseSpace(queryCourseSpaceRequest.getQuestion(), context);
+            QueryCourseSpace200Response response = new QueryCourseSpace200Response();
+            response.setAnswer(aiResponse.getAnswer());
+            response.setCitations(aiResponse.getCitations());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("GenAI backend error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Override

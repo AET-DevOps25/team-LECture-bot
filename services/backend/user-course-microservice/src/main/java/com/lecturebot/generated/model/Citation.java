@@ -18,29 +18,16 @@ import jakarta.annotation.Generated;
  * Citation
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:30:01.886583+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-20T14:29:55.417633+02:00[Europe/Berlin]", comments = "Generator version: 7.13.0")
 public class Citation {
 
-  private String documentId;
+  private @Nullable String documentId;
 
-  private String chunkId;
+  private @Nullable String chunkId;
 
-  private @Nullable String documentName = null;
+  private @Nullable String documentName;
 
-  private String retrievedTextPreview;
-
-  public Citation() {
-    super();
-  }
-
-  /**
-   * Constructor with only required parameters
-   */
-  public Citation(String documentId, String chunkId, String retrievedTextPreview) {
-    this.documentId = documentId;
-    this.chunkId = chunkId;
-    this.retrievedTextPreview = retrievedTextPreview;
-  }
+  private @Nullable String retrievedTextPreview;
 
   public Citation documentId(String documentId) {
     this.documentId = documentId;
@@ -51,8 +38,8 @@ public class Citation {
    * The ID of the document from which the citation was retrieved.
    * @return documentId
    */
-  @NotNull 
-  @Schema(name = "document_id", example = "doc-123", description = "The ID of the document from which the citation was retrieved.", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "document_id", description = "The ID of the document from which the citation was retrieved.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("document_id")
   public String getDocumentId() {
     return documentId;
@@ -68,11 +55,11 @@ public class Citation {
   }
 
   /**
-   * A unique identifier for the specific chunk within the document (e.g., chunk index, page number).
+   * A unique identifier for the specific chunk within the document.
    * @return chunkId
    */
-  @NotNull 
-  @Schema(name = "chunk_id", example = "0", description = "A unique identifier for the specific chunk within the document (e.g., chunk index, page number).", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "chunk_id", description = "A unique identifier for the specific chunk within the document.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("chunk_id")
   public String getChunkId() {
     return chunkId;
@@ -92,7 +79,7 @@ public class Citation {
    * @return documentName
    */
   
-  @Schema(name = "document_name", example = "Lecture Slides Week 5", description = "The name or title of the source document.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "document_name", description = "The name or title of the source document.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("document_name")
   public String getDocumentName() {
     return documentName;
@@ -111,8 +98,8 @@ public class Citation {
    * A short snippet of the text that was retrieved and used as context.
    * @return retrievedTextPreview
    */
-  @NotNull 
-  @Schema(name = "retrieved_text_preview", example = "LangChain is a framework for developing applications powered by language models.", description = "A short snippet of the text that was retrieved and used as context.", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "retrieved_text_preview", description = "A short snippet of the text that was retrieved and used as context.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("retrieved_text_preview")
   public String getRetrievedTextPreview() {
     return retrievedTextPreview;

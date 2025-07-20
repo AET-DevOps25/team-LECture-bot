@@ -40,13 +40,13 @@ const QnAChat: React.FC<QnAChatProps> = ({ courseSpaceId }) => {
         setError(null);
 
         const requestBody = {
-            queryText: question,
-            courseId: courseSpaceId,
+            query_text: question,
+            course_space_id: courseSpaceId,
         };
 
         try {
             const token = storage.getItem<string>('jwtToken');
-            const response = await fetch(`/api/coursespaces/${courseSpaceId}/query`, {
+            const response = await fetch('http://localhost:8011/api/v1/query', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,12 +65,21 @@ const QnAChat: React.FC<QnAChatProps> = ({ courseSpaceId }) => {
             }
 
             const data = await response.json();
+            // Map GenAI citation fields to client Citation type
+            const citations = Array.isArray(data.citations)
+                ? data.citations.map((c: any) => ({
+                    document_id: c.documentId || c.document_id,
+                    chunk_id: c.chunkId || c.chunk_id,
+                    document_name: c.documentName || c.document_name,
+                    retrieved_text_preview: c.retrievedTextPreview || c.retrieved_text_preview,
+                }))
+                : [];
             setHistory((prev) => [
                 ...prev,
                 {
                     question,
-                    answer: data.answerText || "No answer provided.",
-                    citations: data.citations,
+                    answer: data.answer || "No answer provided.",
+                    citations,
                 },
             ]);
             setQuestion("");
