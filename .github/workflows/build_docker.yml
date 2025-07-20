@@ -21,6 +21,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
+
       - name: Build with Gradle in ${{ matrix.service }}
         working-directory: services/backend/${{ matrix.service }}
         run: ./gradlew build

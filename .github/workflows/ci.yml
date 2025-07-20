@@ -133,18 +133,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - run: echo "TUM_AET_LLM_API_KEY=$TUM_AET_LLM_API_KEY"
-      - name: Check env var in genai-service
-        run: docker exec lecturebot-genai-service printenv TUM_AET_LLM_API_KEY
-      - run: echo "TUM_AET_LLM_API_BASE=$TUM_AET_LLM_API_BASE"
-
+          
       - run: npm ci
       - run: npx playwright install --with-deps
 
       # Start your stack (adjust the compose file name if needed)
       - name: Start services
         run: docker compose -f docker-compose.yml up --build -d
+
+      - name: Check env var in genai-service
+        run: docker exec lecturebot-genai-service printenv TUM_AET_LLM_API_KEY
+      - run: echo "TUM_AET_LLM_API_BASE=$TUM_AET_LLM_API_BASE"
 
       # Wait for the frontend to be ready (adjust port if needed)
       - name: Wait for frontend
