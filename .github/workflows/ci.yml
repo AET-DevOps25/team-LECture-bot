@@ -63,6 +63,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
+        
       - name: Run Unit Tests
         run: ./gradlew test
         working-directory: services/backend/${{ matrix.service }}
@@ -110,6 +115,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        working-directory: services/backend/${{ matrix.service }}
 
       - name: Build Server with Gradle
         run: ./gradlew build -x test
