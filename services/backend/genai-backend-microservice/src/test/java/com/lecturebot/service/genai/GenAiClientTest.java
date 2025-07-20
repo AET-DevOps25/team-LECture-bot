@@ -38,7 +38,7 @@ class GenAiClientTest {
         IndexRequest request = mock(IndexRequest.class);
         IndexResponse responseObj = mock(IndexResponse.class);
         when(request.getDocumentId()).thenReturn("doc1");
-        when(restTemplate.postForObject(eq(baseUrl + "/api/v1/index"), eq(request), eq(IndexResponse.class))).thenReturn(responseObj);
+        when(restTemplate.postForObject(eq(baseUrl + "/index"), any(IndexRequest.class), eq(IndexResponse.class))).thenReturn(responseObj);
         Optional<IndexResponse> result = client.indexDocument(request);
         assertTrue(result.isPresent());
         assertEquals(responseObj, result.get());
@@ -58,7 +58,7 @@ class GenAiClientTest {
         QueryRequest request = mock(QueryRequest.class);
         QueryResponse responseObj = mock(QueryResponse.class);
         when(request.getCourseSpaceId()).thenReturn("cs1");
-        when(restTemplate.postForObject(eq(baseUrl + "/api/v1/query"), eq(request), eq(QueryResponse.class))).thenReturn(responseObj);
+        when(restTemplate.postForObject(eq(baseUrl + "/query"), any(QueryRequest.class), eq(QueryResponse.class))).thenReturn(responseObj);
         Optional<QueryResponse> result = client.submitQuery(request);
         assertTrue(result.isPresent());
         assertEquals(responseObj, result.get());
@@ -78,7 +78,7 @@ class GenAiClientTest {
         FlashcardRequest request = mock(FlashcardRequest.class);
         FlashcardResponse responseObj = mock(FlashcardResponse.class);
         when(request.getCourseSpaceId()).thenReturn("cs1");
-        when(restTemplate.postForObject(eq(baseUrl + "/api/v1/flashcards/generate"), eq(request), eq(FlashcardResponse.class))).thenReturn(responseObj);
+        when(restTemplate.postForObject(eq(baseUrl + "/flashcards/generate"), any(FlashcardRequest.class), eq(FlashcardResponse.class))).thenReturn(responseObj);
         Optional<FlashcardResponse> result = client.generateFlashcards(request);
         assertTrue(result.isPresent());
         assertEquals(responseObj, result.get());
