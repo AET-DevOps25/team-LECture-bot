@@ -88,7 +88,7 @@ public class GenAiClient {
      * @return true if the de-indexing was successful, false otherwise.
      */
     public boolean deindexDocument(String courseSpaceId, String documentId) {
-        String deindexUrl = genAiServiceBaseUrl + "/api/v1/index/" + courseSpaceId + "/" + documentId;
+        String deindexUrl = genAiServiceBaseUrl + "/index/" + courseSpaceId + "/" + documentId;
         try {
             logger.info("Sending de-indexing request to GenAI service for documentId: {} in courseSpaceId: {}", documentId, courseSpaceId);
             restTemplate.delete(deindexUrl);
